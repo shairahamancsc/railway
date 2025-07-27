@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode, useMemo } from "react";
 import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord } from "@/types";
 
 interface DataContextProps {
@@ -78,18 +78,32 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const markAttendance = (date: string, records: DailyLabourerRecord[]) => {
     setAttendance((prev) => {
       const existingRecordIndex = prev.findIndex((record) => record.date === date);
+      const newRecord = { 
+        date, 
+        records,
+        presentLabourerIds: records.filter(r => r.status === 'present').map(r => r.labourerId)
+      };
+      
       if (existingRecordIndex > -1) {
         const updatedAttendance = [...prev];
-        updatedAttendance[existingRecordIndex] = { date, records };
+        updatedAttendance[existingRecordIndex] = newRecord;
         return updatedAttendance;
       }
-      return [...prev, { date, records }];
+      return [...prev, newRecord];
     });
   };
 
   const getLabourerById = (id: string) => {
     return labourers.find(l => l.id === id);
   }
+
+  const attendanceWithDerivedState = useMemo(() => {
+    return attendance.map(att => ({
+        ...att,
+        presentLabourerIds: att.records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId),
+    }));
+  }, [attendance]);
+
 
   if (!isMounted) {
     return null;
@@ -102,7 +116,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         addLabourer,
         supervisors,
         addSupervisor,
-        attendance,
+        attendance: attendanceWithDerivedState,
         markAttendance,
         getLabourerById,
       }}
