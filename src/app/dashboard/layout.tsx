@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DataProvider } from "@/context/DataProvider";
-import { SidebarNav } from "@/components/dashboard/sidebar-nav";
+import { SidebarNav, MobileSidebar } from "@/components/dashboard/sidebar-nav";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,21 +54,7 @@ export default function DashboardLayout({
           </div>
           <div className="flex flex-col">
             <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6 md:hidden no-print">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="shrink-0"
-                  >
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle navigation menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="flex flex-col p-0">
-                  <SidebarNav />
-                </SheetContent>
-              </Sheet>
+              <MobileSidebar />
             </header>
             <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
               {children}

@@ -10,6 +10,7 @@ import {
   FileText,
   LogOut,
   UserCheck,
+  Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 
 const navItems = [
@@ -31,7 +33,7 @@ const navItems = [
   { href: "/dashboard/reports", icon: FileText, label: "Reports" },
 ];
 
-export function SidebarNav() {
+function SidebarContentNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
@@ -46,7 +48,7 @@ export function SidebarNav() {
   };
 
   return (
-    <Sidebar className="border-r no-print">
+    <>
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -78,6 +80,37 @@ export function SidebarNav() {
           <span>Logout</span>
         </Button>
       </SidebarFooter>
+    </>
+  );
+}
+
+
+export function SidebarNav() {
+  return (
+    <Sidebar className="border-r no-print">
+      <SidebarContentNav />
     </Sidebar>
   );
+}
+
+export function MobileSidebar() {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="shrink-0"
+        >
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle navigation menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="flex flex-col p-0">
+         <Sidebar className="border-r-0">
+           <SidebarContentNav />
+         </Sidebar>
+      </SheetContent>
+    </Sheet>
+  )
 }
