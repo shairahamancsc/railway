@@ -22,6 +22,7 @@ const labourSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   fatherName: z.string().min(2, "Father's name must be at least 2 characters"),
   mobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits"),
+  dailySalary: z.coerce.number().min(0, "Salary must be a positive number"),
   aadhaar: z.string().regex(/^\d{12}$/, "Aadhaar number must be 12 digits"),
   pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN format"),
   dl: z.string().optional(),
@@ -42,6 +43,7 @@ export default function AddLabourPage() {
       fullName: "",
       fatherName: "",
       mobile: "",
+      dailySalary: 0,
       aadhaar: "",
       pan: "",
       dl: "",
@@ -57,6 +59,7 @@ export default function AddLabourPage() {
       fullName: values.fullName,
       fatherName: values.fatherName,
       mobile: values.mobile,
+      dailySalary: values.dailySalary,
       aadhaar: values.aadhaar,
       pan: values.pan.toUpperCase(),
       dl: values.dl || "",
@@ -123,6 +126,19 @@ export default function AddLabourPage() {
                       <FormLabel>Mobile No.</FormLabel>
                       <FormControl>
                         <Input placeholder="9876543210" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dailySalary"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Daily Salary (₹)</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="e.g. 500" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

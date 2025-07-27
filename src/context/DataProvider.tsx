@@ -26,7 +26,14 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     try {
       const labourersItem = window.localStorage.getItem("labourers");
-      if (labourersItem) setLabourers(JSON.parse(labourersItem));
+      if (labourersItem) {
+        // Add default dailySalary if it's missing
+        const parsedLabourers = JSON.parse(labourersItem).map((l: any) => ({
+            ...l,
+            dailySalary: l.dailySalary ?? 0
+        }));
+        setLabourers(parsedLabourers);
+      }
       
       const supervisorsItem = window.localStorage.getItem("supervisors");
       if (supervisorsItem) setSupervisors(JSON.parse(supervisorsItem));

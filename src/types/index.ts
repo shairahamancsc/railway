@@ -7,6 +7,7 @@ export interface Labourer {
   aadhaar: string;
   pan: string;
   dl: string;
+  dailySalary: number;
   documents: {
     aadhaarUrl: string;
     panUrl: string;
