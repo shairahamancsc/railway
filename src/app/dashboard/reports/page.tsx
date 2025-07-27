@@ -2,16 +2,19 @@
 "use client";
 
 import { useState } from "react";
-import { format, eachDayOfInterval, startOfWeek, endOfWeek, isAfter, addDays } from "date-fns";
+import { format, eachDayOfInterval, startOfWeek, endOfWeek, isAfter } from "date-fns";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar as CalendarIcon, Printer } from "lucide-react";
+import { Calendar as CalendarIcon, Printer, Pencil } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
+import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 export default function ReportsPage() {
   const { labourers, attendance } = useData();
@@ -44,7 +47,7 @@ export default function ReportsPage() {
                     id="date"
                     variant={"outline"}
                     className={cn(
-                      "w-[300px] justify-start text-left font-normal",
+                      "w-full sm:w-[300px] justify-start text-left font-normal",
                       !dateRange && "text-muted-foreground"
                     )}
                   >
@@ -71,6 +74,7 @@ export default function ReportsPage() {
                     selected={dateRange}
                     onSelect={setDateRange}
                     numberOfMonths={2}
+                    disabled={(date) => isAfter(date, new Date())}
                   />
                 </PopoverContent>
               </Popover>
@@ -95,7 +99,23 @@ export default function ReportsPage() {
                     <TableHead>Labourer Name</TableHead>
                     {daysInInterval.map((day) => (
                       <TableHead key={day.toString()} className="text-center">
-                        {format(day, "MMM d")}
+                         <div className="flex items-center justify-center gap-2">
+                          {format(day, "MMM d")}
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Link href={`/dashboard/attendance?date=${format(day, "yyyy-MM-dd")}`} className="no-print">
+                                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                                      <Pencil className="h-3 w-3" />
+                                  </Button>
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Edit Attendance</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
                       </TableHead>
                     ))}
                   </TableRow>

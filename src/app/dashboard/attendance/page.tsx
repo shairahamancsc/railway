@@ -1,7 +1,8 @@
+
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { format } from "date-fns";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { format, parse, isValid } from "date-fns";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +10,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
@@ -30,24 +30,41 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useSearchParams } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type AttendanceState = Omit<DailyLabourerRecord, "labourerId">;
 
-export default function AttendancePage() {
+function AttendanceContent() {
   const { labourers, attendance, markAttendance } = useData();
   const { toast } = useToast();
-  const todayStr = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
+  const searchParams = useSearchParams();
+  
+  const targetDateStr = searchParams.get("date");
+
+  const targetDate = useMemo(() => {
+    if (targetDateStr) {
+      const parsedDate = parse(targetDateStr, "yyyy-MM-dd", new Date());
+      if (isValid(parsedDate)) {
+        return parsedDate;
+      }
+    }
+    return new Date();
+  }, [targetDateStr]);
+
+  const dateStr = useMemo(() => format(targetDate, "yyyy-MM-dd"), [targetDate]);
 
   const [attendanceData, setAttendanceData] = useState<
     Map<string, AttendanceState>
   >(new Map());
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const todayAttendanceRecord = attendance.find((a) => a.date === todayStr);
+    const targetAttendanceRecord = attendance.find((a) => a.date === dateStr);
     const initialData = new Map<string, AttendanceState>();
 
     labourers.forEach((labourer) => {
-      const record = todayAttendanceRecord?.records?.find(
+      const record = targetAttendanceRecord?.records?.find(
         (r) => r.labourerId === labourer.id
       );
       initialData.set(
@@ -56,7 +73,8 @@ export default function AttendancePage() {
       );
     });
     setAttendanceData(initialData);
-  }, [attendance, labourers, todayStr]);
+    setIsLoaded(true);
+  }, [attendance, labourers, dateStr]);
 
   const handleAttendanceChange = (
     labourerId: string,
@@ -84,15 +102,43 @@ export default function AttendancePage() {
       labourerId,
       ...state,
     }));
-    markAttendance(todayStr, records);
+    markAttendance(dateStr, records);
     toast({
       title: "Attendance Saved",
       description: `Attendance for ${format(
-        new Date(),
+        targetDate,
         "MMMM dd, yyyy"
       )} has been updated.`,
     });
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="space-y-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+              <Skeleton className="h-9 w-64 mb-2" />
+              <Skeleton className="h-5 w-48" />
+          </div>
+          <Skeleton className="h-10 w-36" />
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[1,2,3].map(i => (
+             <Card key={i}>
+                <CardHeader className="flex flex-col items-center gap-4 pb-4">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                  <Skeleton className="h-6 w-32" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-10 w-full mb-4" />
+                  <Skeleton className="h-10 w-full" />
+                </CardContent>
+              </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -102,7 +148,7 @@ export default function AttendancePage() {
                 Mark Attendance
             </h1>
             <p className="text-muted-foreground">
-                {format(new Date(), "EEEE, MMMM dd, yyyy")}
+                {format(targetDate, "EEEE, MMMM dd, yyyy")}
             </p>
         </div>
         {labourers.length > 0 && (
@@ -199,4 +245,12 @@ export default function AttendancePage() {
       )}
     </div>
   );
+}
+
+export default function AttendancePage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <AttendanceContent />
+        </Suspense>
+    )
 }
