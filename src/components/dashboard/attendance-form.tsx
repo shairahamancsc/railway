@@ -154,39 +154,39 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                 <CardTitle className="text-lg text-center">{labourer.fullName}</CardTitle>
               </CardHeader>
               <CardContent>
-                <Accordion type="single" collapsible className="w-full">
-                  <div className="space-y-4">
-                     <div className="space-y-2">
-                        <Label>Status</Label>
-                        <Select
-                          value={
-                            attendanceData.get(labourer.id)?.status || "absent"
-                          }
-                          onValueChange={(value: AttendanceStatus) =>
-                            handleAttendanceChange(
-                              labourer.id,
-                              "status",
-                              value
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="present">Present</SelectItem>
-                            <SelectItem value="absent">Absent</SelectItem>
-                            <SelectItem value="half-day">Half Day</SelectItem>
-                          </SelectContent>
-                        </Select>
-                    </div>
+                <div className="space-y-4">
+                   <div className="space-y-2">
+                      <Label>Status</Label>
+                      <Select
+                        value={
+                          attendanceData.get(labourer.id)?.status || "absent"
+                        }
+                        onValueChange={(value: AttendanceStatus) =>
+                          handleAttendanceChange(
+                            labourer.id,
+                            "status",
+                            value
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="present">Present</SelectItem>
+                          <SelectItem value="absent">Absent</SelectItem>
+                          <SelectItem value="half-day">Half Day</SelectItem>
+                        </SelectContent>
+                      </Select>
+                  </div>
 
-                    <AccordionItem value="advance" className="border-t pt-4">
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="advance" className="border-t pt-2">
                         <AccordionTrigger>
-                            <h4 className="font-medium">Advance & Remarks</h4>
+                            <h4 className="font-medium text-sm">Advance & Remarks</h4>
                         </AccordionTrigger>
                         <AccordionContent>
-                           <div className="grid grid-cols-1 gap-4 pt-4">
+                           <div className="grid grid-cols-1 gap-4 pt-2">
                                 <div className="space-y-2">
                                     <Label htmlFor={`advance-${labourer.id}`}>Advance Amount</Label>
                                     <Input
@@ -209,8 +209,8 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                             </div>
                         </AccordionContent>
                     </AccordionItem>
-                   </div>
-                </Accordion>
+                  </Accordion>
+                 </div>
               </CardContent>
             </Card>
           ))}
