@@ -12,9 +12,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
-import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AttendanceForm } from "@/components/dashboard/attendance-form";
 
 export default function ReportsPage() {
   const { labourers, attendance } = useData();
@@ -23,11 +23,19 @@ export default function ReportsPage() {
     to: endOfWeek(new Date()),
   });
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+  today.setHours(0, 0, 0, 0); 
+
+  const [editDate, setEditDate] = useState<Date | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handlePrint = () => {
     window.print();
   };
+  
+  const handleEditClick = (day: Date) => {
+    setEditDate(day);
+    setIsDialogOpen(true);
+  }
 
   const daysInInterval = dateRange?.from && dateRange?.to ? eachDayOfInterval({
     start: dateRange.from,
@@ -101,20 +109,20 @@ export default function ReportsPage() {
                       <TableHead key={day.toString()} className="text-center">
                          <div className="flex items-center justify-center gap-2">
                           {format(day, "MMM d")}
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Link href={`/dashboard/attendance?date=${format(day, "yyyy-MM-dd")}`} className="no-print">
-                                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                          {!isAfter(day, today) && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-6 w-6 no-print" onClick={() => handleEditClick(day)}>
                                       <Pencil className="h-3 w-3" />
                                   </Button>
-                                </Link>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Edit Attendance</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Edit Attendance</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
                         </div>
                       </TableHead>
                     ))}
@@ -176,6 +184,16 @@ export default function ReportsPage() {
           )}
         </CardContent>
       </Card>
+      
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[80vw] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+                <DialogTitle>Edit Attendance for {editDate ? format(editDate, "MMMM dd, yyyy") : ''}</DialogTitle>
+            </DialogHeader>
+            {editDate && <AttendanceForm targetDate={editDate} onSave={() => setIsDialogOpen(false)} />}
+          </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
