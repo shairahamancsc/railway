@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useData } from "@/hooks/useData";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -27,7 +27,10 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Pencil } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { Labourer } from "@/types";
 
 const labourSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
@@ -43,29 +46,35 @@ const labourSchema = z.object({
   dlUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 });
 
-function AddLabourerForm({ onFinished }: { onFinished: () => void }) {
-  const { addLabourer } = useData();
+interface LabourerFormProps {
+  onFinished: () => void;
+  labourer?: Labourer | null;
+}
+
+function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
+  const { addLabourer, updateLabourer } = useData();
   const { toast } = useToast();
+  const isEditMode = !!labourer;
 
   const form = useForm<z.infer<typeof labourSchema>>({
     resolver: zodResolver(labourSchema),
     defaultValues: {
-      fullName: "",
-      fatherName: "",
-      mobile: "",
-      dailySalary: 0,
-      aadhaar: "",
-      pan: "",
-      dl: "",
-      profilePhotoUrl: "",
-      aadhaarUrl: "",
-      panUrl: "",
-      dlUrl: "",
+      fullName: labourer?.fullName || "",
+      fatherName: labourer?.fatherName || "",
+      mobile: labourer?.mobile || "",
+      dailySalary: labourer?.dailySalary || 0,
+      aadhaar: labourer?.aadhaar || "",
+      pan: labourer?.pan || "",
+      dl: labourer?.dl || "",
+      profilePhotoUrl: labourer?.profilePhotoUrl || "",
+      aadhaarUrl: labourer?.documents?.aadhaarUrl || "",
+      panUrl: labourer?.documents?.panUrl || "",
+      dlUrl: labourer?.documents?.dlUrl || "",
     },
   });
 
   const onSubmit = (values: z.infer<typeof labourSchema>) => {
-    addLabourer({
+    const labourerData = {
       fullName: values.fullName,
       fatherName: values.fatherName,
       mobile: values.mobile,
@@ -79,11 +88,22 @@ function AddLabourerForm({ onFinished }: { onFinished: () => void }) {
         panUrl: values.panUrl || "",
         dlUrl: values.dlUrl || "",
       },
-    });
-    toast({
-      title: "Success!",
-      description: "New labourer has been added.",
-    });
+    };
+
+    if (isEditMode && labourer) {
+      updateLabourer(labourer.id, labourerData);
+       toast({
+        title: "Success!",
+        description: "Labourer details have been updated.",
+      });
+    } else {
+      addLabourer(labourerData);
+      toast({
+        title: "Success!",
+        description: "New labourer has been added.",
+      });
+    }
+
     form.reset();
     onFinished();
   };
@@ -246,17 +266,23 @@ function AddLabourerForm({ onFinished }: { onFinished: () => void }) {
         </div>
 
         <div className="flex justify-end pt-4">
-          <Button type="submit">Add Labourer</Button>
+          <Button type="submit">{isEditMode ? 'Save Changes' : 'Add Labourer'}</Button>
         </div>
       </form>
     </Form>
   )
 }
 
-
-export default function AddLabourPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const router = useRouter();
+export default function LabourerManagementPage() {
+  const { labourers } = useData();
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editLabourer, setEditLabourer] = useState<Labourer | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  
+  const handleEditClick = (labourer: Labourer) => {
+    setEditLabourer(labourer);
+    setIsEditDialogOpen(true);
+  }
 
   return (
     <div className="space-y-8">
@@ -264,7 +290,7 @@ export default function AddLabourPage() {
         <h1 className="text-3xl font-headline font-bold tracking-tight">
           Labourer Management
         </h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <UserPlus className="mr-2 h-4 w-4" />
@@ -279,10 +305,7 @@ export default function AddLabourPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">
-              <AddLabourerForm onFinished={() => {
-                setIsDialogOpen(false);
-                router.push('/dashboard');
-              }} />
+              <LabourerForm onFinished={() => setIsAddDialogOpen(false)} />
             </div>
           </DialogContent>
         </Dialog>
@@ -290,14 +313,70 @@ export default function AddLabourPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Instructions</CardTitle>
+          <CardTitle>All Labourers</CardTitle>
+           <CardDescription>View and manage all registered labourers.</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            Click the "Add New Labourer" button to open the form and add a new worker to the database. You can view all labourers on the main dashboard.
-          </p>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Profile</TableHead>
+                <TableHead>Full Name</TableHead>
+                <TableHead>Mobile No.</TableHead>
+                <TableHead>Daily Salary</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {labourers.length > 0 ? (
+                labourers.map((labourer) => (
+                  <TableRow key={labourer.id}>
+                    <TableCell>
+                      <Avatar>
+                        <AvatarImage src={labourer.profilePhotoUrl} alt={labourer.fullName} data-ai-hint="profile person" />
+                        <AvatarFallback>
+                          {labourer.fullName.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {labourer.fullName}
+                    </TableCell>
+                    <TableCell>{labourer.mobile}</TableCell>
+                     <TableCell>₹{labourer.dailySalary}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">
+                    No labourers added yet.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
+      
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Labourer Details</DialogTitle>
+            <DialogDescription>
+              Update the information for {editLabourer?.fullName}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+             {editLabourer && <LabourerForm onFinished={() => setIsEditDialogOpen(false)} labourer={editLabourer} />}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

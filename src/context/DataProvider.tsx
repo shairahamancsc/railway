@@ -6,6 +6,7 @@ import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord } from
 interface DataContextProps {
   labourers: Labourer[];
   addLabourer: (labourer: Omit<Labourer, "id" | "createdAt">) => void;
+  updateLabourer: (labourerId: string, updatedData: Partial<Omit<Labourer, "id" | "createdAt">>) => void;
   supervisors: Supervisor[];
   addSupervisor: (supervisor: Omit<Supervisor, "id" | "createdAt">) => void;
   attendance: AttendanceRecord[];
@@ -27,7 +28,6 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     try {
       const labourersItem = window.localStorage.getItem("labourers");
       if (labourersItem) {
-        // Add default dailySalary if it's missing
         const parsedLabourers = JSON.parse(labourersItem).map((l: any) => ({
             ...l,
             dailySalary: l.dailySalary ?? 0
@@ -72,6 +72,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
     setLabourers((prev) => [...prev, newLabourer]);
   };
+
+  const updateLabourer = (labourerId: string, updatedData: Partial<Omit<Labourer, "id" | "createdAt">>) => {
+    setLabourers(prev => prev.map(l => l.id === labourerId ? { ...l, ...updatedData } : l));
+  }
 
   const addSupervisor = (supervisorData: Omit<Supervisor, "id" | "createdAt">) => {
     const newSupervisor: Supervisor = {
@@ -123,6 +127,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       value={{
         labourers,
         addLabourer,
+        updateLabourer,
         supervisors,
         addSupervisor,
         attendance: attendanceWithDerivedState,
