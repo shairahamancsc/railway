@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { format, eachDayOfInterval, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
+import { format, eachDayOfInterval, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isAfter } from "date-fns";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,6 +17,8 @@ export default function ReportsPage() {
     from: startOfWeek(new Date()),
     to: endOfWeek(new Date()),
   });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
 
   const handlePrint = () => {
     window.print();
@@ -100,6 +102,14 @@ export default function ReportsPage() {
                         const dayStr = format(day, "yyyy-MM-dd");
                         const attendanceRecord = attendance.find((a) => a.date === dayStr);
                         const isPresent = attendanceRecord?.presentLabourerIds.includes(labourer.id);
+                        
+                        // Don't show attendance for future dates
+                        if (isAfter(day, today)) {
+                            return (
+                                <TableCell key={dayStr} className="text-center text-muted-foreground">-</TableCell>
+                            );
+                        }
+
                         return (
                           <TableCell key={dayStr} className="text-center">
                             <span className={`font-bold ${isPresent ? 'text-green-600' : 'text-red-600'}`}>
