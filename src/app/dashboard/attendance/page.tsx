@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -48,7 +47,7 @@ export default function AttendancePage() {
     const initialData = new Map<string, AttendanceState>();
 
     labourers.forEach((labourer) => {
-      const record = todayAttendanceRecord?.records.find(
+      const record = todayAttendanceRecord?.records?.find(
         (r) => r.labourerId === labourer.id
       );
       initialData.set(
