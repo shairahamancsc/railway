@@ -181,8 +181,8 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                   </div>
 
                   <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="advance" className="border-t pt-2">
-                        <AccordionTrigger>
+                    <AccordionItem value="advance" className="border-t border-border">
+                        <AccordionTrigger className="pt-4 hover:no-underline">
                             <h4 className="font-medium text-sm">Advance & Remarks</h4>
                         </AccordionTrigger>
                         <AccordionContent>
