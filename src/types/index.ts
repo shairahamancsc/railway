@@ -21,7 +21,16 @@ export interface Supervisor {
   createdAt: string;
 }
 
+export type AttendanceStatus = "present" | "absent" | "half-day";
+
+export interface DailyLabourerRecord {
+  labourerId: string;
+  status: AttendanceStatus;
+  advance: number;
+  remarks: string;
+}
+
 export interface AttendanceRecord {
   date: string; // YYYY-MM-DD
-  presentLabourerIds: string[];
+  records: DailyLabourerRecord[];
 }

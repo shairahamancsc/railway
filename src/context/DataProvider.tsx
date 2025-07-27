@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode } from "react";
-import type { Labourer, Supervisor, AttendanceRecord } from "@/types";
+import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord } from "@/types";
 
 interface DataContextProps {
   labourers: Labourer[];
@@ -9,7 +9,7 @@ interface DataContextProps {
   supervisors: Supervisor[];
   addSupervisor: (supervisor: Omit<Supervisor, "id" | "createdAt">) => void;
   attendance: AttendanceRecord[];
-  markAttendance: (date: string, presentIds: string[]) => void;
+  markAttendance: (date: string, records: DailyLabourerRecord[]) => void;
   getLabourerById: (id: string) => Labourer | undefined;
 }
 
@@ -75,15 +75,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     setSupervisors((prev) => [...prev, newSupervisor]);
   };
 
-  const markAttendance = (date: string, presentLabourerIds: string[]) => {
+  const markAttendance = (date: string, records: DailyLabourerRecord[]) => {
     setAttendance((prev) => {
       const existingRecordIndex = prev.findIndex((record) => record.date === date);
       if (existingRecordIndex > -1) {
         const updatedAttendance = [...prev];
-        updatedAttendance[existingRecordIndex] = { date, presentLabourerIds };
+        updatedAttendance[existingRecordIndex] = { date, records };
         return updatedAttendance;
       }
-      return [...prev, { date, presentLabourerIds }];
+      return [...prev, { date, records }];
     });
   };
 
