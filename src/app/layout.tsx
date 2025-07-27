@@ -1,17 +1,30 @@
-import type { Metadata } from "next";
+"use client"
+
+import { useEffect } from "react";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-
-export const metadata: Metadata = {
-  title: "AttendEase",
-  description: "Labour Attendance Web App",
-};
+import useSmoothScroll from "@/hooks/use-smooth-scroll";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  useSmoothScroll();
+
+  useEffect(() => {
+    document.title = "AttendEase";
+    const description = document.querySelector('meta[name="description"]');
+    if (description) {
+      description.setAttribute("content", "Labour Attendance Web App");
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = 'Labour Attendance Web App';
+      document.head.appendChild(meta);
+    }
+  }, []);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
