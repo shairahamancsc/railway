@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -17,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useData } from "@/hooks/useData";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -25,12 +25,22 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-  DialogClose,
 } from "@/components/ui/dialog";
-import { UserPlus, Pencil } from "lucide-react";
+import { UserPlus, Pencil, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Labourer } from "@/types";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const labourSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
@@ -274,14 +284,24 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
 }
 
 export default function LabourerManagementPage() {
-  const { labourers } = useData();
+  const { labourers, deleteLabourer } = useData();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editLabourer, setEditLabourer] = useState<Labourer | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { toast } = useToast();
   
   const handleEditClick = (labourer: Labourer) => {
     setEditLabourer(labourer);
     setIsEditDialogOpen(true);
+  }
+
+  const handleDelete = (labourerId: string) => {
+    deleteLabourer(labourerId);
+    toast({
+      title: "Labourer Deleted",
+      description: "The labourer has been removed from the system.",
+      variant: "destructive",
+    });
   }
 
   return (
@@ -344,11 +364,34 @@ export default function LabourerManagementPage() {
                     </TableCell>
                     <TableCell>{labourer.mobile}</TableCell>
                      <TableCell>₹{labourer.dailySalary}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
+                    <TableCell className="text-right space-x-2">
+                       <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit
                       </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                           <Button variant="destructive" size="sm">
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete the
+                              labourer and all their associated data.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(labourer.id)}>
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TableCell>
                   </TableRow>
                 ))
@@ -380,3 +423,5 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
+
+    

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode, useMemo } from "react";
@@ -7,6 +8,7 @@ interface DataContextProps {
   labourers: Labourer[];
   addLabourer: (labourer: Omit<Labourer, "id" | "createdAt">) => void;
   updateLabourer: (labourerId: string, updatedData: Partial<Omit<Labourer, "id" | "createdAt">>) => void;
+  deleteLabourer: (labourerId: string) => void;
   supervisors: Supervisor[];
   addSupervisor: (supervisor: Omit<Supervisor, "id" | "createdAt">) => void;
   attendance: AttendanceRecord[];
@@ -76,6 +78,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const updateLabourer = (labourerId: string, updatedData: Partial<Omit<Labourer, "id" | "createdAt">>) => {
     setLabourers(prev => prev.map(l => l.id === labourerId ? { ...l, ...updatedData } : l));
   }
+  
+  const deleteLabourer = (labourerId: string) => {
+    setLabourers(prev => prev.filter(l => l.id !== labourerId));
+    // Also remove from attendance records
+    setAttendance(prev => prev.map(att => ({
+        ...att,
+        records: att.records.filter(rec => rec.labourerId !== labourerId)
+    })));
+  }
 
   const addSupervisor = (supervisorData: Omit<Supervisor, "id" | "createdAt">) => {
     const newSupervisor: Supervisor = {
@@ -128,6 +139,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         labourers,
         addLabourer,
         updateLabourer,
+        deleteLabourer,
         supervisors,
         addSupervisor,
         attendance: attendanceWithDerivedState,
@@ -139,3 +151,5 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     </DataContext.Provider>
   );
 };
+
+    
