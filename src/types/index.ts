@@ -37,3 +37,5 @@ export interface AttendanceRecord {
   presentLabourerIds: string[];
   workDetails?: string;
 }
+
+    

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -217,7 +218,6 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
               </Card>
             ))}
           </div>
-
           <Card>
             <CardHeader>
               <CardTitle>Work Details for Today</CardTitle>
@@ -244,3 +244,5 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
+
+    
