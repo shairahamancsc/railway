@@ -89,7 +89,7 @@ export default function ReportsPage() {
                     <TableHead>Labourer Name</TableHead>
                     {daysInInterval.map((day) => (
                       <TableHead key={day.toString()} className="text-center">
-                        {format(day, "d MMM")}
+                        {format(day, "MMM d")}
                       </TableHead>
                     ))}
                   </TableRow>
