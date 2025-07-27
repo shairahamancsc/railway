@@ -114,19 +114,17 @@ export default function AttendancePage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {labourers.map((labourer) => (
             <Card key={labourer.id}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <div className="flex items-center gap-4">
-                  <Avatar>
-                    <AvatarImage
-                      src={labourer.profilePhotoUrl}
-                      data-ai-hint="profile person"
-                    />
-                    <AvatarFallback>
-                      {labourer.fullName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <CardTitle className="text-lg">{labourer.fullName}</CardTitle>
-                </div>
+              <CardHeader className="flex flex-col items-center gap-2 pb-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage
+                    src={labourer.profilePhotoUrl}
+                    data-ai-hint="profile person"
+                  />
+                  <AvatarFallback className="text-2xl">
+                    {labourer.fullName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <CardTitle className="text-lg">{labourer.fullName}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full">
