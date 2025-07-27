@@ -6,6 +6,7 @@ import { parse, isValid } from "date-fns";
 import { useSearchParams } from "next/navigation";
 import { AttendanceForm } from "@/components/dashboard/attendance-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 function AttendanceContent() {
   const searchParams = useSearchParams();
@@ -55,4 +56,3 @@ export default function AttendancePage() {
         </Suspense>
     )
 }
-
