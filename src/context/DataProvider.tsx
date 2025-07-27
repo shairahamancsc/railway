@@ -17,45 +17,45 @@ export const DataContext = createContext<DataContextProps | undefined>(
   undefined
 );
 
-const useLocalStorage = <T,>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === "undefined") {
-      return initialValue;
-    }
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(error);
-      return initialValue;
-    }
-  });
-
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return [storedValue, setValue];
-};
-
-
 export const DataProvider = ({ children }: { children: ReactNode }) => {
-  const [labourers, setLabourers] = useLocalStorage<Labourer[]>("labourers", []);
-  const [supervisors, setSupervisors] = useLocalStorage<Supervisor[]>("supervisors", []);
-  const [attendance, setAttendance] = useLocalStorage<AttendanceRecord[]>("attendance", []);
+  const [labourers, setLabourers] = useState<Labourer[]>([]);
+  const [supervisors, setSupervisors] = useState<Supervisor[]>([]);
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    try {
+      const labourersItem = window.localStorage.getItem("labourers");
+      if (labourersItem) setLabourers(JSON.parse(labourersItem));
+      
+      const supervisorsItem = window.localStorage.getItem("supervisors");
+      if (supervisorsItem) setSupervisors(JSON.parse(supervisorsItem));
+
+      const attendanceItem = window.localStorage.getItem("attendance");
+      if (attendanceItem) setAttendance(JSON.parse(attendanceItem));
+    } catch (error) {
+      console.error("Failed to parse localStorage data", error);
+    }
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if(isMounted) {
+      window.localStorage.setItem("labourers", JSON.stringify(labourers));
+    }
+  }, [labourers, isMounted]);
+  
+  useEffect(() => {
+    if(isMounted) {
+      window.localStorage.setItem("supervisors", JSON.stringify(supervisors));
+    }
+  }, [supervisors, isMounted]);
+
+  useEffect(() => {
+    if(isMounted) {
+      window.localStorage.setItem("attendance", JSON.stringify(attendance));
+    }
+  }, [attendance, isMounted]);
 
   const addLabourer = (labourerData: Omit<Labourer, "id" | "createdAt">) => {
     const newLabourer: Labourer = {
