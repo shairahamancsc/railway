@@ -13,15 +13,6 @@ import {
   Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 
@@ -48,48 +39,45 @@ function SidebarContentNav() {
   };
 
   return (
-    <>
-      <SidebarHeader>
-        <div className="flex items-center gap-2 p-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <UserCheck className="h-6 w-6" />
-            </div>
-            <h1 className="font-headline text-2xl font-semibold">AttendEase</h1>
-        </div>
-      </SidebarHeader>
-      <SidebarContent className="p-2">
-        <SidebarMenu>
+    <div className="flex h-full flex-col gap-2">
+       <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+          <UserCheck className="h-6 w-6" />
+          <span className="">AttendEase</span>
+        </Link>
+      </div>
+      <div className="flex-1">
+        <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
           {navItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <Link href={item.href} passHref>
-                <SidebarMenuButton
-                  isActive={pathname === item.href}
-                  className="w-full"
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                pathname === item.href ? "bg-muted text-primary" : ""
+              }`}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Link>
           ))}
-        </SidebarMenu>
-      </SidebarContent>
-      <SidebarFooter>
-        <Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
-          <LogOut className="h-5 w-5" />
-          <span>Logout</span>
+        </nav>
+      </div>
+      <div className="mt-auto p-4">
+        <Button size="sm" className="w-full" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
         </Button>
-      </SidebarFooter>
-    </>
+      </div>
+    </div>
   );
 }
 
 
 export function SidebarNav() {
   return (
-    <Sidebar className="border-r no-print">
+    <div className="flex h-full max-h-screen flex-col gap-2">
       <SidebarContentNav />
-    </Sidebar>
+    </div>
   );
 }
 
@@ -107,9 +95,7 @@ export function MobileSidebar() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="flex flex-col p-0">
-         <Sidebar className="border-r-0">
-           <SidebarContentNav />
-         </Sidebar>
+         <SidebarContentNav />
       </SheetContent>
     </Sheet>
   )
