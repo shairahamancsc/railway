@@ -76,7 +76,7 @@ export default function AddLabourPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8">
       <h1 className="text-3xl font-headline font-bold tracking-tight">
         Add New Labourer
       </h1>
