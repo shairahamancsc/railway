@@ -35,4 +35,5 @@ export interface AttendanceRecord {
   date: string; // YYYY-MM-DD
   records: DailyLabourerRecord[];
   presentLabourerIds: string[];
+  workDetails?: string;
 }

@@ -36,6 +36,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
   const dateStr = useMemo(() => format(targetDate, "yyyy-MM-dd"), [targetDate]);
 
   const [attendanceData, setAttendanceData] = useState<Map<string, AttendanceState>>(new Map());
+  const [workDetails, setWorkDetails] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
       });
     }
     setAttendanceData(initialData);
+    setWorkDetails(targetAttendanceRecord?.workDetails || "");
     setIsLoaded(true);
   }, [attendance, labourers, dateStr]);
 
@@ -83,7 +85,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
       labourerId,
       ...state,
     }));
-    markAttendance(dateStr, records);
+    markAttendance(dateStr, records, workDetails);
     toast({
       title: "Attendance Saved",
       description: `Attendance for ${format(targetDate, "MMMM dd, yyyy")} has been updated.`,
@@ -138,83 +140,99 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
       </div>
 
       {labourers.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-          {labourers.map((labourer) => (
-            <Card key={labourer.id}>
-              <CardHeader className="flex flex-col items-center gap-2 pb-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage
-                    src={labourer.profilePhotoUrl}
-                    data-ai-hint="profile person"
-                  />
-                  <AvatarFallback className="text-2xl">
-                    {labourer.fullName.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <CardTitle className="text-lg text-center">{labourer.fullName}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                   <div className="space-y-2">
-                      <Label>Status</Label>
-                      <Select
-                        value={
-                          attendanceData.get(labourer.id)?.status || "absent"
-                        }
-                        onValueChange={(value: AttendanceStatus) =>
-                          handleAttendanceChange(
-                            labourer.id,
-                            "status",
-                            value
-                          )
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="present">Present</SelectItem>
-                          <SelectItem value="absent">Absent</SelectItem>
-                          <SelectItem value="half-day">Half Day</SelectItem>
-                        </SelectContent>
-                      </Select>
-                  </div>
+        <>
+          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+            {labourers.map((labourer) => (
+              <Card key={labourer.id}>
+                <CardHeader className="flex flex-col items-center gap-2 pb-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage
+                      src={labourer.profilePhotoUrl}
+                      data-ai-hint="profile person"
+                    />
+                    <AvatarFallback className="text-2xl">
+                      {labourer.fullName.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <CardTitle className="text-lg text-center">{labourer.fullName}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Status</Label>
+                        <Select
+                          value={
+                            attendanceData.get(labourer.id)?.status || "absent"
+                          }
+                          onValueChange={(value: AttendanceStatus) =>
+                            handleAttendanceChange(
+                              labourer.id,
+                              "status",
+                              value
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="present">Present</SelectItem>
+                            <SelectItem value="absent">Absent</SelectItem>
+                            <SelectItem value="half-day">Half Day</SelectItem>
+                          </SelectContent>
+                        </Select>
+                    </div>
 
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="advance" className="border-t border-border">
-                        <AccordionTrigger className="pt-4 hover:no-underline">
-                            <h4 className="font-medium text-sm">Advance & Remarks</h4>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                           <div className="grid grid-cols-1 gap-4 pt-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor={`advance-${labourer.id}`}>Advance Amount</Label>
-                                    <Input
-                                      id={`advance-${labourer.id}`}
-                                      type="number"
-                                      placeholder="Enter amount"
-                                      value={attendanceData.get(labourer.id)?.advance || ''}
-                                      onChange={(e) => handleAttendanceChange(labourer.id, 'advance', e.target.valueAsNumber || 0)}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor={`remarks-${labourer.id}`}>Remarks</Label>
-                                    <Textarea
-                                      id={`remarks-${labourer.id}`}
-                                      placeholder="Enter remarks"
-                                      value={attendanceData.get(labourer.id)?.remarks || ''}
-                                      onChange={(e) => handleAttendanceChange(labourer.id, 'remarks', e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="advance">
+                          <AccordionTrigger className="py-0 hover:no-underline -mb-2">
+                              <span className="text-sm font-medium">Advance & Remarks</span>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="grid grid-cols-1 gap-4 pt-4">
+                                  <div className="space-y-2">
+                                      <Label htmlFor={`advance-${labourer.id}`}>Advance Amount</Label>
+                                      <Input
+                                        id={`advance-${labourer.id}`}
+                                        type="number"
+                                        placeholder="Enter amount"
+                                        value={attendanceData.get(labourer.id)?.advance || ''}
+                                        onChange={(e) => handleAttendanceChange(labourer.id, 'advance', e.target.valueAsNumber || 0)}
+                                      />
+                                  </div>
+                                  <div className="space-y-2">
+                                      <Label htmlFor={`remarks-${labourer.id}`}>Remarks</Label>
+                                      <Textarea
+                                        id={`remarks-${labourer.id}`}
+                                        placeholder="Enter remarks"
+                                        value={attendanceData.get(labourer.id)?.remarks || ''}
+                                        onChange={(e) => handleAttendanceChange(labourer.id, 'remarks', e.target.value)}
+                                      />
+                                  </div>
+                              </div>
+                          </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Work Details for Today</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Textarea 
+                placeholder="Describe the work done today..."
+                value={workDetails}
+                onChange={(e) => setWorkDetails(e.target.value)}
+                rows={4}
+              />
+            </CardContent>
+          </Card>
+        </>
       ) : (
          <Card>
             <CardContent className="pt-6">

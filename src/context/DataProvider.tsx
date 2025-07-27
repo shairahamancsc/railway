@@ -12,7 +12,7 @@ interface DataContextProps {
   supervisors: Supervisor[];
   addSupervisor: (supervisor: Omit<Supervisor, "id" | "createdAt">) => void;
   attendance: AttendanceRecord[];
-  markAttendance: (date: string, records: DailyLabourerRecord[]) => void;
+  markAttendance: (date: string, records: DailyLabourerRecord[], workDetails?: string) => void;
   getLabourerById: (id: string) => Labourer | undefined;
 }
 
@@ -97,14 +97,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     setSupervisors((prev) => [...prev, newSupervisor]);
   };
 
-  const markAttendance = (date: string, records: DailyLabourerRecord[]) => {
+  const markAttendance = (date: string, records: DailyLabourerRecord[], workDetails?: string) => {
     setAttendance((prev) => {
       const existingRecordIndex = prev.findIndex((record) => record.date === date);
       
       const newRecord = { 
         date, 
         records,
-        presentLabourerIds: records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId)
+        presentLabourerIds: records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId),
+        workDetails
       };
       
       if (existingRecordIndex > -1) {
