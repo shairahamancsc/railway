@@ -78,10 +78,11 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const markAttendance = (date: string, records: DailyLabourerRecord[]) => {
     setAttendance((prev) => {
       const existingRecordIndex = prev.findIndex((record) => record.date === date);
+      
       const newRecord = { 
         date, 
         records,
-        presentLabourerIds: records.filter(r => r.status === 'present').map(r => r.labourerId)
+        presentLabourerIds: records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId)
       };
       
       if (existingRecordIndex > -1) {
@@ -98,9 +99,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const attendanceWithDerivedState = useMemo(() => {
+    if (!attendance) return [];
     return attendance.map(att => ({
         ...att,
-        presentLabourerIds: att.records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId),
+        presentLabourerIds: att.records?.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId) || [],
     }));
   }, [attendance]);
 
