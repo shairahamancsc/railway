@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -13,14 +14,6 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AttendanceStatus, DailyLabourerRecord } from "@/types";
 import {
@@ -104,132 +97,109 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-headline font-bold tracking-tight">
-        Mark Attendance
-      </h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>Today's Attendance</CardTitle>
-          <CardDescription>
-            {format(new Date(), "EEEE, MMMM dd, yyyy")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {labourers.length > 0 ? (
-            <div className="space-y-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Labourer</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="w-[10px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                  <TableBody>
-                    <Accordion
-                        type="single"
-                        collapsible
-                        className="w-full"
-                        asChild
-                    >
-                     <>
-                      {labourers.map((labourer) => (
-                          <AccordionItem value={`item-${labourer.id}`} asChild key={labourer.id}>
-                              <>
-                                <TableRow>
-                                  <TableCell>
-                                    <div className="flex items-center gap-4">
-                                      <Avatar>
-                                        <AvatarImage
-                                          src={labourer.profilePhotoUrl}
-                                          data-ai-hint="profile person"
-                                        />
-                                        <AvatarFallback>
-                                          {labourer.fullName.charAt(0)}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                      <Label className="font-medium cursor-pointer">
-                                        {labourer.fullName}
-                                      </Label>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell>
-                                    <Select
-                                      value={
-                                        attendanceData.get(labourer.id)?.status || "absent"
-                                      }
-                                      onValueChange={(value: AttendanceStatus) =>
-                                        handleAttendanceChange(
-                                          labourer.id,
-                                          "status",
-                                          value
-                                        )
-                                      }
-                                    >
-                                      <SelectTrigger className="w-[120px]">
-                                        <SelectValue placeholder="Select status" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="present">Present</SelectItem>
-                                        <SelectItem value="absent">Absent</SelectItem>
-                                        <SelectItem value="half-day">Half Day</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </TableCell>
-                                  <TableCell className="p-0">
-                                      <AccordionTrigger className="p-4 hover:no-underline">
-                                          <span className="sr-only">Advance Section</span>
-                                      </AccordionTrigger>
-                                  </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                  <TableCell colSpan={3} className="p-0">
-                                    <AccordionContent>
-                                      <div className="p-6 bg-muted/50">
-                                        <h4 className="text-md font-headline font-semibold mb-4">Advance Section</h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`advance-${labourer.id}`}>Advance Amount</Label>
-                                                <Input
-                                                  id={`advance-${labourer.id}`}
-                                                  type="number"
-                                                  placeholder="Enter amount"
-                                                  value={attendanceData.get(labourer.id)?.advance || ''}
-                                                  onChange={(e) => handleAttendanceChange(labourer.id, 'advance', e.target.valueAsNumber || 0)}
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`remarks-${labourer.id}`}>Remarks</Label>
-                                                <Textarea
-                                                  id={`remarks-${labourer.id}`}
-                                                  placeholder="Enter remarks"
-                                                  value={attendanceData.get(labourer.id)?.remarks || ''}
-                                                  onChange={(e) => handleAttendanceChange(labourer.id, 'remarks', e.target.value)}
-                                                />
-                                            </div>
-                                        </div>
-                                      </div>
-                                    </AccordionContent>
-                                  </TableCell>
-                                </TableRow>
-                              </>
-                          </AccordionItem>
-                      ))}
-                      </>
-                    </Accordion>
-                  </TableBody>
-              </Table>
-              <div className="flex justify-end pt-4">
-                <Button onClick={handleSaveAttendance}>Save Attendance</Button>
-              </div>
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-center">
-              No labourers to mark attendance for. Please add a labourer first.
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 className="text-3xl font-headline font-bold tracking-tight">
+                Mark Attendance
+            </h1>
+            <p className="text-muted-foreground">
+                {format(new Date(), "EEEE, MMMM dd, yyyy")}
             </p>
-          )}
-        </CardContent>
-      </Card>
+        </div>
+        {labourers.length > 0 && (
+            <Button onClick={handleSaveAttendance}>Save Attendance</Button>
+        )}
+      </div>
+
+      {labourers.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {labourers.map((labourer) => (
+            <Card key={labourer.id}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <div className="flex items-center gap-4">
+                  <Avatar>
+                    <AvatarImage
+                      src={labourer.profilePhotoUrl}
+                      data-ai-hint="profile person"
+                    />
+                    <AvatarFallback>
+                      {labourer.fullName.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <CardTitle className="text-lg">{labourer.fullName}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                  <div className="space-y-4">
+                     <div className="space-y-2">
+                        <Label>Status</Label>
+                        <Select
+                          value={
+                            attendanceData.get(labourer.id)?.status || "absent"
+                          }
+                          onValueChange={(value: AttendanceStatus) =>
+                            handleAttendanceChange(
+                              labourer.id,
+                              "status",
+                              value
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="present">Present</SelectItem>
+                            <SelectItem value="absent">Absent</SelectItem>
+                            <SelectItem value="half-day">Half Day</SelectItem>
+                          </SelectContent>
+                        </Select>
+                    </div>
+
+                    <AccordionItem value="advance" className="border-t pt-4">
+                        <AccordionTrigger>
+                            <h4 className="font-medium">Advance & Remarks</h4>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                           <div className="grid grid-cols-1 gap-4 pt-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor={`advance-${labourer.id}`}>Advance Amount</Label>
+                                    <Input
+                                      id={`advance-${labourer.id}`}
+                                      type="number"
+                                      placeholder="Enter amount"
+                                      value={attendanceData.get(labourer.id)?.advance || ''}
+                                      onChange={(e) => handleAttendanceChange(labourer.id, 'advance', e.target.valueAsNumber || 0)}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor={`remarks-${labourer.id}`}>Remarks</Label>
+                                    <Textarea
+                                      id={`remarks-${labourer.id}`}
+                                      placeholder="Enter remarks"
+                                      value={attendanceData.get(labourer.id)?.remarks || ''}
+                                      onChange={(e) => handleAttendanceChange(labourer.id, 'remarks', e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
+                   </div>
+                </Accordion>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+         <Card>
+            <CardContent className="pt-6">
+                <p className="text-muted-foreground text-center">
+                  No labourers to mark attendance for. Please add a labourer first.
+                </p>
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
