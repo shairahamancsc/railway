@@ -1,19 +1,17 @@
+
 "use client";
 
 import { useState } from "react";
-import { format, eachDayOfInterval, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isAfter } from "date-fns";
+import { format, eachDayOfInterval, startOfWeek, endOfWeek, isAfter } from "date-fns";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar as CalendarIcon, Printer } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { Printer } from "lucide-react";
 
 export default function ReportsPage() {
   const { labourers, attendance } = useData();
-  const [dateRange, setDateRange] = useState({
+  const [dateRange] = useState({
     from: startOfWeek(new Date()),
     to: endOfWeek(new Date()),
   });
@@ -36,38 +34,6 @@ export default function ReportsPage() {
           Attendance Reports
         </h1>
         <div className="flex flex-col sm:flex-row items-center gap-2 no-print">
-          <Select
-            onValueChange={(value) => {
-              const now = new Date();
-              if (value === "this_week") setDateRange({ from: startOfWeek(now), to: endOfWeek(now) });
-              if (value === "this_month") setDateRange({ from: startOfMonth(now), to: endOfMonth(now) });
-            }}
-            defaultValue="this_week"
-          >
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Select a range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="this_week">This Week</SelectItem>
-              <SelectItem value="this_month">This Month</SelectItem>
-            </SelectContent>
-          </Select>
-          <Popover>
-            <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full sm:w-[280px] justify-start text-left font-normal">
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(dateRange.from, "PPP")} - {format(dateRange.to, "PPP")}
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                    mode="range"
-                    selected={{from: dateRange.from, to: dateRange.to}}
-                    onSelect={(range) => range && setDateRange({from: range.from || new Date(), to: range.to || new Date()})}
-                    initialFocus
-                />
-            </PopoverContent>
-          </Popover>
           <Button onClick={handlePrint} className="gap-2 w-full sm:w-auto">
             <Printer className="h-4 w-4" />
             Print
@@ -77,8 +43,8 @@ export default function ReportsPage() {
 
       <Card className="printable">
         <CardHeader>
-          <CardTitle>Report for {format(dateRange.from, "PPP")} to {format(dateRange.to, "PPP")}</CardTitle>
-          <CardDescription>P = Present, A = Absent</CardDescription>
+          <CardTitle>Report for This Week</CardTitle>
+          <CardDescription>P = Present, A = Absent, H = Half Day</CardDescription>
         </CardHeader>
         <CardContent>
           {labourers.length > 0 ? (
@@ -100,20 +66,40 @@ export default function ReportsPage() {
                       <TableCell className="font-medium whitespace-nowrap">{labourer.fullName}</TableCell>
                       {daysInInterval.map((day) => {
                         const dayStr = format(day, "yyyy-MM-dd");
-                        const attendanceRecord = attendance.find((a) => a.date === dayStr);
-                        const isPresent = attendanceRecord?.presentLabourerIds.includes(labourer.id);
+                        const attendanceRecordForDay = attendance.find((a) => a.date === dayStr);
+                        const labourerRecord = attendanceRecordForDay?.records.find(r => r.labourerId === labourer.id);
                         
-                        // Don't show attendance for future dates
                         if (isAfter(day, today)) {
                             return (
                                 <TableCell key={dayStr} className="text-center text-muted-foreground">-</TableCell>
                             );
                         }
 
+                        let statusChar = 'A';
+                        let colorClass = 'text-red-600';
+
+                        if (labourerRecord) {
+                            switch(labourerRecord.status) {
+                                case 'present':
+                                    statusChar = 'P';
+                                    colorClass = 'text-green-600';
+                                    break;
+                                case 'half-day':
+                                    statusChar = 'H';
+                                    colorClass = 'text-yellow-600';
+                                    break;
+                                case 'absent':
+                                default:
+                                    statusChar = 'A';
+                                    colorClass = 'text-red-600';
+                                    break;
+                            }
+                        }
+
                         return (
                           <TableCell key={dayStr} className="text-center">
-                            <span className={`font-bold ${isPresent ? 'text-green-600' : 'text-red-600'}`}>
-                                {isPresent ? "P" : "A"}
+                            <span className={`font-bold ${colorClass}`}>
+                                {statusChar}
                             </span>
                           </TableCell>
                         );
