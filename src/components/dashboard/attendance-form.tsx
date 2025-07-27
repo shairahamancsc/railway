@@ -105,7 +105,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
           </div>
           <Skeleton className="h-10 w-36" />
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1,2,3].map(i => (
              <Card key={i}>
                 <CardHeader className="flex flex-col items-center gap-4 pb-4">
@@ -141,7 +141,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
 
       {labourers.length > 0 ? (
         <>
-          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {labourers.map((labourer) => (
               <Card key={labourer.id}>
                 <CardHeader className="flex flex-col items-center gap-2 pb-4">
@@ -185,7 +185,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
 
                     <Accordion type="single" collapsible className="w-full">
                        <AccordionItem value="advance" className="border-b-0">
-                          <AccordionTrigger className="justify-center py-2 text-sm font-medium hover:no-underline rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                          <AccordionTrigger className="flex w-full items-center justify-center rounded-md border border-input bg-background py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground hover:no-underline">
                               <span>Advance & Remarks</span>
                           </AccordionTrigger>
                           <AccordionContent>
@@ -244,5 +244,3 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
-
-    

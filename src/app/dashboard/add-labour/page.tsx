@@ -337,73 +337,75 @@ export default function LabourerManagementPage() {
            <CardDescription>View and manage all registered labourers.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Profile</TableHead>
-                <TableHead>Full Name</TableHead>
-                <TableHead>Mobile No.</TableHead>
-                <TableHead>Daily Salary</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {labourers.length > 0 ? (
-                labourers.map((labourer) => (
-                  <TableRow key={labourer.id}>
-                    <TableCell>
-                      <Avatar>
-                        <AvatarImage src={labourer.profilePhotoUrl} alt={labourer.fullName} data-ai-hint="profile person" />
-                        <AvatarFallback>
-                          {labourer.fullName.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {labourer.fullName}
-                    </TableCell>
-                    <TableCell>{labourer.mobile}</TableCell>
-                     <TableCell>₹{labourer.dailySalary}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                       <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                           <Button variant="destructive" size="sm">
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the
-                              labourer and all their associated data.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(labourer.id)}>
-                              Continue
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Profile</TableHead>
+                  <TableHead>Full Name</TableHead>
+                  <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
+                  <TableHead className="hidden md:table-cell">Daily Salary</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {labourers.length > 0 ? (
+                  labourers.map((labourer) => (
+                    <TableRow key={labourer.id}>
+                      <TableCell>
+                        <Avatar>
+                          <AvatarImage src={labourer.profilePhotoUrl} alt={labourer.fullName} data-ai-hint="profile person" />
+                          <AvatarFallback>
+                            {labourer.fullName.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {labourer.fullName}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">{labourer.mobile}</TableCell>
+                       <TableCell className="hidden md:table-cell">₹{labourer.dailySalary}</TableCell>
+                      <TableCell className="text-right space-x-2 whitespace-nowrap">
+                         <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                             <Button variant="destructive" size="sm">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the
+                                labourer and all their associated data.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(labourer.id)}>
+                                Continue
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center">
+                      No labourers added yet.
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center">
-                    No labourers added yet.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
       
@@ -423,5 +425,3 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
-
-    

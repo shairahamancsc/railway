@@ -88,34 +88,36 @@ export default function SupervisorsPage() {
              <CardDescription>A list of all registered supervisors.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Date Added</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {supervisors.length > 0 ? (
-                  supervisors.map((supervisor) => (
-                    <TableRow key={supervisor.id}>
-                      <TableCell className="font-medium">{supervisor.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                            {format(new Date(supervisor.createdAt), "PPP")}
-                        </Badge>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Date Added</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {supervisors.length > 0 ? (
+                    supervisors.map((supervisor) => (
+                      <TableRow key={supervisor.id}>
+                        <TableCell className="font-medium whitespace-nowrap">{supervisor.name}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                              {format(new Date(supervisor.createdAt), "PPP")}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={2} className="text-center">
+                        No supervisors added yet.
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={2} className="text-center">
-                      No supervisors added yet.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
