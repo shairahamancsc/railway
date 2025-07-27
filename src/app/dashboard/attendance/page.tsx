@@ -126,98 +126,97 @@ export default function AttendancePage() {
                     <TableHead className="w-[10px]"></TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {labourers.map((labourer) => (
-                    <Accordion
-                      type="single"
-                      collapsible
-                      className="w-full"
-                      asChild
-                      key={labourer.id}
-                    >
-                      <AccordionItem value={`item-${labourer.id}`} asChild>
-                        <>
-                          <TableRow>
-                            <TableCell>
-                              <div className="flex items-center gap-4">
-                                <Avatar>
-                                  <AvatarImage
-                                    src={labourer.profilePhotoUrl}
-                                    data-ai-hint="profile person"
-                                  />
-                                  <AvatarFallback>
-                                    {labourer.fullName.charAt(0)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <Label className="font-medium cursor-pointer">
-                                  {labourer.fullName}
-                                </Label>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Select
-                                value={
-                                  attendanceData.get(labourer.id)?.status || "absent"
-                                }
-                                onValueChange={(value: AttendanceStatus) =>
-                                  handleAttendanceChange(
-                                    labourer.id,
-                                    "status",
-                                    value
-                                  )
-                                }
-                              >
-                                <SelectTrigger className="w-[120px]">
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="present">Present</SelectItem>
-                                  <SelectItem value="absent">Absent</SelectItem>
-                                  <SelectItem value="half-day">Half Day</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                             <TableCell className="p-0">
-                                <AccordionTrigger className="p-4 hover:no-underline">
-                                    <span className="sr-only">Advance Section</span>
-                                </AccordionTrigger>
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell colSpan={3} className="p-0">
-                              <AccordionContent>
-                                <div className="p-6 bg-muted/50">
-                                  <h4 className="text-md font-headline font-semibold mb-4">Advance Section</h4>
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                      <div className="space-y-2">
-                                          <Label htmlFor={`advance-${labourer.id}`}>Advance Amount</Label>
-                                          <Input 
-                                            id={`advance-${labourer.id}`}
-                                            type="number"
-                                            placeholder="Enter amount"
-                                            value={attendanceData.get(labourer.id)?.advance || ''}
-                                            onChange={(e) => handleAttendanceChange(labourer.id, 'advance', e.target.valueAsNumber || 0)}
-                                          />
-                                      </div>
-                                      <div className="space-y-2">
-                                          <Label htmlFor={`remarks-${labourer.id}`}>Remarks</Label>
-                                          <Textarea
-                                            id={`remarks-${labourer.id}`}
-                                            placeholder="Enter remarks"
-                                            value={attendanceData.get(labourer.id)?.remarks || ''}
-                                            onChange={(e) => handleAttendanceChange(labourer.id, 'remarks', e.target.value)}
-                                          />
-                                      </div>
-                                  </div>
+                <Accordion
+                    type="single"
+                    collapsible
+                    className="w-full"
+                    asChild
+                >
+                  <TableBody>
+                    {labourers.map((labourer) => (
+                        <AccordionItem value={`item-${labourer.id}`} asChild key={labourer.id}>
+                          <>
+                            <TableRow>
+                              <TableCell>
+                                <div className="flex items-center gap-4">
+                                  <Avatar>
+                                    <AvatarImage
+                                      src={labourer.profilePhotoUrl}
+                                      data-ai-hint="profile person"
+                                    />
+                                    <AvatarFallback>
+                                      {labourer.fullName.charAt(0)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <Label className="font-medium cursor-pointer">
+                                    {labourer.fullName}
+                                  </Label>
                                 </div>
-                              </AccordionContent>
-                            </TableCell>
-                          </TableRow>
-                        </>
-                      </AccordionItem>
-                    </Accordion>
-                  ))}
-                </TableBody>
+                              </TableCell>
+                              <TableCell>
+                                <Select
+                                  value={
+                                    attendanceData.get(labourer.id)?.status || "absent"
+                                  }
+                                  onValueChange={(value: AttendanceStatus) =>
+                                    handleAttendanceChange(
+                                      labourer.id,
+                                      "status",
+                                      value
+                                    )
+                                  }
+                                >
+                                  <SelectTrigger className="w-[120px]">
+                                    <SelectValue placeholder="Select status" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="present">Present</SelectItem>
+                                    <SelectItem value="absent">Absent</SelectItem>
+                                    <SelectItem value="half-day">Half Day</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                              <TableCell className="p-0">
+                                  <AccordionTrigger className="p-4 hover:no-underline">
+                                      <span className="sr-only">Advance Section</span>
+                                  </AccordionTrigger>
+                              </TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell colSpan={3} className="p-0">
+                                <AccordionContent>
+                                  <div className="p-6 bg-muted/50">
+                                    <h4 className="text-md font-headline font-semibold mb-4">Advance Section</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`advance-${labourer.id}`}>Advance Amount</Label>
+                                            <Input
+                                              id={`advance-${labourer.id}`}
+                                              type="number"
+                                              placeholder="Enter amount"
+                                              value={attendanceData.get(labourer.id)?.advance || ''}
+                                              onChange={(e) => handleAttendanceChange(labourer.id, 'advance', e.target.valueAsNumber || 0)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`remarks-${labourer.id}`}>Remarks</Label>
+                                            <Textarea
+                                              id={`remarks-${labourer.id}`}
+                                              placeholder="Enter remarks"
+                                              value={attendanceData.get(labourer.id)?.remarks || ''}
+                                              onChange={(e) => handleAttendanceChange(labourer.id, 'remarks', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                  </div>
+                                </AccordionContent>
+                              </TableCell>
+                            </TableRow>
+                          </>
+                        </AccordionItem>
+                    ))}
+                  </TableBody>
+                </Accordion>
               </Table>
               <div className="flex justify-end pt-4">
                 <Button onClick={handleSaveAttendance}>Save Attendance</Button>
