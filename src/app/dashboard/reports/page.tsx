@@ -2,16 +2,20 @@
 "use client";
 
 import { useState } from "react";
-import { format, eachDayOfInterval, startOfWeek, endOfWeek, isAfter } from "date-fns";
+import { format, eachDayOfInterval, startOfWeek, endOfWeek, isAfter, addDays } from "date-fns";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Printer } from "lucide-react";
+import { Calendar as CalendarIcon, Printer } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import type { DateRange } from "react-day-picker";
 
 export default function ReportsPage() {
   const { labourers, attendance } = useData();
-  const [dateRange] = useState({
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: startOfWeek(new Date()),
     to: endOfWeek(new Date()),
   });
@@ -22,10 +26,10 @@ export default function ReportsPage() {
     window.print();
   };
 
-  const daysInInterval = eachDayOfInterval({
+  const daysInInterval = dateRange?.from && dateRange?.to ? eachDayOfInterval({
     start: dateRange.from,
     end: dateRange.to,
-  });
+  }) : [];
 
   return (
     <div className="space-y-8">
@@ -34,6 +38,42 @@ export default function ReportsPage() {
           Attendance Reports
         </h1>
         <div className="flex flex-col sm:flex-row items-center gap-2 no-print">
+            <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="date"
+                    variant={"outline"}
+                    className={cn(
+                      "w-[300px] justify-start text-left font-normal",
+                      !dateRange && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, "LLL dd, y")} -{" "}
+                          {format(dateRange.to, "LLL dd, y")}
+                        </>
+                      ) : (
+                        format(dateRange.from, "LLL dd, y")
+                      )
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={dateRange?.from}
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    numberOfMonths={2}
+                  />
+                </PopoverContent>
+              </Popover>
           <Button onClick={handlePrint} className="gap-2 w-full sm:w-auto">
             <Printer className="h-4 w-4" />
             Print
@@ -43,7 +83,7 @@ export default function ReportsPage() {
 
       <Card className="printable">
         <CardHeader>
-          <CardTitle>Report for This Week</CardTitle>
+          <CardTitle>Weekly Attendance Report</CardTitle>
           <CardDescription>P = Present, A = Absent, H = Half Day</CardDescription>
         </CardHeader>
         <CardContent>
@@ -67,7 +107,7 @@ export default function ReportsPage() {
                       {daysInInterval.map((day) => {
                         const dayStr = format(day, "yyyy-MM-dd");
                         const attendanceRecordForDay = attendance.find((a) => a.date === dayStr);
-                        const labourerRecord = attendanceRecordForDay?.records.find(r => r.labourerId === labourer.id);
+                        const labourerRecord = attendanceRecordForDay?.records?.find(r => r.labourerId === labourer.id);
                         
                         if (isAfter(day, today)) {
                             return (
