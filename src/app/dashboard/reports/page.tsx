@@ -33,7 +33,7 @@ export default function ReportsPage() {
         <h1 className="text-3xl font-headline font-bold tracking-tight">
           Attendance Reports
         </h1>
-        <div className="flex items-center gap-2 no-print">
+        <div className="flex flex-col sm:flex-row items-center gap-2 no-print">
           <Select
             onValueChange={(value) => {
               const now = new Date();
@@ -42,7 +42,7 @@ export default function ReportsPage() {
             }}
             defaultValue="this_week"
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Select a range" />
             </SelectTrigger>
             <SelectContent>
@@ -52,7 +52,7 @@ export default function ReportsPage() {
           </Select>
           <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
+                <Button variant="outline" className="w-full sm:w-[280px] justify-start text-left font-normal">
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {format(dateRange.from, "PPP")} - {format(dateRange.to, "PPP")}
                 </Button>
@@ -66,7 +66,7 @@ export default function ReportsPage() {
                 />
             </PopoverContent>
           </Popover>
-          <Button onClick={handlePrint} className="gap-2">
+          <Button onClick={handlePrint} className="gap-2 w-full sm:w-auto">
             <Printer className="h-4 w-4" />
             Print
           </Button>
@@ -95,7 +95,7 @@ export default function ReportsPage() {
                 <TableBody>
                   {labourers.map((labourer) => (
                     <TableRow key={labourer.id}>
-                      <TableCell className="font-medium">{labourer.fullName}</TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">{labourer.fullName}</TableCell>
                       {daysInInterval.map((day) => {
                         const dayStr = format(day, "yyyy-MM-dd");
                         const attendanceRecord = attendance.find((a) => a.date === dayStr);
