@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -184,9 +183,9 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                     </div>
 
                     <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value="advance">
-                          <AccordionTrigger className="py-0 hover:no-underline -mb-2">
-                              <span className="text-sm font-medium">Advance & Remarks</span>
+                       <AccordionItem value="advance" className="border-b-0">
+                          <AccordionTrigger className="justify-center py-2 text-sm font-medium hover:no-underline rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                              <span>Advance & Remarks</span>
                           </AccordionTrigger>
                           <AccordionContent>
                             <div className="grid grid-cols-1 gap-4 pt-4">
