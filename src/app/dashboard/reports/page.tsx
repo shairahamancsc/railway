@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { format, eachDayOfInterval, startOfWeek, endOfWeek, isAfter } from "date-fns";
+import { format, eachDayOfInterval, startOfMonth, endOfMonth, isAfter } from "date-fns";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -19,8 +19,8 @@ import { AttendanceForm } from "@/components/dashboard/attendance-form";
 export default function ReportsPage() {
   const { labourers, attendance } = useData();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: startOfWeek(new Date()),
-    to: endOfWeek(new Date()),
+    from: startOfMonth(new Date()),
+    to: endOfMonth(new Date()),
   });
   const today = new Date();
   today.setHours(0, 0, 0, 0); 
@@ -95,7 +95,7 @@ export default function ReportsPage() {
 
       <Card className="printable">
         <CardHeader>
-          <CardTitle>Weekly Attendance Report</CardTitle>
+          <CardTitle>Monthly Attendance Report</CardTitle>
           <CardDescription>P = Present, A = Absent, H = Half Day</CardDescription>
         </CardHeader>
         <CardContent>
