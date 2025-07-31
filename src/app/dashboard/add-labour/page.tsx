@@ -44,17 +44,18 @@ import {
 
 const labourSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
-  fatherName: z.string().min(2, "Father's name must be at least 2 characters"),
-  mobile: z.string().regex(/^\d{10}$/, "Mobile number must be 10 digits"),
-  dailySalary: z.coerce.number().min(0, "Salary must be a positive number"),
-  aadhaar: z.string().regex(/^\d{12}$/, "Aadhaar number must be 12 digits"),
-  pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN format"),
+  fatherName: z.string().optional(),
+  mobile: z.string().optional(),
+  dailySalary: z.coerce.number().optional(),
+  aadhaar: z.string().optional(),
+  pan: z.string().optional(),
   dl: z.string().optional(),
   profilePhotoUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   aadhaarUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   panUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   dlUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
 });
+
 
 interface LabourerFormProps {
   onFinished: () => void;
@@ -86,11 +87,11 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
   const onSubmit = (values: z.infer<typeof labourSchema>) => {
     const labourerData = {
       fullName: values.fullName,
-      fatherName: values.fatherName,
-      mobile: values.mobile,
-      dailySalary: values.dailySalary,
-      aadhaar: values.aadhaar,
-      pan: values.pan.toUpperCase(),
+      fatherName: values.fatherName || "",
+      mobile: values.mobile || "",
+      dailySalary: values.dailySalary || 0,
+      aadhaar: values.aadhaar || "",
+      pan: values.pan?.toUpperCase() || "",
       dl: values.dl || "",
       profilePhotoUrl: values.profilePhotoUrl || "https://placehold.co/100x100.png",
       documents: {
@@ -140,7 +141,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
             name="fatherName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Father's Name</FormLabel>
+                <FormLabel>Father's Name (Optional)</FormLabel>
                 <FormControl>
                   <Input placeholder="Richard Doe" {...field} />
                 </FormControl>
@@ -153,7 +154,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
             name="mobile"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Mobile No.</FormLabel>
+                <FormLabel>Mobile No. (Optional)</FormLabel>
                 <FormControl>
                   <Input placeholder="9876543210" {...field} />
                 </FormControl>
@@ -166,7 +167,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
             name="dailySalary"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Daily Salary (₹)</FormLabel>
+                <FormLabel>Daily Salary (₹) (Optional)</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="e.g. 500" {...field} />
                 </FormControl>
@@ -179,7 +180,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
             name="profilePhotoUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Profile Photo URL</FormLabel>
+                <FormLabel>Profile Photo URL (Optional)</FormLabel>
                 <FormControl>
                   <Input placeholder="https://example.com/photo.jpg" {...field} />
                 </FormControl>
@@ -189,7 +190,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
           />
         </div>
 
-        <h3 className="text-lg font-medium font-headline border-t pt-6">Documents</h3>
+        <h3 className="text-lg font-medium font-headline border-t pt-6">Documents (Optional)</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
@@ -222,7 +223,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
             name="dl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Driving License No. (Optional)</FormLabel>
+                <FormLabel>Driving License No.</FormLabel>
                 <FormControl>
                   <Input placeholder="DL-1420110012345" {...field} />
                 </FormControl>
@@ -232,7 +233,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
           />
         </div>
 
-        <h3 className="text-lg font-medium font-headline border-t pt-6">Document Upload (Links)</h3>
+        <h3 className="text-lg font-medium font-headline border-t pt-6">Document Upload (Links - Optional)</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
@@ -265,7 +266,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
             name="dlUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>DL Document URL (Optional)</FormLabel>
+                <FormLabel>DL Document URL</FormLabel>
                 <FormControl>
                   <Input placeholder="https://example.com/dl.pdf" {...field} />
                 </FormControl>
