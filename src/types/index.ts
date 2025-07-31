@@ -1,3 +1,6 @@
+
+export type Designation = "Supervisor" | "Skilled Labour" | "Unskilled Labour" | "Driver" | "Office Incharge";
+
 export interface Labourer {
   id: string;
   profilePhotoUrl: string;
@@ -8,6 +11,7 @@ export interface Labourer {
   pan: string;
   dl: string;
   dailySalary: number;
+  designation: Designation;
   documents: {
     aadhaarUrl: string;
     panUrl: string;

@@ -14,6 +14,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useData } from "@/hooks/useData";
@@ -29,7 +36,7 @@ import {
 import { UserPlus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Labourer } from "@/types";
+import type { Labourer, Designation } from "@/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,9 +48,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+
+const designationValues: [Designation, ...Designation[]] = ["Supervisor", "Skilled Labour", "Unskilled Labour", "Driver", "Office Incharge"];
 
 const labourSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  designation: z.enum(designationValues, { required_error: "Designation is required" }),
   fatherName: z.string().optional(),
   mobile: z.string().optional(),
   dailySalary: z.coerce.number().optional(),
@@ -71,6 +82,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
     resolver: zodResolver(labourSchema),
     defaultValues: {
       fullName: labourer?.fullName || "",
+      designation: labourer?.designation,
       fatherName: labourer?.fatherName || "",
       mobile: labourer?.mobile || "",
       dailySalary: labourer?.dailySalary || 0,
@@ -87,6 +99,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
   const onSubmit = (values: z.infer<typeof labourSchema>) => {
     const labourerData = {
       fullName: values.fullName,
+      designation: values.designation,
       fatherName: values.fatherName || "",
       mobile: values.mobile || "",
       dailySalary: values.dailySalary || 0,
@@ -132,6 +145,28 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                 <FormControl>
                   <Input placeholder="John Doe" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="designation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Designation</FormLabel>
+                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a designation" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {designationValues.map(value => (
+                        <SelectItem key={value} value={value}>{value}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -353,6 +388,7 @@ export default function LabourerManagementPage() {
                 <TableRow>
                   <TableHead>Profile</TableHead>
                   <TableHead>Full Name</TableHead>
+                  <TableHead>Designation</TableHead>
                   <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
                   {showSalary && <TableHead className="hidden md:table-cell">Daily Salary</TableHead>}
                   <TableHead className="text-right">Actions</TableHead>
@@ -372,6 +408,9 @@ export default function LabourerManagementPage() {
                       </TableCell>
                       <TableCell className="font-medium whitespace-nowrap">
                         {labourer.fullName}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{labourer.designation}</Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{labourer.mobile}</TableCell>
                        {showSalary && <TableCell className="hidden md:table-cell">₹{labourer.dailySalary}</TableCell>}
@@ -408,7 +447,7 @@ export default function LabourerManagementPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={showSalary ? 5 : 4} className="text-center">
+                    <TableCell colSpan={showSalary ? 6 : 5} className="text-center">
                       No labourers added yet.
                     </TableCell>
                   </TableRow>
