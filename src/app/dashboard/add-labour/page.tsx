@@ -289,7 +289,7 @@ export default function LabourerManagementPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editLabourer, setEditLabourer] = useState<Labourer | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [showSalary, setShowSalary] = useState(true);
+  const [showSalary, setShowSalary] = useState(false);
   const { toast } = useToast();
   
   const handleEditClick = (labourer: Labourer) => {
@@ -435,5 +435,3 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
-
-    
