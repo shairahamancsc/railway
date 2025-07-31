@@ -26,7 +26,7 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { UserPlus, Pencil, Trash2 } from "lucide-react";
+import { UserPlus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Labourer } from "@/types";
@@ -288,6 +288,7 @@ export default function LabourerManagementPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editLabourer, setEditLabourer] = useState<Labourer | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [showSalary, setShowSalary] = useState(true);
   const { toast } = useToast();
   
   const handleEditClick = (labourer: Labourer) => {
@@ -333,8 +334,16 @@ export default function LabourerManagementPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Labourers</CardTitle>
-           <CardDescription>View and manage all registered labourers.</CardDescription>
+           <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>All Labourers</CardTitle>
+              <CardDescription>View and manage all registered labourers.</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setShowSalary(!showSalary)}>
+              {showSalary ? <EyeOff className="mr-2" /> : <Eye className="mr-2" />}
+              {showSalary ? 'Hide' : 'Show'} Salary
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -344,7 +353,7 @@ export default function LabourerManagementPage() {
                   <TableHead>Profile</TableHead>
                   <TableHead>Full Name</TableHead>
                   <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
-                  <TableHead className="hidden md:table-cell">Daily Salary</TableHead>
+                  {showSalary && <TableHead className="hidden md:table-cell">Daily Salary</TableHead>}
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -364,7 +373,7 @@ export default function LabourerManagementPage() {
                         {labourer.fullName}
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{labourer.mobile}</TableCell>
-                       <TableCell className="hidden md:table-cell">₹{labourer.dailySalary}</TableCell>
+                       {showSalary && <TableCell className="hidden md:table-cell">₹{labourer.dailySalary}</TableCell>}
                       <TableCell className="text-right space-x-2 whitespace-nowrap">
                          <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
                           <Pencil className="mr-2 h-4 w-4" />
@@ -398,7 +407,7 @@ export default function LabourerManagementPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center">
+                    <TableCell colSpan={showSalary ? 5 : 4} className="text-center">
                       No labourers added yet.
                     </TableCell>
                   </TableRow>
@@ -425,3 +434,5 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
+
+    
