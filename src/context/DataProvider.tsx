@@ -1,137 +1,198 @@
 
 "use client";
 
-import React, { createContext, useState, useEffect, ReactNode, useMemo } from "react";
+import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
 import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord } from "@/types";
+import { supabase } from "@/lib/supabaseClient";
 
 interface DataContextProps {
   labourers: Labourer[];
-  addLabourer: (labourer: Omit<Labourer, "id" | "createdAt">) => void;
-  updateLabourer: (labourerId: string, updatedData: Partial<Omit<Labourer, "id" | "createdAt">>) => void;
-  deleteLabourer: (labourerId: string) => void;
+  addLabourer: (labourerData: any) => Promise<void>;
+  updateLabourer: (labourerId: string, updatedData: any) => Promise<void>;
+  deleteLabourer: (labourerId: string) => Promise<void>;
   supervisors: Supervisor[];
-  addSupervisor: (supervisor: Omit<Supervisor, "id" | "createdAt">) => void;
+  addSupervisor: (supervisor: Omit<Supervisor, "id" | "createdAt">) => Promise<void>;
   attendance: AttendanceRecord[];
-  markAttendance: (date: string, records: DailyLabourerRecord[], workDetails?: string) => void;
+  markAttendance: (date: string, records: DailyLabourerRecord[], workDetails?: string) => Promise<void>;
   getLabourerById: (id: string) => Labourer | undefined;
+  loading: boolean;
+  error: Error | null;
 }
 
 export const DataContext = createContext<DataContextProps | undefined>(
   undefined
 );
 
+const BUCKETS = {
+  PROFILE_PHOTOS: 'profile-photos',
+  DOCUMENTS: 'documents'
+};
+
+const uploadFile = async (file: File, bucket: string): Promise<string | null> => {
+    if (!file) return null;
+
+    const fileName = `${Date.now()}_${file.name}`;
+    const { data, error } = await supabase.storage.from(bucket).upload(fileName, file);
+
+    if (error) {
+        console.error('Error uploading file:', error);
+        throw error;
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(data.path);
+    return publicUrl;
+}
+
 export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [labourers, setLabourers] = useState<Labourer[]>([]);
   const [supervisors, setSupervisors] = useState<Supervisor[]>([]);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const labourersItem = window.localStorage.getItem("labourers");
-      if (labourersItem) {
-        const parsedLabourers = JSON.parse(labourersItem).map((l: any) => ({
-            ...l,
-            dailySalary: l.dailySalary ?? 0
-        }));
-        setLabourers(parsedLabourers);
-      }
-      
-      const supervisorsItem = window.localStorage.getItem("supervisors");
-      if (supervisorsItem) setSupervisors(JSON.parse(supervisorsItem));
+      const { data: labourersData, error: labourersError } = await supabase
+        .from("labourers")
+        .select("*")
+        .order("createdAt", { ascending: false });
+      if (labourersError) throw labourersError;
+      setLabourers(labourersData || []);
 
-      const attendanceItem = window.localStorage.getItem("attendance");
-      if (attendanceItem) setAttendance(JSON.parse(attendanceItem));
-    } catch (error) {
-      console.error("Failed to parse localStorage data", error);
+      const { data: supervisorsData, error: supervisorsError } = await supabase
+        .from("supervisors")
+        .select("*")
+        .order("createdAt", { ascending: false });
+      if (supervisorsError) throw supervisorsError;
+      setSupervisors(supervisorsData || []);
+      
+      const { data: attendanceData, error: attendanceError } = await supabase
+        .from("attendance")
+        .select("*");
+      if (attendanceError) throw attendanceError;
+      setAttendance(attendanceData || []);
+
+    } catch (err: any) {
+      console.error("Failed to fetch data from Supabase", err);
+      setError(err);
+    } finally {
+      setLoading(false);
     }
-    setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    if(isMounted) {
-      window.localStorage.setItem("labourers", JSON.stringify(labourers));
-    }
-  }, [labourers, isMounted]);
-  
-  useEffect(() => {
-    if(isMounted) {
-      window.localStorage.setItem("supervisors", JSON.stringify(supervisors));
-    }
-  }, [supervisors, isMounted]);
+    fetchData();
+  }, [fetchData]);
 
-  useEffect(() => {
-    if(isMounted) {
-      window.localStorage.setItem("attendance", JSON.stringify(attendance));
-    }
-  }, [attendance, isMounted]);
+  const addLabourer = async (labourerData: any) => {
+    const { profilePhoto, aadhaarFile, panFile, dlFile, ...restOfData } = labourerData;
+    
+    // 1. Upload files
+    const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
+    const aadhaarUrl = await uploadFile(aadhaarFile, BUCKETS.DOCUMENTS);
+    const panUrl = await uploadFile(panFile, BUCKETS.DOCUMENTS);
+    const dlUrl = await uploadFile(dlFile, BUCKETS.DOCUMENTS);
 
-  const addLabourer = (labourerData: Omit<Labourer, "id" | "createdAt">) => {
-    const newLabourer: Labourer = {
-      ...labourerData,
-      id: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
+    // 2. Prepare data for DB
+    const newLabourer = {
+      ...restOfData,
+      profilePhotoUrl: profilePhotoUrl || "https://placehold.co/100x100.png",
+      documents: {
+        aadhaarUrl: aadhaarUrl || "",
+        panUrl: panUrl || "",
+        dlUrl: dlUrl || "",
+      },
     };
-    setLabourers((prev) => [...prev, newLabourer]);
+
+    // 3. Insert into DB
+    const { data, error: dbError } = await supabase
+      .from("labourers")
+      .insert([newLabourer])
+      .select();
+
+    if (dbError) throw dbError;
+
+    // 4. Update local state
+    if (data) {
+      setLabourers((prev) => [data[0], ...prev]);
+    }
   };
 
-  const updateLabourer = (labourerId: string, updatedData: Partial<Omit<Labourer, "id" | "createdAt">>) => {
-    setLabourers(prev => prev.map(l => l.id === labourerId ? { ...l, ...updatedData } : l));
-  }
+  const updateLabourer = async (labourerId: string, updatedData: any) => {
+    const { profilePhoto, aadhaarFile, panFile, dlFile, ...restOfData } = updatedData;
+    
+    // 1. Upload new files if they exist
+    const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
+    const aadhaarUrl = await uploadFile(aadhaarFile, BUCKETS.DOCUMENTS);
+    const panUrl = await uploadFile(panFile, BUCKETS.DOCUMENTS);
+    const dlUrl = await uploadFile(dlFile, BUCKETS.DOCUMENTS);
+
+    // 2. Prepare data for DB update
+    const dataToUpdate = { ...restOfData };
+    if (profilePhotoUrl) dataToUpdate.profilePhotoUrl = profilePhotoUrl;
+    
+    // Fetch existing documents to merge
+    const existingLabourer = labourers.find(l => l.id === labourerId);
+    dataToUpdate.documents = { ...existingLabourer?.documents };
+    if (aadhaarUrl) dataToUpdate.documents.aadhaarUrl = aadhaarUrl;
+    if (panUrl) dataToUpdate.documents.panUrl = panUrl;
+    if (dlUrl) dataToUpdate.documents.dlUrl = dlUrl;
+
+
+    // 3. Update DB
+    const { data, error: dbError } = await supabase
+      .from("labourers")
+      .update(dataToUpdate)
+      .eq("id", labourerId)
+      .select();
+
+    if (dbError) throw dbError;
+
+    // 4. Update local state
+    if (data) {
+      setLabourers(prev => prev.map(l => l.id === labourerId ? data[0] : l));
+    }
+  };
   
-  const deleteLabourer = (labourerId: string) => {
+  const deleteLabourer = async (labourerId: string) => {
+    const { error } = await supabase.from("labourers").delete().eq("id", labourerId);
+    if (error) throw error;
     setLabourers(prev => prev.filter(l => l.id !== labourerId));
-    // Also remove from attendance records
-    setAttendance(prev => prev.map(att => ({
-        ...att,
-        records: att.records.filter(rec => rec.labourerId !== labourerId)
-    })));
-  }
-
-  const addSupervisor = (supervisorData: Omit<Supervisor, "id" | "createdAt">) => {
-    const newSupervisor: Supervisor = {
-      ...supervisorData,
-      id: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-    };
-    setSupervisors((prev) => [...prev, newSupervisor]);
   };
 
-  const markAttendance = (date: string, records: DailyLabourerRecord[], workDetails?: string) => {
-    setAttendance((prev) => {
-      const existingRecordIndex = prev.findIndex((record) => record.date === date);
-      
-      const newRecord = { 
+  const addSupervisor = async (supervisorData: Omit<Supervisor, "id" | "createdAt">) => {
+    const { data, error } = await supabase.from("supervisors").insert([supervisorData]).select();
+    if (error) throw error;
+    if (data) {
+      setSupervisors((prev) => [data[0], ...prev]);
+    }
+  };
+
+  const markAttendance = async (date: string, records: DailyLabourerRecord[], workDetails?: string) => {
+     const newRecord = { 
         date, 
         records,
-        presentLabourerIds: records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId),
         workDetails
       };
       
+    const { error } = await supabase.from("attendance").upsert(newRecord, { onConflict: 'date' });
+    if (error) throw error;
+
+    setAttendance((prev) => {
+      const existingRecordIndex = prev.findIndex((record) => record.date === date);
       if (existingRecordIndex > -1) {
         const updatedAttendance = [...prev];
-        updatedAttendance[existingRecordIndex] = newRecord;
+        updatedAttendance[existingRecordIndex] = { ...updatedAttendance[existingRecordIndex], ...newRecord};
         return updatedAttendance;
       }
-      return [...prev, newRecord];
+      return [...prev, { ...newRecord, presentLabourerIds: records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId) }];
     });
   };
 
   const getLabourerById = (id: string) => {
     return labourers.find(l => l.id === id);
-  }
-
-  const attendanceWithDerivedState = useMemo(() => {
-    if (!attendance) return [];
-    return attendance.map(att => ({
-        ...att,
-        presentLabourerIds: att.records?.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId) || [],
-    }));
-  }, [attendance]);
-
-
-  if (!isMounted) {
-    return null;
   }
 
   return (
@@ -143,9 +204,11 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         deleteLabourer,
         supervisors,
         addSupervisor,
-        attendance: attendanceWithDerivedState,
+        attendance,
         markAttendance,
         getLabourerById,
+        loading,
+        error
       }}
     >
       {children}

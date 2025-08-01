@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -33,7 +33,7 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { UserPlus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Labourer, Designation } from "@/types";
@@ -52,6 +52,25 @@ import { Badge } from "@/components/ui/badge";
 
 const designationValues: [Designation, ...Designation[]] = ["Supervisor", "Skilled Labour", "Unskilled Labour", "Driver", "Office Incharge"];
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const ACCEPTED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/jpg", "image/png"];
+
+const fileSchema = z.any()
+  .optional()
+  .refine((file) => !file || file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+
+const imageFileSchema = fileSchema.refine(
+    (file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
+    "Only .jpg, .jpeg, .png and .webp formats are supported."
+);
+
+const documentFileSchema = fileSchema.refine(
+    (file) => !file || ACCEPTED_DOCUMENT_TYPES.includes(file.type),
+    "Only .jpg, .jpeg, .png and .pdf formats are supported."
+);
+
+
 const labourSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   designation: z.enum(designationValues, { required_error: "Designation is required" }),
@@ -61,10 +80,11 @@ const labourSchema = z.object({
   aadhaar: z.string().optional(),
   pan: z.string().optional(),
   dl: z.string().optional(),
-  profilePhotoUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
-  aadhaarUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
-  panUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
-  dlUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
+  // Fields for new file uploads
+  profilePhoto: imageFileSchema,
+  aadhaarFile: documentFileSchema,
+  panFile: documentFileSchema,
+  dlFile: documentFileSchema,
 });
 
 
@@ -77,6 +97,13 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
   const { addLabourer, updateLabourer } = useData();
   const { toast } = useToast();
   const isEditMode = !!labourer;
+  const [isLoading, setIsLoading] = useState(false);
+
+  const profilePhotoRef = useRef<HTMLInputElement>(null);
+  const aadhaarFileRef = useRef<HTMLInputElement>(null);
+  const panFileRef = useRef<HTMLInputElement>(null);
+  const dlFileRef = useRef<HTMLInputElement>(null);
+
 
   const form = useForm<z.infer<typeof labourSchema>>({
     resolver: zodResolver(labourSchema),
@@ -89,48 +116,59 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
       aadhaar: labourer?.aadhaar || "",
       pan: labourer?.pan || "",
       dl: labourer?.dl || "",
-      profilePhotoUrl: labourer?.profilePhotoUrl || "",
-      aadhaarUrl: labourer?.documents?.aadhaarUrl || "",
-      panUrl: labourer?.documents?.panUrl || "",
-      dlUrl: labourer?.documents?.dlUrl || "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof labourSchema>) => {
+  const onSubmit = async (values: z.infer<typeof labourSchema>) => {
+    setIsLoading(true);
     const labourerData = {
       fullName: values.fullName,
       designation: values.designation,
-      fatherName: values.fatherName || "",
-      mobile: values.mobile || "",
-      dailySalary: values.dailySalary || 0,
-      aadhaar: values.aadhaar || "",
-      pan: values.pan?.toUpperCase() || "",
-      dl: values.dl || "",
-      profilePhotoUrl: values.profilePhotoUrl || "https://placehold.co/100x100.png",
-      documents: {
-        aadhaarUrl: values.aadhaarUrl || "",
-        panUrl: values.panUrl || "",
-        dlUrl: values.dlUrl || "",
-      },
+      fatherName: values.fatherName,
+      mobile: values.mobile,
+      dailySalary: values.dailySalary,
+      aadhaar: values.aadhaar,
+      pan: values.pan?.toUpperCase(),
+      dl: values.dl,
+      profilePhoto: values.profilePhoto,
+      aadhaarFile: values.aadhaarFile,
+      panFile: values.panFile,
+      dlFile: values.dlFile,
     };
 
-    if (isEditMode && labourer) {
-      updateLabourer(labourer.id, labourerData);
+    try {
+      if (isEditMode && labourer) {
+        await updateLabourer(labourer.id, labourerData);
+        toast({
+          title: "Success!",
+          description: "Worker details have been updated.",
+        });
+      } else {
+        await addLabourer(labourerData);
+        toast({
+          title: "Success!",
+          description: "New worker has been added.",
+        });
+      }
+      form.reset();
+      onFinished();
+    } catch (error) {
        toast({
-        title: "Success!",
-        description: "Worker details have been updated.",
+        title: "Error",
+        description: "An error occurred. Please try again.",
+        variant: "destructive",
       });
-    } else {
-      addLabourer(labourerData);
-      toast({
-        title: "Success!",
-        description: "New worker has been added.",
-      });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
 
-    form.reset();
-    onFinished();
   };
+  
+  const getFileName = (field: "profilePhoto" | "aadhaarFile" | "panFile" | "dlFile") => {
+    const file = form.watch(field);
+    return file ? file.name : `Select a file`;
+  }
 
   return (
     <Form {...form}>
@@ -212,15 +250,27 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
           />
           <FormField
             control={form.control}
-            name="profilePhotoUrl"
+            name="profilePhoto"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Profile Photo URL (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://example.com/photo.jpg" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+                <FormItem>
+                  <FormLabel>Profile Photo (Optional)</FormLabel>
+                  <FormControl>
+                    <>
+                      <Input 
+                        type="file" 
+                        className="hidden"
+                        ref={profilePhotoRef}
+                        onChange={(e) => field.onChange(e.target.files?.[0])}
+                        accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                      />
+                      <Button type="button" variant="outline" onClick={() => profilePhotoRef.current?.click()}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        <span className="truncate max-w-[200px]">{getFileName("profilePhoto")}</span>
+                      </Button>
+                    </>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
             )}
           />
         </div>
@@ -267,52 +317,91 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
             )}
           />
         </div>
-
-        <h3 className="text-lg font-medium font-headline border-t pt-6">Document Upload (Links - Optional)</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="aadhaarUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Aadhaar Document URL</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://example.com/aadhaar.pdf" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="panUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>PAN Document URL</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://example.com/pan.pdf" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dlUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>DL Document URL</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://example.com/dl.pdf" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        
+        <h3 className="text-lg font-medium font-headline border-t pt-6">Document Upload (Optional)</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <FormField
+              control={form.control}
+              name="aadhaarFile"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Aadhaar Document</FormLabel>
+                    <FormControl>
+                      <>
+                        <Input 
+                          type="file" 
+                          className="hidden"
+                          ref={aadhaarFileRef}
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                          accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
+                        />
+                        <Button type="button" variant="outline" onClick={() => aadhaarFileRef.current?.click()}>
+                          <Upload className="mr-2 h-4 w-4" />
+                          <span className="truncate max-w-[200px]">{getFileName("aadhaarFile")}</span>
+                        </Button>
+                      </>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="panFile"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>PAN Document</FormLabel>
+                    <FormControl>
+                      <>
+                        <Input 
+                          type="file" 
+                          className="hidden"
+                          ref={panFileRef}
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                          accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
+                        />
+                        <Button type="button" variant="outline" onClick={() => panFileRef.current?.click()}>
+                          <Upload className="mr-2 h-4 w-4" />
+                          <span className="truncate max-w-[200px]">{getFileName("panFile")}</span>
+                        </Button>
+                      </>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dlFile"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>DL Document</FormLabel>
+                    <FormControl>
+                      <>
+                        <Input 
+                          type="file" 
+                          className="hidden"
+                          ref={dlFileRef}
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                          accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
+                        />
+                        <Button type="button" variant="outline" onClick={() => dlFileRef.current?.click()}>
+                          <Upload className="mr-2 h-4 w-4" />
+                          <span className="truncate max-w-[200px]">{getFileName("dlFile")}</span>
+                        </Button>
+                      </>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )}
+            />
         </div>
 
+
         <div className="flex justify-end pt-4">
-          <Button type="submit">{isEditMode ? 'Save Changes' : 'Add Worker'}</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : isEditMode ? 'Save Changes' : 'Add Worker'}
+          </Button>
         </div>
       </form>
     </Form>
@@ -320,7 +409,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
 }
 
 export default function LabourerManagementPage() {
-  const { labourers, deleteLabourer } = useData();
+  const { labourers, deleteLabourer, loading, error } = useData();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editLabourer, setEditLabourer] = useState<Labourer | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -332,13 +421,21 @@ export default function LabourerManagementPage() {
     setIsEditDialogOpen(true);
   }
 
-  const handleDelete = (labourerId: string) => {
-    deleteLabourer(labourerId);
-    toast({
-      title: "Worker Deleted",
-      description: "The worker has been removed from the system.",
-      variant: "destructive",
-    });
+  const handleDelete = async (labourerId: string) => {
+    try {
+      await deleteLabourer(labourerId);
+      toast({
+        title: "Worker Deleted",
+        description: "The worker has been removed from the system.",
+        variant: "destructive",
+      });
+    } catch {
+       toast({
+        title: "Error Deleting Worker",
+        description: "Could not remove worker. Please try again.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -390,19 +487,31 @@ export default function LabourerManagementPage() {
                   <TableHead>Full Name</TableHead>
                   <TableHead>Designation</TableHead>
                   <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
-                  {showSalary && <TableHead className="hidden md:table-cell">Daily Salary</TableHead>}
+                  {showSalary && <TableHead className="hidden md:table-cell">Daily Salary (₹)</TableHead>}
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {labourers.length > 0 ? (
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={showSalary ? 6 : 5} className="text-center">
+                      Loading workers...
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                   <TableRow>
+                    <TableCell colSpan={showSalary ? 6 : 5} className="text-center text-red-500">
+                      Error loading workers. Please check your connection and refresh.
+                    </TableCell>
+                  </TableRow>
+                ) : labourers.length > 0 ? (
                   labourers.map((labourer) => (
                     <TableRow key={labourer.id}>
                       <TableCell>
                         <Avatar>
                           <AvatarImage src={labourer.profilePhotoUrl} alt={labourer.fullName} data-ai-hint="profile person" />
                           <AvatarFallback>
-                            {labourer.fullName.charAt(0)}
+                            {labourer.fullName?.charAt(0) || 'W'}
                           </AvatarFallback>
                         </Avatar>
                       </TableCell>
@@ -413,7 +522,7 @@ export default function LabourerManagementPage() {
                         <Badge variant="secondary">{labourer.designation}</Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{labourer.mobile}</TableCell>
-                       {showSalary && <TableCell className="hidden md:table-cell">₹{labourer.dailySalary}</TableCell>}
+                       {showSalary && <TableCell className="hidden md:table-cell">{labourer.dailySalary}</TableCell>}
                       <TableCell className="text-right space-x-2 whitespace-nowrap">
                          <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
                           <Pencil className="mr-2 h-4 w-4" />
@@ -431,7 +540,7 @@ export default function LabourerManagementPage() {
                               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 This action cannot be undone. This will permanently delete the
-                                worker and all their associated data.
+                                worker and all their associated data from the database.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
