@@ -12,6 +12,7 @@ import {
   LogOut,
   UserCheck as BrandIcon,
   Menu,
+  Notebook,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/dashboard/attendance", icon: CalendarCheck, label: "Attendance" },
   { href: "/dashboard/supervisors", icon: Users, label: "Supervisors" },
   { href: "/dashboard/reports", icon: FileText, label: "Reports" },
+  { href: "/dashboard/notes", icon: Notebook, label: "Notes" },
 ];
 
 function SidebarContentNav() {
@@ -101,5 +103,3 @@ export function MobileSidebar() {
     </Sheet>
   )
 }
-
-    
