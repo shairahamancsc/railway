@@ -63,11 +63,11 @@ export default function ReportsPage() {
                     {dateRange?.from ? (
                       dateRange.to ? (
                         <>
-                          {format(dateRange.from, "LLL dd, y")} -{" "}
-                          {format(dateRange.to, "LLL dd, y")}
+                          {format(dateRange.from, "dd-MMM-yyyy")} -{" "}
+                          {format(dateRange.to, "dd-MMM-yyyy")}
                         </>
                       ) : (
-                        format(dateRange.from, "LLL dd, y")
+                        format(dateRange.from, "dd-MMM-yyyy")
                       )
                     ) : (
                       <span>Pick a date</span>
@@ -104,11 +104,11 @@ export default function ReportsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Labourer Name</TableHead>
+                    <TableHead>Worker Name</TableHead>
                     {daysInInterval.map((day) => (
                       <TableHead key={day.toString()} className="text-center">
                          <div className="flex items-center justify-center gap-2">
-                          {format(day, "MMM d")}
+                          {format(day, "dd-MMM")}
                           {!isAfter(day, today) && (
                             <TooltipProvider>
                               <Tooltip>
@@ -179,7 +179,7 @@ export default function ReportsPage() {
             </div>
           ) : (
             <p className="text-muted-foreground text-center py-8">
-              No labourer data available for this report.
+              No worker data available for this report.
             </p>
           )}
         </CardContent>
@@ -188,7 +188,7 @@ export default function ReportsPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-[80vw] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-                <DialogTitle>Edit Attendance for {editDate ? format(editDate, "MMMM dd, yyyy") : ''}</DialogTitle>
+                <DialogTitle>Edit Attendance for {editDate ? format(editDate, "dd MMMM, yyyy") : ''}</DialogTitle>
             </DialogHeader>
             {editDate && <AttendanceForm targetDate={editDate} onSave={() => setIsDialogOpen(false)} />}
           </DialogContent>
@@ -197,3 +197,5 @@ export default function ReportsPage() {
     </div>
   );
 }
+
+    

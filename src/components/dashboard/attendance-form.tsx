@@ -88,7 +88,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     markAttendance(dateStr, records, workDetails);
     toast({
       title: "Attendance Saved",
-      description: `Attendance for ${format(targetDate, "MMMM dd, yyyy")} has been updated.`,
+      description: `Attendance for ${format(targetDate, "dd MMMM, yyyy")} has been updated.`,
     });
     if (onSave) {
         onSave();
@@ -131,7 +131,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                 Mark Attendance
             </h1>
             <p className="text-muted-foreground">
-                {format(targetDate, "EEEE, MMMM dd, yyyy")}
+                {format(targetDate, "EEEE, dd MMMM, yyyy")}
             </p>
         </div>
         {labourers.length > 0 && (
@@ -191,7 +191,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                           <AccordionContent>
                             <div className="grid grid-cols-1 gap-4 pt-4">
                                   <div className="space-y-2">
-                                      <Label htmlFor={`advance-${labourer.id}`}>Advance Amount</Label>
+                                      <Label htmlFor={`advance-${labourer.id}`}>Advance Amount (₹)</Label>
                                       <Input
                                         id={`advance-${labourer.id}`}
                                         type="number"
@@ -236,7 +236,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
          <Card>
             <CardContent className="pt-6">
                 <p className="text-muted-foreground text-center">
-                  No labourers to mark attendance for. Please add a labourer first.
+                  No workers to mark attendance for. Please add a worker first.
                 </p>
             </CardContent>
         </Card>
@@ -244,3 +244,5 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
+
+    

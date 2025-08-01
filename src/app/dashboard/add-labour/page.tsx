@@ -118,13 +118,13 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
       updateLabourer(labourer.id, labourerData);
        toast({
         title: "Success!",
-        description: "Labourer details have been updated.",
+        description: "Worker details have been updated.",
       });
     } else {
       addLabourer(labourerData);
       toast({
         title: "Success!",
-        description: "New labourer has been added.",
+        description: "New worker has been added.",
       });
     }
 
@@ -143,7 +143,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
               <FormItem>
                 <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input placeholder="e.g. Ramesh Kumar" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -178,7 +178,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
               <FormItem>
                 <FormLabel>Father's Name (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="Richard Doe" {...field} />
+                  <Input placeholder="e.g. Suresh Kumar" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -191,7 +191,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
               <FormItem>
                 <FormLabel>Mobile No. (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="9876543210" {...field} />
+                  <Input placeholder="e.g. 9876543210" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -234,7 +234,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
               <FormItem>
                 <FormLabel>Aadhaar No.</FormLabel>
                 <FormControl>
-                  <Input placeholder="123456789012" {...field} />
+                  <Input placeholder="XXXX XXXX XXXX" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -260,7 +260,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
               <FormItem>
                 <FormLabel>Driving License No.</FormLabel>
                 <FormControl>
-                  <Input placeholder="DL-1420110012345" {...field} />
+                  <Input placeholder="e.g. DL-1420110012345" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -312,7 +312,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
         </div>
 
         <div className="flex justify-end pt-4">
-          <Button type="submit">{isEditMode ? 'Save Changes' : 'Add Labourer'}</Button>
+          <Button type="submit">{isEditMode ? 'Save Changes' : 'Add Worker'}</Button>
         </div>
       </form>
     </Form>
@@ -335,8 +335,8 @@ export default function LabourerManagementPage() {
   const handleDelete = (labourerId: string) => {
     deleteLabourer(labourerId);
     toast({
-      title: "Labourer Deleted",
-      description: "The labourer has been removed from the system.",
+      title: "Worker Deleted",
+      description: "The worker has been removed from the system.",
       variant: "destructive",
     });
   }
@@ -345,20 +345,20 @@ export default function LabourerManagementPage() {
     <div className="space-y-8">
        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="text-3xl font-headline font-bold tracking-tight">
-          Labourer Management
+          Worker Management
         </h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <UserPlus className="mr-2 h-4 w-4" />
-              Add New Labourer
+              Add New Worker
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Add New Labourer</DialogTitle>
+              <DialogTitle>Add New Worker</DialogTitle>
               <DialogDescription>
-                Fill in the details below to add a new labourer to the system.
+                Fill in the details below to add a new worker to the system.
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">
@@ -372,8 +372,8 @@ export default function LabourerManagementPage() {
         <CardHeader>
            <div className="flex items-center justify-between">
             <div>
-              <CardTitle>All Labourers</CardTitle>
-              <CardDescription>View and manage all registered labourers.</CardDescription>
+              <CardTitle>All Workers</CardTitle>
+              <CardDescription>View and manage all registered workers.</CardDescription>
             </div>
             <Button variant="outline" size="sm" onClick={() => setShowSalary(!showSalary)}>
               {showSalary ? <EyeOff className="mr-2" /> : <Eye className="mr-2" />}
@@ -431,7 +431,7 @@ export default function LabourerManagementPage() {
                               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 This action cannot be undone. This will permanently delete the
-                                labourer and all their associated data.
+                                worker and all their associated data.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -448,7 +448,7 @@ export default function LabourerManagementPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={showSalary ? 6 : 5} className="text-center">
-                      No labourers added yet.
+                      No workers added yet.
                     </TableCell>
                   </TableRow>
                 )}
@@ -461,7 +461,7 @@ export default function LabourerManagementPage() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Labourer Details</DialogTitle>
+            <DialogTitle>Edit Worker Details</DialogTitle>
             <DialogDescription>
               Update the information for {editLabourer?.fullName}.
             </DialogDescription>
@@ -474,3 +474,5 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
+
+    

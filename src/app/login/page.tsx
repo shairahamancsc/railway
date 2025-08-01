@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -47,7 +48,7 @@ export default function LoginPage() {
     setIsLoading(true);
     // Simulate API call
     setTimeout(() => {
-      if (values.username === "Illu" && values.password === "123456789") {
+      if (values.username === "Admin" && values.password === "password") {
         toast({
           title: "Login Successful",
           description: "Welcome back!",
@@ -87,7 +88,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Illu" {...field} />
+                      <Input placeholder="e.g. Admin" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -116,3 +117,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

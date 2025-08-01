@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useData } from "@/hooks/useData";
@@ -36,7 +37,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Labourers
+              Total Workers
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -55,7 +56,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{presentToday}</div>
             <p className="text-xs text-muted-foreground">
-              Out of {labourers.length} labourers
+              Out of {labourers.length} workers
             </p>
           </CardContent>
         </Card>
@@ -63,7 +64,7 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Labourer Details</CardTitle>
+          <CardTitle>Worker Details</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -105,7 +106,7 @@ export default function DashboardPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center">
-                    No labourers added yet.
+                    No workers added yet.
                   </TableCell>
                 </TableRow>
               )}
@@ -116,3 +117,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

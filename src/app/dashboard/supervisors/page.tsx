@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -70,7 +71,7 @@ export default function SupervisorsPage() {
                     <FormItem>
                       <FormLabel>Supervisor Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Mike Ross" {...field} />
+                        <Input placeholder="e.g., Sanjay Singh" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -103,7 +104,7 @@ export default function SupervisorsPage() {
                         <TableCell className="font-medium whitespace-nowrap">{supervisor.name}</TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                              {format(new Date(supervisor.createdAt), "PPP")}
+                              {format(new Date(supervisor.createdAt), "dd-MMM-yyyy")}
                           </Badge>
                         </TableCell>
                       </TableRow>
@@ -124,3 +125,5 @@ export default function SupervisorsPage() {
     </div>
   );
 }
+
+    
