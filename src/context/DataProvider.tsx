@@ -56,15 +56,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { data: labourersData, error: labourersError } = await supabase
         .from("labourers")
-        .select("*")
-        .order("createdAt", { ascending: false });
+        .select("*");
       if (labourersError) throw labourersError;
       setLabourers(labourersData || []);
 
       const { data: supervisorsData, error: supervisorsError } = await supabase
         .from("supervisors")
-        .select("*")
-        .order("createdAt", { ascending: false });
+        .select("*");
       if (supervisorsError) throw supervisorsError;
       setSupervisors(supervisorsData || []);
       
