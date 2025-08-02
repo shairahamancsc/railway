@@ -56,8 +56,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { data: labourersData, error: labourersError } = await supabase
         .from("labourers")
-        .select("*")
-        .order("fullName", { ascending: true });
+        .select("*");
       if (labourersError) throw labourersError;
       setLabourers(labourersData || []);
 
@@ -87,7 +86,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchData]);
 
   const addLabourer = async (labourerData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, fatherName, mobile, aadhaar, pan, dl, ...restOfData } = labourerData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, ...restOfData } = labourerData;
     
     // 1. Upload files
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -100,16 +99,22 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       ...restOfData,
       profilePhotoUrl: profilePhotoUrl || "https://placehold.co/100x100.png",
       documents: {
-        fatherName,
-        mobile,
-        aadhaar,
-        pan,
-        dl,
+        fatherName: restOfData.fatherName,
+        mobile: restOfData.mobile,
+        aadhaar: restOfData.aadhaar,
+        pan: restOfData.pan,
+        dl: restOfData.dl,
         aadhaarUrl: aadhaarUrl || "",
         panUrl: panUrl || "",
         dlUrl: dlUrl || "",
       },
     };
+    
+    delete newLabourer.fatherName;
+    delete newLabourer.mobile;
+    delete newLabourer.aadhaar;
+    delete newLabourer.pan;
+    delete newLabourer.dl;
 
     // 3. Insert into DB
     const { data, error: dbError } = await supabase
@@ -126,7 +131,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateLabourer = async (labourerId: string, updatedData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, fatherName, mobile, aadhaar, pan, dl, ...restOfData } = updatedData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, ...restOfData } = updatedData;
     
     // 1. Upload new files if they exist
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -142,16 +147,21 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const existingLabourer = labourers.find(l => l.id === labourerId);
     dataToUpdate.documents = { 
         ...existingLabourer?.documents,
-        fatherName,
-        mobile,
-        aadhaar,
-        pan,
-        dl
+        fatherName: restOfData.fatherName,
+        mobile: restOfData.mobile,
+        aadhaar: restOfData.aadhaar,
+        pan: restOfData.pan,
+        dl: restOfData.dl
     };
     if (aadhaarUrl) dataToUpdate.documents.aadhaarUrl = aadhaarUrl;
     if (panUrl) dataToUpdate.documents.panUrl = panUrl;
     if (dlUrl) dataToUpdate.documents.dlUrl = dlUrl;
 
+    delete dataToUpdate.fatherName;
+    delete dataToUpdate.mobile;
+    delete dataToUpdate.aadhaar;
+    delete dataToUpdate.pan;
+    delete dataToUpdate.dl;
 
     // 3. Update DB
     const { data, error: dbError } = await supabase
