@@ -76,8 +76,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
       const { data: supervisorsData, error: supervisorsError } = await supabase
         .from("supervisors")
-        .select("*")
-        .order("name", { ascending: true });
+        .select("*");
       if (supervisorsError) throw supervisorsError;
       
       const mappedSupervisors = supervisorsData?.map(s => ({
@@ -110,113 +109,103 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchData]);
 
   const addLabourer = async (labourerData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, fullName, dailySalary, ...restOfData } = labourerData;
-    
-    // 1. Upload files
-    const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
-    const aadhaarUrl = await uploadFile(aadhaarFile, BUCKETS.DOCUMENTS);
-    const panUrl = await uploadFile(panFile, BUCKETS.DOCUMENTS);
-    const dlUrl = await uploadFile(dlFile, BUCKETS.DOCUMENTS);
+    // 1. Upload files first
+    const profilePhotoUrl = await uploadFile(labourerData.profilePhoto, BUCKETS.PROFILE_PHOTOS);
+    const aadhaarUrl = await uploadFile(labourerData.aadhaarFile, BUCKETS.DOCUMENTS);
+    const panUrl = await uploadFile(labourerData.panFile, BUCKETS.DOCUMENTS);
+    const dlUrl = await uploadFile(labourerData.dlFile, BUCKETS.DOCUMENTS);
 
-    // 2. Prepare data for DB
-    const newLabourer = {
-      ...restOfData,
-      full_name: fullName,
-      daily_salary: dailySalary,
-      profile_photo_url: profilePhotoUrl || "https://placehold.co/100x100.png",
+    // 2. Prepare a clean data object for Supabase with correct column names
+    const newLabourerData = {
+      full_name: labourerData.fullName,
+      daily_salary: labourerData.dailySalary,
+      designation: labourerData.designation,
+      profile_photo_url: profilePhotoUrl, // Use the URL from upload
       documents: {
-        fatherName: restOfData.fatherName,
-        mobile: restOfData.mobile,
-        aadhaar: restOfData.aadhaar,
-        pan: restOfData.pan,
-        dl: restOfData.dl,
-        aadhaarUrl: aadhaarUrl || "",
-        panUrl: panUrl || "",
-        dlUrl: dlUrl || "",
-      },
+        fatherName: labourerData.fatherName,
+        mobile: labourerData.mobile,
+        aadhaar: labourerData.aadhaar,
+        pan: labourerData.pan,
+        dl: labourerData.dl,
+        aadhaarUrl: aadhaarUrl, // Use the URL from upload
+        panUrl: panUrl,         // Use the URL from upload
+        dlUrl: dlUrl            // Use the URL from upload
+      }
     };
-    
-    delete newLabourer.fatherName;
-    delete newLabourer.mobile;
-    delete newLabourer.aadhaar;
-    delete newLabourer.pan;
-    delete newLabourer.dl;
 
-    // 3. Insert into DB
+    // 3. Insert the clean data into the database
     const { data, error: dbError } = await supabase
       .from("labourers")
-      .insert([newLabourer])
-      .select();
+      .insert([newLabourerData])
+      .select()
+      .single(); // Use .single() to get a single object back, not an array
 
     if (dbError) throw dbError;
 
-    // 4. Update local state
+    // 4. Update local state with the newly created record
     if (data) {
         const newRecord = { 
-            ...data[0], 
-            fullName: data[0].full_name,
-            dailySalary: data[0].daily_salary,
-            profilePhotoUrl: data[0].profile_photo_url,
-            createdAt: data[0].created_at
+            ...data, 
+            fullName: data.full_name,
+            dailySalary: data.daily_salary,
+            profilePhotoUrl: data.profile_photo_url,
+            createdAt: data.created_at
         };
         setLabourers((prev) => [newRecord, ...prev]);
     }
   };
 
   const updateLabourer = async (labourerId: string, updatedData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, fullName, dailySalary, ...restOfData } = updatedData;
-    
-    // 1. Upload new files if they exist
-    const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
-    const aadhaarUrl = await uploadFile(aadhaarFile, BUCKETS.DOCUMENTS);
-    const panUrl = await uploadFile(panFile, BUCKETS.DOCUMENTS);
-    const dlUrl = await uploadFile(dlFile, BUCKETS.DOCUMENTS);
+     // 1. Upload new files if they exist
+    const profilePhotoUrl = await uploadFile(updatedData.profilePhoto, BUCKETS.PROFILE_PHOTOS);
+    const aadhaarUrl = await uploadFile(updatedData.aadhaarFile, BUCKETS.DOCUMENTS);
+    const panUrl = await uploadFile(updatedData.panFile, BUCKETS.DOCUMENTS);
+    const dlUrl = await uploadFile(updatedData.dlFile, BUCKETS.DOCUMENTS);
 
-    // 2. Prepare data for DB update
-    const dataToUpdate: any = { 
-        ...restOfData, 
-        full_name: fullName,
-        daily_salary: dailySalary 
+    // 2. Prepare a clean data object for the update
+    const dataToUpdate: any = {
+      full_name: updatedData.fullName,
+      daily_salary: updatedData.dailySalary,
+      designation: updatedData.designation
     };
+    
+    // Only add profile photo URL if a new one was uploaded
     if (profilePhotoUrl) dataToUpdate.profile_photo_url = profilePhotoUrl;
     
-    // Fetch existing documents to merge
+    // Fetch existing documents to merge with new data
     const existingLabourer = labourers.find(l => l.id === labourerId);
-    dataToUpdate.documents = { 
+    const newDocuments = { 
         ...existingLabourer?.documents,
-        fatherName: restOfData.fatherName,
-        mobile: restOfData.mobile,
-        aadhaar: restOfData.aadhaar,
-        pan: restOfData.pan,
-        dl: restOfData.dl
+        fatherName: updatedData.fatherName,
+        mobile: updatedData.mobile,
+        aadhaar: updatedData.aadhaar,
+        pan: updatedData.pan,
+        dl: updatedData.dl
     };
-    if (aadhaarUrl) dataToUpdate.documents.aadhaarUrl = aadhaarUrl;
-    if (panUrl) dataToUpdate.documents.panUrl = panUrl;
-    if (dlUrl) dataToUpdate.documents.dlUrl = dlUrl;
+    if (aadhaarUrl) newDocuments.aadhaarUrl = aadhaarUrl;
+    if (panUrl) newDocuments.panUrl = panUrl;
+    if (dlUrl) newDocuments.dlUrl = dlUrl;
+    dataToUpdate.documents = newDocuments;
 
-    delete dataToUpdate.fatherName;
-    delete dataToUpdate.mobile;
-    delete dataToUpdate.aadhaar;
-    delete dataToUpdate.pan;
-    delete dataToUpdate.dl;
 
-    // 3. Update DB
+    // 3. Update the database
     const { data, error: dbError } = await supabase
       .from("labourers")
       .update(dataToUpdate)
       .eq("id", labourerId)
-      .select();
+      .select()
+      .single();
 
     if (dbError) throw dbError;
 
     // 4. Update local state
     if (data) {
        const updatedRecord = { 
-           ...data[0], 
-           fullName: data[0].full_name,
-           dailySalary: data[0].daily_salary,
-           profilePhotoUrl: data[0].profile_photo_url,
-           createdAt: data[0].created_at
+           ...data, 
+           fullName: data.full_name,
+           dailySalary: data.daily_salary,
+           profilePhotoUrl: data.profile_photo_url,
+           createdAt: data.created_at
         };
        setLabourers(prev => prev.map(l => l.id === labourerId ? updatedRecord : l));
     }
@@ -232,7 +221,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const { data, error } = await supabase.from("supervisors").insert([supervisorData]).select();
     if (error) throw error;
     if (data) {
-      setSupervisors((prev) => [{...data[0], createdAt: data[0].created_at}, ...prev]);
+      const newSupervisor = { ...data[0], createdAt: data[0].created_at };
+      setSupervisors((prev) => [newSupervisor, ...prev].sort((a, b) => a.name.localeCompare(b.name)));
     }
   };
 
@@ -287,4 +277,3 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     </DataContext.Provider>
   );
 };
- 
