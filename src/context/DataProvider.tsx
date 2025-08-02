@@ -75,7 +75,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       setAttendance(attendanceData || []);
 
     } catch (err: any) {
-      console.error("Failed to fetch data from Supabase", err);
+      console.error("Failed to fetch data from Supabase:", err.message || err);
       setError(err);
     } finally {
       setLoading(false);
@@ -215,5 +215,3 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     </DataContext.Provider>
   );
 };
-
-    
