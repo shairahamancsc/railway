@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import useSmoothScroll from "@/hooks/use-smooth-scroll";
@@ -36,6 +37,7 @@ export default function RootLayout({
       >
         {children}
         <Analytics />
+        <SpeedInsights />
         <Toaster />
       </body>
     </html>

@@ -58,7 +58,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         .from("labourers")
         .select("*");
       if (labourersError) throw labourersError;
-      setLabourers(labourersData || []);
+      
+      const mappedLabourers = labourersData?.map(l => ({ ...l, dailySalary: l.daily_salary })) || [];
+      setLabourers(mappedLabourers || []);
 
       const { data: supervisorsData, error: supervisorsError } = await supabase
         .from("supervisors")
@@ -86,7 +88,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchData]);
 
   const addLabourer = async (labourerData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, ...restOfData } = labourerData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, dailySalary, ...restOfData } = labourerData;
     
     // 1. Upload files
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -97,6 +99,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     // 2. Prepare data for DB
     const newLabourer = {
       ...restOfData,
+      daily_salary: dailySalary,
       profilePhotoUrl: profilePhotoUrl || "https://placehold.co/100x100.png",
       documents: {
         fatherName: restOfData.fatherName,
@@ -126,12 +129,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // 4. Update local state
     if (data) {
-      setLabourers((prev) => [data[0], ...prev]);
+        const newRecord = { ...data[0], dailySalary: data[0].daily_salary };
+        setLabourers((prev) => [newRecord, ...prev]);
     }
   };
 
   const updateLabourer = async (labourerId: string, updatedData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, ...restOfData } = updatedData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, dailySalary, ...restOfData } = updatedData;
     
     // 1. Upload new files if they exist
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -140,7 +144,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const dlUrl = await uploadFile(dlFile, BUCKETS.DOCUMENTS);
 
     // 2. Prepare data for DB update
-    const dataToUpdate: any = { ...restOfData };
+    const dataToUpdate: any = { ...restOfData, daily_salary: dailySalary };
     if (profilePhotoUrl) dataToUpdate.profilePhotoUrl = profilePhotoUrl;
     
     // Fetch existing documents to merge
@@ -174,7 +178,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // 4. Update local state
     if (data) {
-      setLabourers(prev => prev.map(l => l.id === labourerId ? data[0] : l));
+       const updatedRecord = { ...data[0], dailySalary: data[0].daily_salary };
+       setLabourers(prev => prev.map(l => l.id === labourerId ? updatedRecord : l));
     }
   };
   
