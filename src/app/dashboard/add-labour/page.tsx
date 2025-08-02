@@ -61,12 +61,12 @@ const fileSchema = z.any()
   .refine((file) => !file || file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
 
 const imageFileSchema = fileSchema.refine(
-    (file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
+    (file) => !file || ACCEPTED_IMAGE_TYPES.includes(file?.type),
     "Only .jpg, .jpeg, .png and .webp formats are supported."
 );
 
 const documentFileSchema = fileSchema.refine(
-    (file) => !file || ACCEPTED_DOCUMENT_TYPES.includes(file.type),
+    (file) => !file || ACCEPTED_DOCUMENT_TYPES.includes(file?.type),
     "Only .jpg, .jpeg, .png and .pdf formats are supported."
 );
 
@@ -152,13 +152,13 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
       }
       form.reset();
       onFinished();
-    } catch (error) {
+    } catch (error: any) {
        toast({
         title: "Error",
-        description: "An error occurred. Please try again.",
+        description: error.message || "An error occurred. Please try again.",
         variant: "destructive",
       });
-      console.error(error);
+      console.error(error.message || error);
     } finally {
       setIsLoading(false);
     }
@@ -522,7 +522,7 @@ export default function LabourerManagementPage() {
                         <Badge variant="secondary">{labourer.designation}</Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{labourer.mobile}</TableCell>
-                       {showSalary && <TableCell className="hidden md:table-cell">{labourer.dailySalary}</TableCell>}
+                       {showSalary && <TableCell className="hidden md:table-.cell">{labourer.dailySalary}</TableCell>}
                       <TableCell className="text-right space-x-2 whitespace-nowrap">
                          <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
                           <Pencil className="mr-2 h-4 w-4" />
@@ -583,3 +583,5 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
+
+    
