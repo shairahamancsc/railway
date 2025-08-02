@@ -255,7 +255,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                 <FormItem>
                   <FormLabel>Profile Photo (Optional)</FormLabel>
                   <FormControl>
-                    <>
+                    <div>
                       <Input 
                         type="file" 
                         className="hidden"
@@ -267,7 +267,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                         <Upload className="mr-2 h-4 w-4" />
                         <span className="truncate max-w-[200px]">{getFileName("profilePhoto")}</span>
                       </Button>
-                    </>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -327,7 +327,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                   <FormItem>
                     <FormLabel>Aadhaar Document</FormLabel>
                     <FormControl>
-                      <>
+                      <div>
                         <Input 
                           type="file" 
                           className="hidden"
@@ -339,7 +339,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                           <Upload className="mr-2 h-4 w-4" />
                           <span className="truncate max-w-[200px]">{getFileName("aadhaarFile")}</span>
                         </Button>
-                      </>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -352,7 +352,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                   <FormItem>
                     <FormLabel>PAN Document</FormLabel>
                     <FormControl>
-                      <>
+                      <div>
                         <Input 
                           type="file" 
                           className="hidden"
@@ -364,7 +364,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                           <Upload className="mr-2 h-4 w-4" />
                           <span className="truncate max-w-[200px]">{getFileName("panFile")}</span>
                         </Button>
-                      </>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -377,7 +377,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                   <FormItem>
                     <FormLabel>DL Document</FormLabel>
                     <FormControl>
-                      <>
+                      <div>
                         <Input 
                           type="file" 
                           className="hidden"
@@ -389,7 +389,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                           <Upload className="mr-2 h-4 w-4" />
                           <span className="truncate max-w-[200px]">{getFileName("dlFile")}</span>
                         </Button>
-                      </>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -583,5 +583,3 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
-
-    
