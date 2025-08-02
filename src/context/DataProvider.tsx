@@ -56,13 +56,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { data: labourersData, error: labourersError } = await supabase
         .from("labourers")
-        .select("*");
+        .select("*")
+        .order("fullName", { ascending: true });
       if (labourersError) throw labourersError;
       setLabourers(labourersData || []);
 
       const { data: supervisorsData, error: supervisorsError } = await supabase
         .from("supervisors")
-        .select("*");
+        .select("*")
+        .order("name", { ascending: true });
       if (supervisorsError) throw supervisorsError;
       setSupervisors(supervisorsData || []);
       
@@ -85,7 +87,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchData]);
 
   const addLabourer = async (labourerData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, aadhaar, pan, dl, ...restOfData } = labourerData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, fatherName, mobile, aadhaar, pan, dl, ...restOfData } = labourerData;
     
     // 1. Upload files
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -98,6 +100,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       ...restOfData,
       profilePhotoUrl: profilePhotoUrl || "https://placehold.co/100x100.png",
       documents: {
+        fatherName,
+        mobile,
         aadhaar,
         pan,
         dl,
@@ -122,7 +126,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateLabourer = async (labourerId: string, updatedData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, aadhaar, pan, dl, ...restOfData } = updatedData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, fatherName, mobile, aadhaar, pan, dl, ...restOfData } = updatedData;
     
     // 1. Upload new files if they exist
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -131,13 +135,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const dlUrl = await uploadFile(dlFile, BUCKETS.DOCUMENTS);
 
     // 2. Prepare data for DB update
-    const dataToUpdate = { ...restOfData };
+    const dataToUpdate: any = { ...restOfData };
     if (profilePhotoUrl) dataToUpdate.profilePhotoUrl = profilePhotoUrl;
     
     // Fetch existing documents to merge
     const existingLabourer = labourers.find(l => l.id === labourerId);
     dataToUpdate.documents = { 
         ...existingLabourer?.documents,
+        fatherName,
+        mobile,
         aadhaar,
         pan,
         dl
