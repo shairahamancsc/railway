@@ -5,14 +5,14 @@ export interface Labourer {
   id: string;
   profilePhotoUrl: string;
   fullName: string;
-  fatherName: string;
-  mobile: string;
-  aadhaar: string;
-  pan: string;
-  dl: string;
   dailySalary: number;
   designation: Designation;
   documents: {
+    fatherName: string;
+    mobile: string;
+    aadhaar: string;
+    pan: string;
+    dl: string;
     aadhaarUrl: string;
     panUrl: string;
     dlUrl: string;
@@ -41,5 +41,3 @@ export interface AttendanceRecord {
   presentLabourerIds: string[];
   workDetails?: string;
 }
-
-    

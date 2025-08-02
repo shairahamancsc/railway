@@ -92,8 +92,8 @@ export default function DashboardPage() {
                     <TableCell className="font-medium">
                       {labourer.fullName}
                     </TableCell>
-                    <TableCell>{labourer.fatherName}</TableCell>
-                    <TableCell>{labourer.mobile}</TableCell>
+                    <TableCell>{labourer.documents.fatherName}</TableCell>
+                    <TableCell>{labourer.documents.mobile}</TableCell>
                     <TableCell>
                       {todayAttendance?.presentLabourerIds.includes(labourer.id) ? (
                         <Badge>Present</Badge>
@@ -117,5 +117,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    

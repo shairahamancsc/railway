@@ -85,7 +85,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchData]);
 
   const addLabourer = async (labourerData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, ...restOfData } = labourerData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, aadhaar, pan, dl, ...restOfData } = labourerData;
     
     // 1. Upload files
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -98,6 +98,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       ...restOfData,
       profilePhotoUrl: profilePhotoUrl || "https://placehold.co/100x100.png",
       documents: {
+        aadhaar,
+        pan,
+        dl,
         aadhaarUrl: aadhaarUrl || "",
         panUrl: panUrl || "",
         dlUrl: dlUrl || "",
@@ -119,7 +122,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateLabourer = async (labourerId: string, updatedData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, ...restOfData } = updatedData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, aadhaar, pan, dl, ...restOfData } = updatedData;
     
     // 1. Upload new files if they exist
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -133,7 +136,12 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     
     // Fetch existing documents to merge
     const existingLabourer = labourers.find(l => l.id === labourerId);
-    dataToUpdate.documents = { ...existingLabourer?.documents };
+    dataToUpdate.documents = { 
+        ...existingLabourer?.documents,
+        aadhaar,
+        pan,
+        dl
+    };
     if (aadhaarUrl) dataToUpdate.documents.aadhaarUrl = aadhaarUrl;
     if (panUrl) dataToUpdate.documents.panUrl = panUrl;
     if (dlUrl) dataToUpdate.documents.dlUrl = dlUrl;

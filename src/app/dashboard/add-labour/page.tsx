@@ -110,12 +110,12 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
     defaultValues: {
       fullName: labourer?.fullName || "",
       designation: labourer?.designation,
-      fatherName: labourer?.fatherName || "",
-      mobile: labourer?.mobile || "",
+      fatherName: labourer?.documents.fatherName || "",
+      mobile: labourer?.documents.mobile || "",
       dailySalary: labourer?.dailySalary || 0,
-      aadhaar: labourer?.aadhaar || "",
-      pan: labourer?.pan || "",
-      dl: labourer?.dl || "",
+      aadhaar: labourer?.documents.aadhaar || "",
+      pan: labourer?.documents.pan || "",
+      dl: labourer?.documents.dl || "",
     },
   });
 
@@ -521,8 +521,8 @@ export default function LabourerManagementPage() {
                       <TableCell>
                         <Badge variant="secondary">{labourer.designation}</Badge>
                       </TableCell>
-                      <TableCell className="hidden sm:table-cell">{labourer.mobile}</TableCell>
-                       {showSalary && <TableCell className="hidden md:table-.cell">{labourer.dailySalary}</TableCell>}
+                      <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
+                       {showSalary && <TableCell className="hidden md:table-cell">{labourer.dailySalary}</TableCell>}
                       <TableCell className="text-right space-x-2 whitespace-nowrap">
                          <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
                           <Pencil className="mr-2 h-4 w-4" />
@@ -583,5 +583,3 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
-
-    
