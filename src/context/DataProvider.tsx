@@ -35,6 +35,12 @@ const uploadFile = async (file: File, bucket: string): Promise<string | null> =>
     const { data, error } = await supabase.storage.from(bucket).upload(fileName, file);
 
     if (error) {
+        if (error.message.includes("Bucket not found")) {
+            console.error(`Supabase Storage Error: Bucket "${bucket}" not found.`);
+            console.error("Please create the bucket in your Supabase project dashboard under Storage > Buckets.");
+            // Return null to allow the function to continue without a file URL
+            return null;
+        }
         console.error('Error uploading file:', error);
         throw error;
     }
@@ -59,7 +65,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         .select("*");
       if (labourersError) throw labourersError;
       
-      const mappedLabourers = labourersData?.map(l => ({ ...l, dailySalary: l.daily_salary })) || [];
+      const mappedLabourers = labourersData?.map(l => ({ 
+          ...l, 
+          fullName: l.full_name,
+          dailySalary: l.daily_salary,
+          profilePhotoUrl: l.profile_photo_url,
+          createdAt: l.created_at
+      })) || [];
       setLabourers(mappedLabourers || []);
 
       const { data: supervisorsData, error: supervisorsError } = await supabase
@@ -67,13 +79,23 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         .select("*")
         .order("name", { ascending: true });
       if (supervisorsError) throw supervisorsError;
-      setSupervisors(supervisorsData || []);
+      
+      const mappedSupervisors = supervisorsData?.map(s => ({
+          ...s,
+          createdAt: s.created_at
+      })) || [];
+      setSupervisors(mappedSupervisors || []);
       
       const { data: attendanceData, error: attendanceError } = await supabase
         .from("attendance")
         .select("*");
       if (attendanceError) throw attendanceError;
-      setAttendance(attendanceData || []);
+      
+      const mappedAttendance = attendanceData?.map(a => ({
+          ...a,
+          presentLabourerIds: a.present_labourer_ids
+      })) || [];
+      setAttendance(mappedAttendance || []);
 
     } catch (err: any) {
       console.error("Failed to fetch data from Supabase:", err.message || err);
@@ -88,7 +110,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchData]);
 
   const addLabourer = async (labourerData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, dailySalary, ...restOfData } = labourerData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, fullName, dailySalary, ...restOfData } = labourerData;
     
     // 1. Upload files
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -99,8 +121,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     // 2. Prepare data for DB
     const newLabourer = {
       ...restOfData,
+      full_name: fullName,
       daily_salary: dailySalary,
-      profilePhotoUrl: profilePhotoUrl || "https://placehold.co/100x100.png",
+      profile_photo_url: profilePhotoUrl || "https://placehold.co/100x100.png",
       documents: {
         fatherName: restOfData.fatherName,
         mobile: restOfData.mobile,
@@ -129,13 +152,19 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // 4. Update local state
     if (data) {
-        const newRecord = { ...data[0], dailySalary: data[0].daily_salary };
+        const newRecord = { 
+            ...data[0], 
+            fullName: data[0].full_name,
+            dailySalary: data[0].daily_salary,
+            profilePhotoUrl: data[0].profile_photo_url,
+            createdAt: data[0].created_at
+        };
         setLabourers((prev) => [newRecord, ...prev]);
     }
   };
 
   const updateLabourer = async (labourerId: string, updatedData: any) => {
-    const { profilePhoto, aadhaarFile, panFile, dlFile, dailySalary, ...restOfData } = updatedData;
+    const { profilePhoto, aadhaarFile, panFile, dlFile, fullName, dailySalary, ...restOfData } = updatedData;
     
     // 1. Upload new files if they exist
     const profilePhotoUrl = await uploadFile(profilePhoto, BUCKETS.PROFILE_PHOTOS);
@@ -144,8 +173,12 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const dlUrl = await uploadFile(dlFile, BUCKETS.DOCUMENTS);
 
     // 2. Prepare data for DB update
-    const dataToUpdate: any = { ...restOfData, daily_salary: dailySalary };
-    if (profilePhotoUrl) dataToUpdate.profilePhotoUrl = profilePhotoUrl;
+    const dataToUpdate: any = { 
+        ...restOfData, 
+        full_name: fullName,
+        daily_salary: dailySalary 
+    };
+    if (profilePhotoUrl) dataToUpdate.profile_photo_url = profilePhotoUrl;
     
     // Fetch existing documents to merge
     const existingLabourer = labourers.find(l => l.id === labourerId);
@@ -178,7 +211,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // 4. Update local state
     if (data) {
-       const updatedRecord = { ...data[0], dailySalary: data[0].daily_salary };
+       const updatedRecord = { 
+           ...data[0], 
+           fullName: data[0].full_name,
+           dailySalary: data[0].daily_salary,
+           profilePhotoUrl: data[0].profile_photo_url,
+           createdAt: data[0].created_at
+        };
        setLabourers(prev => prev.map(l => l.id === labourerId ? updatedRecord : l));
     }
   };
@@ -193,7 +232,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const { data, error } = await supabase.from("supervisors").insert([supervisorData]).select();
     if (error) throw error;
     if (data) {
-      setSupervisors((prev) => [data[0], ...prev]);
+      setSupervisors((prev) => [{...data[0], createdAt: data[0].created_at}, ...prev]);
     }
   };
 
@@ -201,7 +240,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
      const newRecord = { 
         date, 
         records,
-        workDetails
+        work_details: workDetails,
+        present_labourer_ids: records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId)
       };
       
     const { error } = await supabase.from("attendance").upsert(newRecord, { onConflict: 'date' });
@@ -211,10 +251,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       const existingRecordIndex = prev.findIndex((record) => record.date === date);
       if (existingRecordIndex > -1) {
         const updatedAttendance = [...prev];
-        updatedAttendance[existingRecordIndex] = { ...updatedAttendance[existingRecordIndex], ...newRecord};
+        const updatedRecord = { 
+            ...updatedAttendance[existingRecordIndex], 
+            ...newRecord,
+            presentLabourerIds: newRecord.present_labourer_ids
+        };
+        updatedAttendance[existingRecordIndex] = updatedRecord
         return updatedAttendance;
       }
-      return [...prev, { ...newRecord, presentLabourerIds: records.filter(r => r.status === 'present' || r.status === 'half-day').map(r => r.labourerId) }];
+      return [...prev, { ...newRecord, presentLabourerIds: newRecord.present_labourer_ids }];
     });
   };
 
@@ -242,3 +287,4 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     </DataContext.Provider>
   );
 };
+ 
