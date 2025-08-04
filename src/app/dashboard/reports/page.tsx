@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format, eachDayOfInterval, startOfMonth, endOfMonth, isAfter } from "date-fns";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet, Archive } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { DateRange } from "react-day-picker";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -45,6 +46,7 @@ export default function ReportsPage() {
   const [editDate, setEditDate] = useState<Date | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSettling, setIsSettling] = useState(false);
+  const [salaryAdvances, setSalaryAdvances] = useState<{[key: string]: number}>({});
 
   const handlePrint = () => {
     window.print();
@@ -54,6 +56,11 @@ export default function ReportsPage() {
     setEditDate(day);
     setIsDialogOpen(true);
   }
+  
+  useEffect(() => {
+    // Reset salary advances when labourers data changes
+    setSalaryAdvances({});
+  }, [labourers]);
 
   const daysInInterval = dateRange?.from && dateRange?.to ? eachDayOfInterval({
     start: dateRange.from,
@@ -89,6 +96,7 @@ export default function ReportsPage() {
         }
       });
       
+      const salaryAdvanceOnDate = salaryAdvances[labourer.id] || 0;
       const totalSalary = (presentDays * dailySalary) + (halfDays * dailySalary / 2);
 
       return {
@@ -96,13 +104,13 @@ export default function ReportsPage() {
         fullName: labourer.fullName,
         presentDays,
         halfDays,
-        totalAdvance,
+        totalAdvance: totalAdvance + salaryAdvanceOnDate,
         totalSalary,
         attendance: attendanceByDate
       };
     });
     return data;
-  }, [labourers, attendance, daysInInterval, today]);
+  }, [labourers, attendance, daysInInterval, today, salaryAdvances]);
 
   const overallTotals: OverallTotals = useMemo(() => {
     return reportData.reduce((acc, curr) => {
@@ -253,6 +261,7 @@ export default function ReportsPage() {
                     <TableHead className="text-right font-bold">Present</TableHead>
                     <TableHead className="text-right font-bold">Half</TableHead>
                     <TableHead className="text-right font-bold">Total Salary</TableHead>
+                    <TableHead className="text-right font-bold min-w-[150px] no-print">Salary Advance</TableHead>
                     <TableHead className="text-right font-bold">Total Advance</TableHead>
                     <TableHead className="text-right font-bold text-primary">Net Payable</TableHead>
                   </TableRow>
@@ -317,6 +326,15 @@ export default function ReportsPage() {
                         <TableCell className="text-right font-medium">{data.presentDays}</TableCell>
                         <TableCell className="text-right font-medium">{data.halfDays}</TableCell>
                         <TableCell className="text-right">{data.totalSalary.toFixed(2)}</TableCell>
+                         <TableCell className="text-right no-print">
+                           <Input 
+                            type="number"
+                            placeholder="0"
+                            className="text-right h-8"
+                            value={salaryAdvances[data.labourerId] || ''}
+                            onChange={(e) => setSalaryAdvances(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
+                           />
+                         </TableCell>
                         <TableCell className="text-right text-red-600">{data.totalAdvance.toFixed(2)}</TableCell>
                         <TableCell className={`text-right font-bold ${netPayable >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {netPayable.toFixed(2)}
