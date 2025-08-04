@@ -13,6 +13,7 @@ import {
   UserCheck as BrandIcon,
   Menu,
   Notebook,
+  Code,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/dashboard/supervisors", icon: Users, label: "Supervisors" },
   { href: "/dashboard/reports", icon: FileText, label: "Reports" },
   { href: "/dashboard/notes", icon: Notebook, label: "Notes" },
+  { href: "/dashboard/api", icon: Code, label: "API" },
 ];
 
 function SidebarContentNav() {
