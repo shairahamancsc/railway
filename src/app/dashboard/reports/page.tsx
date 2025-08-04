@@ -58,7 +58,7 @@ export default function ReportsPage() {
       let presentDays = 0;
       let halfDays = 0;
       let totalAdvance = 0;
-      const dailySalary = labourer.dailySalary || 0;
+      const dailySalary = labourer.daily_salary || 0;
       const attendanceByDate: { [key: string]: DailyLabourerRecord | { status: 'absent' } } = {};
 
       daysInInterval.forEach(day => {

@@ -83,7 +83,7 @@ export default function DashboardPage() {
                   <TableRow key={labourer.id}>
                     <TableCell>
                       <Avatar>
-                        <AvatarImage src={labourer.profilePhotoUrl} alt={labourer.fullName} data-ai-hint="profile person" />
+                        <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
                         <AvatarFallback>
                           {labourer.fullName.charAt(0)}
                         </AvatarFallback>

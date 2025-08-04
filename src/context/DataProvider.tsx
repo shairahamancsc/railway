@@ -65,14 +65,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         .select("*");
       if (labourersError) throw labourersError;
       
-      const mappedLabourers = labourersData?.map(l => ({ 
-          ...l, 
-          fullName: l.full_name,
-          dailySalary: l.daily_salary,
-          profilePhotoUrl: l.profile_photo_url,
-          createdAt: l.created_at
-      })) || [];
-      setLabourers(mappedLabourers || []);
+      setLabourers(labourersData || []);
 
       const { data: supervisorsData, error: supervisorsError } = await supabase
         .from("supervisors")
@@ -117,7 +110,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // 2. Prepare a clean data object for Supabase with correct column names
     const newLabourerData = {
-      full_name: labourerData.fullName,
+      fullName: labourerData.fullName,
       daily_salary: labourerData.dailySalary,
       designation: labourerData.designation,
       profile_photo_url: profilePhotoUrl, // Use the URL from upload
@@ -144,14 +137,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // 4. Update local state with the newly created record
     if (data) {
-        const newRecord = { 
-            ...data, 
-            fullName: data.full_name,
-            dailySalary: data.daily_salary,
-            profilePhotoUrl: data.profile_photo_url,
-            createdAt: data.created_at
-        };
-        setLabourers((prev) => [newRecord, ...prev]);
+        setLabourers((prev) => [data, ...prev]);
     }
   };
 
@@ -164,7 +150,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // 2. Prepare a clean data object for the update
     const dataToUpdate: any = {
-      full_name: updatedData.fullName,
+      fullName: updatedData.fullName,
       daily_salary: updatedData.dailySalary,
       designation: updatedData.designation
     };
@@ -200,14 +186,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // 4. Update local state
     if (data) {
-       const updatedRecord = { 
-           ...data, 
-           fullName: data.full_name,
-           dailySalary: data.daily_salary,
-           profilePhotoUrl: data.profile_photo_url,
-           createdAt: data.created_at
-        };
-       setLabourers(prev => prev.map(l => l.id === labourerId ? updatedRecord : l));
+       setLabourers(prev => prev.map(l => l.id === labourerId ? data : l));
     }
   };
   

@@ -112,7 +112,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
       designation: labourer?.designation,
       fatherName: labourer?.documents.fatherName || "",
       mobile: labourer?.documents.mobile || "",
-      dailySalary: labourer?.dailySalary || 0,
+      dailySalary: labourer?.daily_salary || 0,
       aadhaar: labourer?.documents.aadhaar || "",
       pan: labourer?.documents.pan || "",
       dl: labourer?.documents.dl || "",
@@ -509,7 +509,7 @@ export default function LabourerManagementPage() {
                     <TableRow key={labourer.id}>
                       <TableCell>
                         <Avatar>
-                          <AvatarImage src={labourer.profilePhotoUrl} alt={labourer.fullName} data-ai-hint="profile person" />
+                          <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
                           <AvatarFallback>
                             {labourer.fullName?.charAt(0) || 'W'}
                           </AvatarFallback>
@@ -522,7 +522,7 @@ export default function LabourerManagementPage() {
                         <Badge variant="secondary">{labourer.designation}</Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
-                       {showSalary && <TableCell className="hidden md:table-cell">{labourer.dailySalary}</TableCell>}
+                       {showSalary && <TableCell className="hidden md:table-cell">{labourer.daily_salary}</TableCell>}
                       <TableCell className="text-right space-x-2 whitespace-nowrap">
                          <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
                           <Pencil className="mr-2 h-4 w-4" />

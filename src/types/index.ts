@@ -3,9 +3,9 @@ export type Designation = "Supervisor" | "Skilled Labour" | "Unskilled Labour" |
 
 export interface Labourer {
   id: string;
-  profilePhotoUrl: string;
+  profile_photo_url: string;
   fullName: string;
-  dailySalary: number;
+  daily_salary: number;
   designation: Designation;
   documents: {
     fatherName: string;
@@ -17,7 +17,7 @@ export interface Labourer {
     panUrl: string;
     dlUrl: string;
   };
-  createdAt: string;
+  created_at: string;
 }
 
 export interface Supervisor {

@@ -147,7 +147,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                 <CardHeader className="flex flex-col items-center gap-2 pb-4">
                   <Avatar className="h-16 w-16">
                     <AvatarImage
-                      src={labourer.profilePhotoUrl}
+                      src={labourer.profile_photo_url}
                       data-ai-hint="profile person"
                     />
                     <AvatarFallback className="text-2xl">
@@ -244,5 +244,3 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
-
-    
