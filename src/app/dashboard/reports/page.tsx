@@ -265,7 +265,7 @@ export default function ReportsPage() {
                         <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-card z-10">{data.fullName}</TableCell>
                         {daysInInterval.map((day) => {
                           const dayStr = format(day, "yyyy-MM-dd");
-                          const record = data.attendance[dayStr];
+                          const record = data.attendance[dayStr] as DailyLabourerRecord | { status: 'absent' };
                           
                           if (isAfter(day, today) || !record) {
                               return <TableCell key={dayStr} className="text-center text-muted-foreground">-</TableCell>;
@@ -289,12 +289,28 @@ export default function ReportsPage() {
                                   colorClass = 'text-red-600';
                                   break;
                           }
+                          
+                          const hasAdvance = 'advance' in record && record.advance && record.advance > 0;
 
                           return (
                             <TableCell key={dayStr} className="text-center">
-                              <span className={`font-bold ${colorClass}`}>
-                                  {statusChar}
-                              </span>
+                              <div className="flex items-center justify-center gap-1">
+                                <span className={`font-bold ${colorClass}`}>
+                                    {statusChar}
+                                </span>
+                                {hasAdvance && (
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger>
+                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>Advance: ₹{record.advance}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                )}
+                              </div>
                             </TableCell>
                           );
                         })}
