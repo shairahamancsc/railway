@@ -46,7 +46,7 @@ export default function ReportsPage() {
   const [editDate, setEditDate] = useState<Date | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSettling, setIsSettling] = useState(false);
-  const [salaryAdvances, setSalaryAdvances] = useState<{[key: string]: number}>({});
+  const [newLoans, setNewLoans] = useState<{[key: string]: number}>({});
 
   const handlePrint = () => {
     window.print();
@@ -58,8 +58,8 @@ export default function ReportsPage() {
   }
   
   useEffect(() => {
-    // Reset salary advances when labourers data changes
-    setSalaryAdvances({});
+    // Reset new loans when labourers data changes
+    setNewLoans({});
   }, [labourers]);
 
   const daysInInterval = dateRange?.from && dateRange?.to ? eachDayOfInterval({
@@ -96,7 +96,6 @@ export default function ReportsPage() {
         }
       });
       
-      const salaryAdvanceOnDate = salaryAdvances[labourer.id] || 0;
       const totalSalary = (presentDays * dailySalary) + (halfDays * dailySalary / 2);
 
       return {
@@ -104,13 +103,14 @@ export default function ReportsPage() {
         fullName: labourer.fullName,
         presentDays,
         halfDays,
-        totalAdvance: totalAdvance + salaryAdvanceOnDate,
+        totalAdvance: totalAdvance,
         totalSalary,
+        newLoan: newLoans[labourer.id] || 0, // Add new loan to data
         attendance: attendanceByDate
       };
     });
     return data;
-  }, [labourers, attendance, daysInInterval, today, salaryAdvances]);
+  }, [labourers, attendance, daysInInterval, today, newLoans]);
 
   const overallTotals: OverallTotals = useMemo(() => {
     return reportData.reduce((acc, curr) => {
@@ -261,9 +261,9 @@ export default function ReportsPage() {
                     <TableHead className="text-right font-bold">Present</TableHead>
                     <TableHead className="text-right font-bold">Half</TableHead>
                     <TableHead className="text-right font-bold">Total Salary</TableHead>
-                    <TableHead className="text-right font-bold min-w-[150px] no-print">Salary Advance</TableHead>
                     <TableHead className="text-right font-bold">Total Advance</TableHead>
                     <TableHead className="text-right font-bold text-primary">Net Payable</TableHead>
+                    <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan (for next period)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -326,19 +326,19 @@ export default function ReportsPage() {
                         <TableCell className="text-right font-medium">{data.presentDays}</TableCell>
                         <TableCell className="text-right font-medium">{data.halfDays}</TableCell>
                         <TableCell className="text-right">{data.totalSalary.toFixed(2)}</TableCell>
+                        <TableCell className="text-right text-red-600">{data.totalAdvance.toFixed(2)}</TableCell>
+                        <TableCell className={`text-right font-bold ${netPayable >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {netPayable.toFixed(2)}
+                        </TableCell>
                          <TableCell className="text-right no-print">
                            <Input 
                             type="number"
                             placeholder="0"
                             className="text-right h-8"
-                            value={salaryAdvances[data.labourerId] || ''}
-                            onChange={(e) => setSalaryAdvances(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
+                            value={newLoans[data.labourerId] || ''}
+                            onChange={(e) => setNewLoans(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
                            />
                          </TableCell>
-                        <TableCell className="text-right text-red-600">{data.totalAdvance.toFixed(2)}</TableCell>
-                        <TableCell className={`text-right font-bold ${netPayable >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {netPayable.toFixed(2)}
-                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -408,3 +408,4 @@ export default function ReportsPage() {
     </div>
   );
 }
+

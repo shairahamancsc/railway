@@ -50,6 +50,7 @@ export interface ReportData {
   halfDays: number;
   totalAdvance: number;
   totalSalary: number;
+  newLoan?: number; // Optional field for post-salary loans
   attendance: { [key: string]: DailyLabourerRecord | { status: 'absent' } };
 }
 
