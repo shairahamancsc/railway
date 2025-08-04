@@ -7,7 +7,7 @@ import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet, Archive } from "lucide-react";
+import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet, Archive, Banknote } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,8 @@ export default function ReportsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSettling, setIsSettling] = useState(false);
   const [newLoans, setNewLoans] = useState<{[key: string]: number}>({});
+  const [loanRepayments, setLoanRepayments] = useState<{[key: string]: number}>({});
+
 
   const handlePrint = () => {
     window.print();
@@ -58,8 +60,9 @@ export default function ReportsPage() {
   }
   
   useEffect(() => {
-    // Reset new loans when labourers data changes
+    // Reset inputs when labourers data changes
     setNewLoans({});
+    setLoanRepayments({});
   }, [labourers]);
 
   const daysInInterval = dateRange?.from && dateRange?.to ? eachDayOfInterval({
@@ -97,6 +100,10 @@ export default function ReportsPage() {
       });
       
       const totalSalary = (presentDays * dailySalary) + (halfDays * dailySalary / 2);
+      const loanRepayment = loanRepayments[labourer.id] || 0;
+      const netPayable = totalSalary - totalAdvance;
+      const finalAmountPaid = netPayable - loanRepayment;
+
 
       return {
         labourerId: labourer.id,
@@ -105,20 +112,27 @@ export default function ReportsPage() {
         halfDays,
         totalAdvance: totalAdvance,
         totalSalary,
-        newLoan: newLoans[labourer.id] || 0, // Add new loan to data
+        loanRepayment,
+        netPayable,
+        finalAmountPaid,
+        newLoan: newLoans[labourer.id] || 0,
         attendance: attendanceByDate
       };
     });
     return data;
-  }, [labourers, attendance, daysInInterval, today, newLoans]);
+  }, [labourers, attendance, daysInInterval, today, newLoans, loanRepayments]);
 
   const overallTotals: OverallTotals = useMemo(() => {
     return reportData.reduce((acc, curr) => {
       acc.totalGrossWages += curr.totalSalary;
       acc.totalAdvancePaid += curr.totalAdvance;
+      acc.totalLoanRepayments += curr.loanRepayment;
       return acc;
-    }, { totalGrossWages: 0, totalAdvancePaid: 0 });
+    }, { totalGrossWages: 0, totalAdvancePaid: 0, totalLoanRepayments: 0 });
   }, [reportData]);
+  
+  const overallFinalPaid = overallTotals.totalGrossWages - overallTotals.totalAdvancePaid - overallTotals.totalLoanRepayments;
+
 
   const handleSettleReport = async () => {
     if (!dateRange?.from || !dateRange?.to) {
@@ -236,7 +250,7 @@ export default function ReportsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="sticky left-0 bg-card z-10">Worker Name</TableHead>
+                    <TableHead className="sticky left-0 bg-card z-10 whitespace-nowrap min-w-[150px]">Worker Name</TableHead>
                     {daysInInterval.map((day) => (
                       <TableHead key={day.toString()} className="text-center min-w-[120px]">
                          <div className="flex items-center justify-center gap-2">
@@ -258,18 +272,18 @@ export default function ReportsPage() {
                         </div>
                       </TableHead>
                     ))}
-                    <TableHead className="text-right font-bold">Present</TableHead>
-                    <TableHead className="text-right font-bold">Half</TableHead>
-                    <TableHead className="text-right font-bold">Total Salary</TableHead>
-                    <TableHead className="text-right font-bold">Total Advance</TableHead>
-                    <TableHead className="text-right font-bold text-primary">Net Payable</TableHead>
-                    <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan (for next period)</TableHead>
+                    <TableHead className="text-right font-bold min-w-[80px]">Present</TableHead>
+                    <TableHead className="text-right font-bold min-w-[80px]">Half</TableHead>
+                    <TableHead className="text-right font-bold min-w-[120px]">Total Salary</TableHead>
+                    <TableHead className="text-right font-bold min-w-[120px]">Total Advance</TableHead>
+                    <TableHead className="text-right font-bold min-w-[120px]">Net Payable</TableHead>
+                    <TableHead className="text-right font-bold min-w-[180px]">Loan Repayment</TableHead>
+                    <TableHead className="text-right font-bold text-primary min-w-[140px]">Final Amount Paid</TableHead>
+                    <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan (Next Period)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reportData.map((data) => {
-                    const netPayable = data.totalSalary - data.totalAdvance;
-                    return (
+                  {reportData.map((data) => (
                       <TableRow key={data.labourerId}>
                         <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-card z-10">{data.fullName}</TableCell>
                         {daysInInterval.map((day) => {
@@ -327,8 +341,20 @@ export default function ReportsPage() {
                         <TableCell className="text-right font-medium">{data.halfDays}</TableCell>
                         <TableCell className="text-right">{data.totalSalary.toFixed(2)}</TableCell>
                         <TableCell className="text-right text-red-600">{data.totalAdvance.toFixed(2)}</TableCell>
-                        <TableCell className={`text-right font-bold ${netPayable >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {netPayable.toFixed(2)}
+                        <TableCell className={`text-right font-bold ${data.netPayable >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                          {data.netPayable.toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                           <Input 
+                            type="number"
+                            placeholder="0"
+                            className="text-right h-8"
+                            value={loanRepayments[data.labourerId] || ''}
+                            onChange={(e) => setLoanRepayments(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
+                           />
+                         </TableCell>
+                        <TableCell className={`text-right font-bold text-primary`}>
+                          {data.finalAmountPaid.toFixed(2)}
                         </TableCell>
                          <TableCell className="text-right no-print">
                            <Input 
@@ -340,8 +366,7 @@ export default function ReportsPage() {
                            />
                          </TableCell>
                       </TableRow>
-                    );
-                  })}
+                    ))}
                 </TableBody>
               </Table>
             </div>
@@ -361,7 +386,7 @@ export default function ReportsPage() {
                     This is the total payroll summary for all workers for the period from {dateRange?.from ? format(dateRange.from, "dd-MMM-yy") : ''} to {dateRange?.to ? format(dateRange.to, "dd-MMM-yy") : ''}.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-3">
+            <CardContent className="grid gap-4 md:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Gross Wages</CardTitle>
@@ -374,22 +399,32 @@ export default function ReportsPage() {
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Advance Paid</CardTitle>
+                        <CardTitle className="text-sm font-medium">Total Daily Advance</CardTitle>
                         <TrendingDown className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-red-600">₹{overallTotals.totalAdvancePaid.toFixed(2)}</div>
-                        <p className="text-xs text-muted-foreground">Total advance amount given to workers.</p>
+                        <p className="text-xs text-muted-foreground">Advances given on daily basis.</p>
+                    </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Loan Repayments</CardTitle>
+                        <Banknote className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-green-600">₹{overallTotals.totalLoanRepayments.toFixed(2)}</div>
+                        <p className="text-xs text-muted-foreground">Amount paid back by workers.</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Net Payable</CardTitle>
+                        <CardTitle className="text-sm font-medium">Total Final Paid Amount</CardTitle>
                         <Wallet className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-primary">₹{(overallTotals.totalGrossWages - overallTotals.totalAdvancePaid).toFixed(2)}</div>
-                        <p className="text-xs text-muted-foreground">Final amount to be paid to all workers.</p>
+                        <div className="text-2xl font-bold text-primary">₹{overallFinalPaid.toFixed(2)}</div>
+                        <p className="text-xs text-muted-foreground">Final amount paid to all workers.</p>
                     </CardContent>
                 </Card>
             </CardContent>

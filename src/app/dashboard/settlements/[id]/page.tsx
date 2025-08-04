@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-import { ArrowLeft, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { ArrowLeft, TrendingDown, TrendingUp, Wallet, Banknote } from "lucide-react";
 
 export default function SettlementDetailPage() {
   const { id } = useParams();
@@ -65,7 +65,8 @@ export default function SettlementDetailPage() {
   }
 
   const { report_data, overall_totals } = settlement;
-  const netPayableOverall = overall_totals.totalGrossWages - overall_totals.totalAdvancePaid;
+  const totalLoanRepayments = overall_totals.totalLoanRepayments || 0;
+  const netPayableOverall = overall_totals.totalGrossWages - overall_totals.totalAdvancePaid - totalLoanRepayments;
 
 
   return (
@@ -91,7 +92,7 @@ export default function SettlementDetailPage() {
                     This is the total payroll summary that was settled for this period.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-3">
+            <CardContent className="grid gap-4 md:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Gross Wages</CardTitle>
@@ -104,17 +105,27 @@ export default function SettlementDetailPage() {
                 </Card>
                  <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Advance Paid</CardTitle>
+                        <CardTitle className="text-sm font-medium">Total Daily Advance</CardTitle>
                         <TrendingDown className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-red-600">₹{overall_totals.totalAdvancePaid.toFixed(2)}</div>
-                        <p className="text-xs text-muted-foreground">Total advance amount given to workers.</p>
+                        <p className="text-xs text-muted-foreground">Advances given on daily basis.</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Net Payable</CardTitle>
+                        <CardTitle className="text-sm font-medium">Total Loan Repayments</CardTitle>
+                        <Banknote className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-green-600">₹{totalLoanRepayments.toFixed(2)}</div>
+                        <p className="text-xs text-muted-foreground">Amount paid back by workers.</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Final Paid</CardTitle>
                         <Wallet className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -142,15 +153,15 @@ export default function SettlementDetailPage() {
                   <TableHead className="text-right">Half Days</TableHead>
                   <TableHead className="text-right">Total Salary (₹)</TableHead>
                   <TableHead className="text-right">Total Advance (₹)</TableHead>
+                  <TableHead className="text-right">Net Payable (₹)</TableHead>
+                  <TableHead className="text-right">Loan Repayment (₹)</TableHead>
                   <TableHead className="text-right font-bold text-primary">
-                    Net Payable (₹)
+                    Final Paid (₹)
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {report_data.map((data) => {
-                  const netPayable = data.totalSalary - data.totalAdvance;
-                  return (
+                {report_data.map((data) => (
                     <TableRow key={data.labourerId}>
                       <TableCell className="font-medium">
                         {data.fullName}
@@ -169,14 +180,21 @@ export default function SettlementDetailPage() {
                       </TableCell>
                       <TableCell
                         className={`text-right font-bold ${
-                          netPayable >= 0 ? "text-green-600" : "text-red-600"
+                          data.netPayable >= 0 ? "text-green-700" : "text-red-700"
                         }`}
                       >
-                        {netPayable.toFixed(2)}
+                        {data.netPayable.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-right text-red-600">
+                        {(data.loanRepayment || 0).toFixed(2)}
+                      </TableCell>
+                      <TableCell
+                        className={`text-right font-bold text-primary`}
+                      >
+                        {(data.finalAmountPaid || 0).toFixed(2)}
                       </TableCell>
                     </TableRow>
-                  );
-                })}
+                  ))}
               </TableBody>
             </Table>
           </div>

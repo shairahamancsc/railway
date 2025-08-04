@@ -50,13 +50,17 @@ export interface ReportData {
   halfDays: number;
   totalAdvance: number;
   totalSalary: number;
-  newLoan?: number; // Optional field for post-salary loans
+  loanRepayment: number;
+  netPayable: number;
+  finalAmountPaid: number;
+  newLoan: number;
   attendance: { [key: string]: DailyLabourerRecord | { status: 'absent' } };
 }
 
 export interface OverallTotals {
     totalGrossWages: number;
     totalAdvancePaid: number;
+    totalLoanRepayments: number;
 }
 
 export interface Settlement {
