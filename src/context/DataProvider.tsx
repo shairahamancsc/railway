@@ -1,8 +1,9 @@
 
+
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
-import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord } from "@/types";
+import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord, Settlement, ReportData, OverallTotals } from "@/types";
 import { supabase } from "@/lib/supabaseClient";
 
 interface DataContextProps {
@@ -14,6 +15,13 @@ interface DataContextProps {
   addSupervisor: (supervisor: Omit<Supervisor, "id" | "createdAt">) => Promise<void>;
   attendance: AttendanceRecord[];
   markAttendance: (date: string, records: DailyLabourerRecord[], workDetails?: string) => Promise<void>;
+  settlements: Settlement[];
+  addSettlement: (settlementData: {
+    start_date: string;
+    end_date: string;
+    report_data: ReportData[];
+    overall_totals: OverallTotals;
+  }) => Promise<void>;
   getLabourerById: (id: string) => Labourer | undefined;
   loading: boolean;
   error: Error | null;
@@ -53,6 +61,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [labourers, setLabourers] = useState<Labourer[]>([]);
   const [supervisors, setSupervisors] = useState<Supervisor[]>([]);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  const [settlements, setSettlements] = useState<Settlement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -89,6 +98,13 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       })) || [];
       setAttendance(mappedAttendance || []);
 
+      const { data: settlementsData, error: settlementsError } = await supabase
+        .from("settlements")
+        .select("*")
+        .order('start_date', { ascending: false });
+      if (settlementsError) throw settlementsError;
+      setSettlements(settlementsData || []);
+
     } catch (err: any) {
       console.error("Failed to fetch data from Supabase:", err.message || err);
       setError(err);
@@ -102,63 +118,55 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchData]);
 
   const addLabourer = async (labourerData: any) => {
-    // 1. Upload files first
     const profilePhotoUrl = await uploadFile(labourerData.profilePhoto, BUCKETS.PROFILE_PHOTOS);
     const aadhaarUrl = await uploadFile(labourerData.aadhaarFile, BUCKETS.DOCUMENTS);
     const panUrl = await uploadFile(labourerData.panFile, BUCKETS.DOCUMENTS);
     const dlUrl = await uploadFile(labourerData.dlFile, BUCKETS.DOCUMENTS);
 
-    // 2. Prepare a clean data object for Supabase with correct column names
     const newLabourerData = {
       fullName: labourerData.fullName,
       daily_salary: labourerData.dailySalary,
       designation: labourerData.designation,
-      profile_photo_url: profilePhotoUrl, // Use the URL from upload
+      profile_photo_url: profilePhotoUrl,
       documents: {
         fatherName: labourerData.fatherName,
         mobile: labourerData.mobile,
         aadhaar: labourerData.aadhaar,
         pan: labourerData.pan,
         dl: labourerData.dl,
-        aadhaarUrl: aadhaarUrl, // Use the URL from upload
-        panUrl: panUrl,         // Use the URL from upload
-        dlUrl: dlUrl            // Use the URL from upload
+        aadhaarUrl: aadhaarUrl,
+        panUrl: panUrl,
+        dlUrl: dlUrl
       }
     };
 
-    // 3. Insert the clean data into the database
     const { data, error: dbError } = await supabase
       .from("labourers")
       .insert([newLabourerData])
       .select()
-      .single(); // Use .single() to get a single object back, not an array
+      .single();
 
     if (dbError) throw dbError;
 
-    // 4. Update local state with the newly created record
     if (data) {
         setLabourers((prev) => [data, ...prev]);
     }
   };
 
   const updateLabourer = async (labourerId: string, updatedData: any) => {
-     // 1. Upload new files if they exist
     const profilePhotoUrl = await uploadFile(updatedData.profilePhoto, BUCKETS.PROFILE_PHOTOS);
     const aadhaarUrl = await uploadFile(updatedData.aadhaarFile, BUCKETS.DOCUMENTS);
     const panUrl = await uploadFile(updatedData.panFile, BUCKETS.DOCUMENTS);
     const dlUrl = await uploadFile(updatedData.dlFile, BUCKETS.DOCUMENTS);
 
-    // 2. Prepare a clean data object for the update
     const dataToUpdate: any = {
       fullName: updatedData.fullName,
       daily_salary: updatedData.dailySalary,
       designation: updatedData.designation
     };
     
-    // Only add profile photo URL if a new one was uploaded
     if (profilePhotoUrl) dataToUpdate.profile_photo_url = profilePhotoUrl;
     
-    // Fetch existing documents to merge with new data
     const existingLabourer = labourers.find(l => l.id === labourerId);
     const newDocuments = { 
         ...existingLabourer?.documents,
@@ -174,7 +182,6 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     dataToUpdate.documents = newDocuments;
 
 
-    // 3. Update the database
     const { data, error: dbError } = await supabase
       .from("labourers")
       .update(dataToUpdate)
@@ -184,7 +191,6 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     if (dbError) throw dbError;
 
-    // 4. Update local state
     if (data) {
        setLabourers(prev => prev.map(l => l.id === labourerId ? data : l));
     }
@@ -232,6 +238,25 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const addSettlement = async (settlementData: {
+    start_date: string;
+    end_date: string;
+    report_data: ReportData[];
+    overall_totals: OverallTotals;
+  }) => {
+    const { data, error } = await supabase
+      .from("settlements")
+      .insert([settlementData])
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    if(data) {
+        setSettlements(prev => [data, ...prev]);
+    }
+  };
+
   const getLabourerById = (id: string) => {
     return labourers.find(l => l.id === id);
   }
@@ -247,6 +272,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         addSupervisor,
         attendance,
         markAttendance,
+        settlements,
+        addSettlement,
         getLabourerById,
         loading,
         error

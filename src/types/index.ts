@@ -1,4 +1,5 @@
 
+
 export type Designation = "Supervisor" | "Skilled Labour" | "Unskilled Labour" | "Driver" | "Office Incharge";
 
 export interface Labourer {
@@ -40,4 +41,28 @@ export interface AttendanceRecord {
   records: DailyLabourerRecord[];
   presentLabourerIds: string[];
   workDetails?: string;
+}
+
+export interface ReportData {
+  labourerId: string;
+  fullName: string;
+  presentDays: number;
+  halfDays: number;
+  totalAdvance: number;
+  totalSalary: number;
+  attendance: { [key: string]: DailyLabourerRecord | { status: 'absent' } };
+}
+
+export interface OverallTotals {
+    totalGrossWages: number;
+    totalAdvancePaid: number;
+}
+
+export interface Settlement {
+    id: string;
+    start_date: string;
+    end_date: string;
+    report_data: ReportData[];
+    overall_totals: OverallTotals;
+    created_at: string;
 }

@@ -7,7 +7,7 @@ import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet, Archive } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -15,20 +15,26 @@ import type { DateRange } from "react-day-picker";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AttendanceForm } from "@/components/dashboard/attendance-form";
-import type { DailyLabourerRecord } from "@/types";
+import type { DailyLabourerRecord, ReportData, OverallTotals } from "@/types";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
-interface ReportData {
-  labourerId: string;
-  fullName: string;
-  presentDays: number;
-  halfDays: number;
-  totalAdvance: number;
-  totalSalary: number;
-  attendance: { [key: string]: DailyLabourerRecord | { status: 'absent' } };
-}
 
 export default function ReportsPage() {
-  const { labourers, attendance } = useData();
+  const { labourers, attendance, addSettlement } = useData();
+  const { toast } = useToast();
+  const router = useRouter();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: startOfMonth(new Date()),
     to: endOfMonth(new Date()),
@@ -38,6 +44,7 @@ export default function ReportsPage() {
 
   const [editDate, setEditDate] = useState<Date | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSettling, setIsSettling] = useState(false);
 
   const handlePrint = () => {
     window.print();
@@ -53,7 +60,7 @@ export default function ReportsPage() {
     end: dateRange.to,
   }) : [];
 
-  const reportData = useMemo(() => {
+  const reportData: ReportData[] = useMemo(() => {
     const data: ReportData[] = labourers.map(labourer => {
       let presentDays = 0;
       let halfDays = 0;
@@ -97,13 +104,42 @@ export default function ReportsPage() {
     return data;
   }, [labourers, attendance, daysInInterval, today]);
 
-  const overallTotals = useMemo(() => {
+  const overallTotals: OverallTotals = useMemo(() => {
     return reportData.reduce((acc, curr) => {
       acc.totalGrossWages += curr.totalSalary;
       acc.totalAdvancePaid += curr.totalAdvance;
       return acc;
     }, { totalGrossWages: 0, totalAdvancePaid: 0 });
   }, [reportData]);
+
+  const handleSettleReport = async () => {
+    if (!dateRange?.from || !dateRange?.to) {
+        toast({ title: "Error", description: "Please select a valid date range.", variant: "destructive" });
+        return;
+    }
+    setIsSettling(true);
+    try {
+        await addSettlement({
+            start_date: format(dateRange.from, "yyyy-MM-dd"),
+            end_date: format(dateRange.to, "yyyy-MM-dd"),
+            report_data: reportData,
+            overall_totals: overallTotals
+        });
+        toast({
+            title: "Report Settled!",
+            description: "The payroll report has been saved successfully.",
+            action: (
+                <Button variant="outline" size="sm" onClick={() => router.push('/dashboard/settlements')}>
+                    View Settlements
+                </Button>
+            ),
+        });
+    } catch (error: any) {
+        toast({ title: "Error", description: error.message || "Failed to settle report.", variant: "destructive" });
+    } finally {
+        setIsSettling(false);
+    }
+  }
 
 
   return (
@@ -159,8 +195,32 @@ export default function ReportsPage() {
 
       <Card className="printable">
         <CardHeader>
-          <CardTitle>Worker Attendance & Salary Report</CardTitle>
-          <CardDescription>P = Present, A = Absent, H = Half Day. All amounts are in ₹.</CardDescription>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <CardTitle>Worker Attendance & Salary Report</CardTitle>
+                    <CardDescription>P = Present, A = Absent, H = Half Day. All amounts are in ₹.</CardDescription>
+                </div>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="secondary" className="gap-2 no-print" disabled={isSettling}>
+                            <Archive className="h-4 w-4" />
+                            {isSettling ? "Saving..." : "Settle & Save Report"}
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                        <AlertDialogTitle>Settle this Report?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will create a permanent, historical snapshot of the current report from <span className="font-bold">{dateRange?.from ? format(dateRange.from, 'dd-MMM-yy') : ''}</span> to <span className="font-bold">{dateRange?.to ? format(dateRange.to, 'dd-MMM-yy') : ''}</span>. This action cannot be undone.
+                        </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleSettleReport}>Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
         </CardHeader>
         <CardContent>
           {labourers.length > 0 ? (
