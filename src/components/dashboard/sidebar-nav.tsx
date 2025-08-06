@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -12,7 +11,6 @@ import {
   LogOut,
   UserCheck as BrandIcon,
   Menu,
-  Notebook,
   Code,
   Archive,
   Landmark,
@@ -29,7 +27,6 @@ const navItems = [
   { href: "/dashboard/loans", icon: Landmark, label: "Loans" },
   { href: "/dashboard/reports", icon: FileText, label: "Reports" },
   { href: "/dashboard/settlements", icon: Archive, label: "Settlements" },
-  { href: "/dashboard/notes", icon: Notebook, label: "Notes" },
   { href: "/dashboard/api", icon: Code, label: "API" },
 ];
 
