@@ -104,6 +104,8 @@ export default function ReportsPage() {
       const newLoanAmount = newLoans[labourer.id] || 0;
       const netPayable = totalSalary - totalAdvance;
       const finalAmountPaid = netPayable - loanRepaymentAmount + newLoanAmount;
+      const currentLoan = labourer.loan_balance || 0;
+      const updatedLoanBalance = currentLoan - loanRepaymentAmount + newLoanAmount;
 
 
       return {
@@ -113,11 +115,12 @@ export default function ReportsPage() {
         halfDays,
         totalAdvance: totalAdvance,
         totalSalary,
-        currentLoan: labourer.loan_balance || 0,
+        currentLoan,
         loanRepayment: loanRepaymentAmount,
         netPayable,
         newLoan: newLoanAmount,
         finalAmountPaid,
+        updatedLoanBalance,
         attendance: attendanceByDate
       };
     });
@@ -159,6 +162,9 @@ export default function ReportsPage() {
                 </Button>
             ),
         });
+        // Clear inputs after successful settlement
+        setNewLoans({});
+        setLoanRepayments({});
     } catch (error: any) {
         toast({ title: "Error", description: error.message || "Failed to settle report.", variant: "destructive" });
     } finally {
@@ -278,11 +284,12 @@ export default function ReportsPage() {
                     <TableHead className="text-right font-bold min-w-[80px]">Present</TableHead>
                     <TableHead className="text-right font-bold min-w-[80px]">Half</TableHead>
                     <TableHead className="text-right font-bold min-w-[120px]">Total Salary</TableHead>
-                    <TableHead className="text-right font-bold min-w-[120px]">Total Advance</TableHead>
+                    <TableHead className="text-right font-bold min-w-[120px]">Daily Advance</TableHead>
                     <TableHead className="text-right font-bold min-w-[120px]">Net Payable</TableHead>
-                    <TableHead className="text-right font-bold min-w-[140px]">Prev. Loan Bal.</TableHead>
+                    <TableHead className="text-right font-bold min-w-[140px]">Current Loan</TableHead>
                     <TableHead className="text-right font-bold min-w-[180px]">Loan Repayment</TableHead>
                     <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan</TableHead>
+                    <TableHead className="text-right font-bold min-w-[140px]">Updated Loan Bal.</TableHead>
                     <TableHead className="text-right font-bold text-primary min-w-[140px]">Final Amount Paid</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -368,6 +375,9 @@ export default function ReportsPage() {
                             value={newLoans[data.labourerId] || ''}
                             onChange={(e) => setNewLoans(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
                            />
+                         </TableCell>
+                         <TableCell className={`text-right font-bold ${data.updatedLoanBalance > 0 ? 'text-red-600' : ''}`}>
+                          {data.updatedLoanBalance.toFixed(2)}
                          </TableCell>
                         <TableCell className={`text-right font-bold text-primary`}>
                           {data.finalAmountPaid.toFixed(2)}

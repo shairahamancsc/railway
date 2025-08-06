@@ -71,7 +71,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { data: labourersData, error: labourersError } = await supabase
         .from("labourers")
-        .select("*");
+        .select("*")
+        .order("fullName", { ascending: true });
       if (labourersError) throw labourersError;
       
       setLabourers(labourersData || []);
@@ -150,7 +151,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     if (dbError) throw dbError;
 
     if (data) {
-        setLabourers((prev) => [data, ...prev]);
+        // After adding, refetch all data to maintain sorted order
+        await fetchData();
     }
   };
 
@@ -193,7 +195,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     if (dbError) throw dbError;
 
     if (data) {
-       setLabourers(prev => prev.map(l => l.id === labourerId ? data : l));
+       // After updating, refetch all data to maintain sorted order
+       await fetchData();
     }
   };
   

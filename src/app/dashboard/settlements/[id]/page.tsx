@@ -147,16 +147,17 @@ export default function SettlementDetailPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Worker Name</TableHead>
-                  <TableHead className="text-right">Present Days</TableHead>
-                  <TableHead className="text-right">Half Days</TableHead>
-                  <TableHead className="text-right">Total Salary (₹)</TableHead>
-                  <TableHead className="text-right">Total Advance (₹)</TableHead>
-                  <TableHead className="text-right">Net Payable (₹)</TableHead>
-                  <TableHead className="text-right">Prev. Loan Bal. (₹)</TableHead>
-                  <TableHead className="text-right">Loan Repayment (₹)</TableHead>
-                  <TableHead className="text-right">New Loan (₹)</TableHead>
+                  <TableHead className="text-right">Present</TableHead>
+                  <TableHead className="text-right">Half</TableHead>
+                  <TableHead className="text-right">Total Salary</TableHead>
+                  <TableHead className="text-right">Daily Advance</TableHead>
+                  <TableHead className="text-right">Net Payable</TableHead>
+                  <TableHead className="text-right">Current Loan</TableHead>
+                  <TableHead className="text-right">Loan Repayment</TableHead>
+                  <TableHead className="text-right">New Loan</TableHead>
+                  <TableHead className="text-right">Updated Loan Bal.</TableHead>
                   <TableHead className="text-right font-bold text-primary">
-                    Final Paid (₹)
+                    Final Paid
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -194,6 +195,9 @@ export default function SettlementDetailPage() {
                        <TableCell className="text-right text-red-600">
                         {(data.newLoan || 0).toFixed(2)}
                       </TableCell>
+                       <TableCell className={`text-right font-bold ${data.updatedLoanBalance > 0 ? 'text-red-600' : ''}`}>
+                          {(data.updatedLoanBalance || 0).toFixed(2)}
+                         </TableCell>
                       <TableCell
                         className={`text-right font-bold text-primary`}
                       >

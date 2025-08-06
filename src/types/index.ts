@@ -55,6 +55,7 @@ export interface ReportData {
   netPayable: number;
   finalAmountPaid: number;
   newLoan: number;
+  updatedLoanBalance: number;
   attendance: { [key: string]: DailyLabourerRecord | { status: 'absent' } };
 }
 
