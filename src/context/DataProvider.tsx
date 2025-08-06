@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
@@ -22,6 +21,7 @@ interface DataContextProps {
     report_data: ReportData[];
     overall_totals: OverallTotals;
   }) => Promise<void>;
+  adjustLoanBalance: (labourerId: string, amount: number, notes?: string) => Promise<void>;
   getLabourerById: (id: string) => Labourer | undefined;
   loading: boolean;
   error: Error | null;
@@ -128,6 +128,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       daily_salary: labourerData.dailySalary,
       designation: labourerData.designation,
       profile_photo_url: profilePhotoUrl,
+      loan_balance: 0,
       documents: {
         fatherName: labourerData.fatherName,
         mobile: labourerData.mobile,
@@ -244,17 +245,66 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     report_data: ReportData[];
     overall_totals: OverallTotals;
   }) => {
-    const { data, error } = await supabase
+    // 1. Save the settlement report
+    const { data: settlement, error } = await supabase
       .from("settlements")
       .insert([settlementData])
       .select()
       .single();
-
+  
     if (error) throw error;
-    
-    if(data) {
-        setSettlements(prev => [data, ...prev]);
+  
+    // 2. Update loan balances for each worker involved in the settlement
+    const balanceUpdates = settlementData.report_data.map(report => {
+      const loanChange = (report.newLoan || 0) - (report.loanRepayment || 0);
+      return {
+        id: report.labourerId,
+        change: loanChange
+      };
+    }).filter(update => update.change !== 0);
+  
+    if (balanceUpdates.length > 0) {
+      // Using a stored procedure would be more robust, but this works for now.
+      // It iterates through each required update.
+      for (const update of balanceUpdates) {
+        const labourer = labourers.find(l => l.id === update.id);
+        if (labourer) {
+          const newBalance = (labourer.loan_balance || 0) + update.change;
+          await supabase
+            .from('labourers')
+            .update({ loan_balance: newBalance })
+            .eq('id', update.id);
+        }
+      }
     }
+  
+    // 3. Refetch labourers data to get updated balances and update state
+    if (settlement) {
+      setSettlements(prev => [settlement, ...prev]);
+      await fetchData(); // Refetch all data to ensure consistency
+    }
+  };
+  
+  const adjustLoanBalance = async (labourerId: string, amount: number, notes?: string) => {
+    // This function is for direct adjustments from the Loans page.
+    const labourer = labourers.find(l => l.id === labourerId);
+    if (!labourer) throw new Error("Worker not found");
+  
+    const newBalance = (labourer.loan_balance || 0) + amount;
+  
+    const { data, error } = await supabase
+      .from('labourers')
+      .update({ loan_balance: newBalance })
+      .eq('id', labourerId)
+      .select()
+      .single();
+  
+    if (error) throw error;
+  
+    if (data) {
+      setLabourers(prev => prev.map(l => l.id === labourerId ? data : l));
+    }
+    // Optionally, you could log this transaction to another table if you had one.
   };
 
   const getLabourerById = (id: string) => {
@@ -274,6 +324,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         markAttendance,
         settlements,
         addSettlement,
+        adjustLoanBalance,
         getLabourerById,
         loading,
         error

@@ -15,6 +15,7 @@ import {
   Notebook,
   Code,
   Archive,
+  Landmark,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/dashboard/add-labour", icon: UserPlus, label: "Add Worker" },
   { href: "/dashboard/attendance", icon: CalendarCheck, label: "Attendance" },
   { href: "/dashboard/supervisors", icon: Users, label: "Supervisors" },
+  { href: "/dashboard/loans", icon: Landmark, label: "Loans" },
   { href: "/dashboard/reports", icon: FileText, label: "Reports" },
   { href: "/dashboard/settlements", icon: Archive, label: "Settlements" },
   { href: "/dashboard/notes", icon: Notebook, label: "Notes" },

@@ -155,6 +155,7 @@ export default function SettlementDetailPage() {
                   <TableHead className="text-right">Total Salary (₹)</TableHead>
                   <TableHead className="text-right">Total Advance (₹)</TableHead>
                   <TableHead className="text-right">Net Payable (₹)</TableHead>
+                  <TableHead className="text-right">Prev. Loan Bal. (₹)</TableHead>
                   <TableHead className="text-right">Loan Repayment (₹)</TableHead>
                   <TableHead className="text-right">New Loan (₹)</TableHead>
                   <TableHead className="text-right font-bold text-primary">
@@ -187,6 +188,9 @@ export default function SettlementDetailPage() {
                       >
                         {data.netPayable.toFixed(2)}
                       </TableCell>
+                       <TableCell className={`text-right ${data.currentLoan > 0 ? 'text-red-600' : ''}`}>
+                          {(data.currentLoan || 0).toFixed(2)}
+                        </TableCell>
                       <TableCell className="text-right text-green-600">
                         {(data.loanRepayment || 0).toFixed(2)}
                       </TableCell>

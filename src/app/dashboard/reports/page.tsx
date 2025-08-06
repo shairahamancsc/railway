@@ -113,6 +113,7 @@ export default function ReportsPage() {
         halfDays,
         totalAdvance: totalAdvance,
         totalSalary,
+        currentLoan: labourer.loan_balance || 0,
         loanRepayment: loanRepaymentAmount,
         netPayable,
         newLoan: newLoanAmount,
@@ -127,10 +128,11 @@ export default function ReportsPage() {
     return reportData.reduce((acc, curr) => {
       acc.totalGrossWages += curr.totalSalary;
       acc.totalAdvancePaid += curr.totalAdvance;
+      acc.totalCurrentLoans += curr.currentLoan;
       acc.totalLoanRepayments += curr.loanRepayment;
       acc.totalNewLoans += curr.newLoan;
       return acc;
-    }, { totalGrossWages: 0, totalAdvancePaid: 0, totalLoanRepayments: 0, totalNewLoans: 0 });
+    }, { totalGrossWages: 0, totalAdvancePaid: 0, totalCurrentLoans: 0, totalLoanRepayments: 0, totalNewLoans: 0 });
   }, [reportData]);
   
   const overallFinalPaid = overallTotals.totalGrossWages - overallTotals.totalAdvancePaid - overallTotals.totalLoanRepayments + overallTotals.totalNewLoans;
@@ -235,7 +237,7 @@ export default function ReportsPage() {
                         <AlertDialogHeader>
                         <AlertDialogTitle>Settle this Report?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This will create a permanent, historical snapshot of the current report from <span className="font-bold">{dateRange?.from ? format(dateRange.from, 'dd-MMM-yy') : ''}</span> to <span className="font-bold">{dateRange?.to ? format(dateRange.to, 'dd-MMM-yy') : ''}</span>. This action cannot be undone.
+                            This will create a permanent, historical snapshot of the current report from <span className="font-bold">{dateRange?.from ? format(dateRange.from, 'dd-MMM-yy') : ''}</span> to <span className="font-bold">{dateRange?.to ? format(dateRange.to, 'dd-MMM-yy') : ''}</span>. This action cannot be undone. Loan balances will be updated.
                         </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -279,8 +281,9 @@ export default function ReportsPage() {
                     <TableHead className="text-right font-bold min-w-[120px]">Total Salary</TableHead>
                     <TableHead className="text-right font-bold min-w-[120px]">Total Advance</TableHead>
                     <TableHead className="text-right font-bold min-w-[120px]">Net Payable</TableHead>
+                    <TableHead className="text-right font-bold min-w-[140px]">Prev. Loan Bal.</TableHead>
                     <TableHead className="text-right font-bold min-w-[180px]">Loan Repayment</TableHead>
-                    <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan (Next Period)</TableHead>
+                    <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan</TableHead>
                     <TableHead className="text-right font-bold text-primary min-w-[140px]">Final Amount Paid</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -345,6 +348,9 @@ export default function ReportsPage() {
                         <TableCell className="text-right text-red-600">{data.totalAdvance.toFixed(2)}</TableCell>
                         <TableCell className={`text-right font-bold ${data.netPayable >= 0 ? 'text-green-700' : 'text-red-700'}`}>
                           {data.netPayable.toFixed(2)}
+                        </TableCell>
+                         <TableCell className={`text-right ${data.currentLoan > 0 ? 'text-red-600' : ''}`}>
+                          {data.currentLoan.toFixed(2)}
                         </TableCell>
                         <TableCell className="text-right">
                            <Input 

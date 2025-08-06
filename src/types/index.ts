@@ -1,5 +1,4 @@
 
-
 export type Designation = "Supervisor" | "Skilled Labour" | "Unskilled Labour" | "Driver" | "Office Incharge";
 
 export interface Labourer {
@@ -8,6 +7,7 @@ export interface Labourer {
   fullName: string;
   daily_salary: number;
   designation: Designation;
+  loan_balance: number;
   documents: {
     fatherName: string;
     mobile: string;
@@ -50,6 +50,7 @@ export interface ReportData {
   halfDays: number;
   totalAdvance: number;
   totalSalary: number;
+  currentLoan: number;
   loanRepayment: number;
   netPayable: number;
   finalAmountPaid: number;
@@ -60,6 +61,7 @@ export interface ReportData {
 export interface OverallTotals {
     totalGrossWages: number;
     totalAdvancePaid: number;
+    totalCurrentLoans: number;
     totalLoanRepayments: number;
     totalNewLoans: number;
 }
