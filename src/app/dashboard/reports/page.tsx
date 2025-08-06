@@ -100,9 +100,10 @@ export default function ReportsPage() {
       });
       
       const totalSalary = (presentDays * dailySalary) + (halfDays * dailySalary / 2);
-      const loanRepayment = loanRepayments[labourer.id] || 0;
+      const loanRepaymentAmount = loanRepayments[labourer.id] || 0;
+      const newLoanAmount = newLoans[labourer.id] || 0;
       const netPayable = totalSalary - totalAdvance;
-      const finalAmountPaid = netPayable - loanRepayment;
+      const finalAmountPaid = netPayable - loanRepaymentAmount + newLoanAmount;
 
 
       return {
@@ -112,10 +113,10 @@ export default function ReportsPage() {
         halfDays,
         totalAdvance: totalAdvance,
         totalSalary,
-        loanRepayment,
+        loanRepayment: loanRepaymentAmount,
         netPayable,
+        newLoan: newLoanAmount,
         finalAmountPaid,
-        newLoan: newLoans[labourer.id] || 0,
         attendance: attendanceByDate
       };
     });
@@ -127,11 +128,12 @@ export default function ReportsPage() {
       acc.totalGrossWages += curr.totalSalary;
       acc.totalAdvancePaid += curr.totalAdvance;
       acc.totalLoanRepayments += curr.loanRepayment;
+      acc.totalNewLoans += curr.newLoan;
       return acc;
-    }, { totalGrossWages: 0, totalAdvancePaid: 0, totalLoanRepayments: 0 });
+    }, { totalGrossWages: 0, totalAdvancePaid: 0, totalLoanRepayments: 0, totalNewLoans: 0 });
   }, [reportData]);
   
-  const overallFinalPaid = overallTotals.totalGrossWages - overallTotals.totalAdvancePaid - overallTotals.totalLoanRepayments;
+  const overallFinalPaid = overallTotals.totalGrossWages - overallTotals.totalAdvancePaid - overallTotals.totalLoanRepayments + overallTotals.totalNewLoans;
 
 
   const handleSettleReport = async () => {

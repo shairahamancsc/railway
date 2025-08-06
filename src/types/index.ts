@@ -61,6 +61,7 @@ export interface OverallTotals {
     totalGrossWages: number;
     totalAdvancePaid: number;
     totalLoanRepayments: number;
+    totalNewLoans: number;
 }
 
 export interface Settlement {

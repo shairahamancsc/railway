@@ -66,7 +66,8 @@ export default function SettlementDetailPage() {
 
   const { report_data, overall_totals } = settlement;
   const totalLoanRepayments = overall_totals.totalLoanRepayments || 0;
-  const netPayableOverall = overall_totals.totalGrossWages - overall_totals.totalAdvancePaid - totalLoanRepayments;
+  const totalNewLoans = overall_totals.totalNewLoans || 0;
+  const netPayableOverall = overall_totals.totalGrossWages - overall_totals.totalAdvancePaid - totalLoanRepayments + totalNewLoans;
 
 
   return (
@@ -155,6 +156,7 @@ export default function SettlementDetailPage() {
                   <TableHead className="text-right">Total Advance (₹)</TableHead>
                   <TableHead className="text-right">Net Payable (₹)</TableHead>
                   <TableHead className="text-right">Loan Repayment (₹)</TableHead>
+                  <TableHead className="text-right">New Loan (₹)</TableHead>
                   <TableHead className="text-right font-bold text-primary">
                     Final Paid (₹)
                   </TableHead>
@@ -185,8 +187,11 @@ export default function SettlementDetailPage() {
                       >
                         {data.netPayable.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right text-red-600">
+                      <TableCell className="text-right text-green-600">
                         {(data.loanRepayment || 0).toFixed(2)}
+                      </TableCell>
+                       <TableCell className="text-right text-red-600">
+                        {(data.newLoan || 0).toFixed(2)}
                       </TableCell>
                       <TableCell
                         className={`text-right font-bold text-primary`}
