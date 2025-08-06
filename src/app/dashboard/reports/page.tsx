@@ -278,8 +278,8 @@ export default function ReportsPage() {
                     <TableHead className="text-right font-bold min-w-[120px]">Total Advance</TableHead>
                     <TableHead className="text-right font-bold min-w-[120px]">Net Payable</TableHead>
                     <TableHead className="text-right font-bold min-w-[180px]">Loan Repayment</TableHead>
-                    <TableHead className="text-right font-bold text-primary min-w-[140px]">Final Amount Paid</TableHead>
                     <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan (Next Period)</TableHead>
+                    <TableHead className="text-right font-bold text-primary min-w-[140px]">Final Amount Paid</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -353,9 +353,6 @@ export default function ReportsPage() {
                             onChange={(e) => setLoanRepayments(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
                            />
                          </TableCell>
-                        <TableCell className={`text-right font-bold text-primary`}>
-                          {data.finalAmountPaid.toFixed(2)}
-                        </TableCell>
                          <TableCell className="text-right no-print">
                            <Input 
                             type="number"
@@ -365,6 +362,9 @@ export default function ReportsPage() {
                             onChange={(e) => setNewLoans(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
                            />
                          </TableCell>
+                        <TableCell className={`text-right font-bold text-primary`}>
+                          {data.finalAmountPaid.toFixed(2)}
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -444,3 +444,6 @@ export default function ReportsPage() {
   );
 }
 
+
+
+    
