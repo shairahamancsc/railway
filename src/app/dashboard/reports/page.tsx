@@ -287,7 +287,7 @@ export default function ReportsPage() {
                     <TableHead className="text-right font-bold min-w-[120px]">Daily Advance</TableHead>
                     <TableHead className="text-right font-bold min-w-[120px]">Net Payable</TableHead>
                     <TableHead className="text-right font-bold min-w-[140px]">Current Loan</TableHead>
-                    <TableHead className="text-right font-bold min-w-[180px]">Loan Repayment</TableHead>
+                    <TableHead className="text-right font-bold min-w-[180px] no-print">Loan Repayment</TableHead>
                     <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan</TableHead>
                     <TableHead className="text-right font-bold min-w-[140px]">Updated Loan Bal.</TableHead>
                     <TableHead className="text-right font-bold text-primary min-w-[140px]">Final Amount Paid</TableHead>
@@ -358,7 +358,7 @@ export default function ReportsPage() {
                          <TableCell className={`text-right ${data.currentLoan > 0 ? 'text-red-600' : ''}`}>
                           {data.currentLoan.toFixed(2)}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right no-print">
                            <Input 
                             type="number"
                             placeholder="0"
@@ -456,7 +456,6 @@ export default function ReportsPage() {
             {editDate && <AttendanceForm targetDate={editDate} onSave={() => setIsDialogOpen(false)} />}
           </DialogContent>
       </Dialog>
-
     </div>
   );
 }
