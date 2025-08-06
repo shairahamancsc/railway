@@ -66,10 +66,7 @@ export default function SettlementDetailPage() {
 
   const { report_data, overall_totals } = settlement;
   const totalLoanRepayments = overall_totals.totalLoanRepayments || 0;
-  const totalNewLoans = overall_totals.totalNewLoans || 0;
-  const netPayableOverall = overall_totals.totalGrossWages - overall_totals.totalAdvancePaid - totalLoanRepayments + totalNewLoans;
-
-
+  
   return (
     <div className="space-y-8">
        <div className="flex items-center gap-4">
@@ -130,7 +127,7 @@ export default function SettlementDetailPage() {
                         <Wallet className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-primary">₹{netPayableOverall.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-primary">₹{(overall_totals.totalFinalPaid || 0).toFixed(2)}</div>
                         <p className="text-xs text-muted-foreground">Final amount paid to all workers.</p>
                     </CardContent>
                 </Card>

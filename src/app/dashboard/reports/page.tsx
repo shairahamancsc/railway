@@ -131,12 +131,11 @@ export default function ReportsPage() {
       acc.totalCurrentLoans += curr.currentLoan;
       acc.totalLoanRepayments += curr.loanRepayment;
       acc.totalNewLoans += curr.newLoan;
+      acc.totalFinalPaid += curr.finalAmountPaid;
       return acc;
-    }, { totalGrossWages: 0, totalAdvancePaid: 0, totalCurrentLoans: 0, totalLoanRepayments: 0, totalNewLoans: 0 });
+    }, { totalGrossWages: 0, totalAdvancePaid: 0, totalCurrentLoans: 0, totalLoanRepayments: 0, totalNewLoans: 0, totalFinalPaid: 0 });
   }, [reportData]);
   
-  const overallFinalPaid = overallTotals.totalGrossWages - overallTotals.totalAdvancePaid - overallTotals.totalLoanRepayments + overallTotals.totalNewLoans;
-
 
   const handleSettleReport = async () => {
     if (!dateRange?.from || !dateRange?.to) {
@@ -431,7 +430,7 @@ export default function ReportsPage() {
                         <Wallet className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-primary">₹{overallFinalPaid.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-primary">₹{overallTotals.totalFinalPaid.toFixed(2)}</div>
                         <p className="text-xs text-muted-foreground">Final amount paid to all workers.</p>
                     </CardContent>
                 </Card>
@@ -451,7 +450,3 @@ export default function ReportsPage() {
     </div>
   );
 }
-
-
-
-    
