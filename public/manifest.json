@@ -2,9 +2,9 @@
   "name": "AttendEase - Labour Attendance",
   "short_name": "AttendEase",
   "description": "A web app for managing labour attendance and payroll.",
-  "start_url": "/login",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#f8fafc",
   "theme_color": "#E11D48",
   "icons": [
     {

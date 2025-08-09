@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect } from "react";
@@ -14,22 +15,14 @@ export default function RootLayout({
 }) {
   useSmoothScroll();
 
-  useEffect(() => {
-    document.title = "AttendEase";
-    const description = document.querySelector('meta[name="description"]');
-    if (description) {
-      description.setAttribute("content", "Labour Attendance Web App");
-    } else {
-      const meta = document.createElement('meta');
-      meta.name = 'description';
-      meta.content = 'Labour Attendance Web App';
-      document.head.appendChild(meta);
-    }
-  }, []);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <title>AttendEase</title>
+        <meta name="description" content="Labour Attendance Web App" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
+        <meta name="theme-color" content="#3F51B5" />
       </head>
       <body
         className="font-body antialiased"
