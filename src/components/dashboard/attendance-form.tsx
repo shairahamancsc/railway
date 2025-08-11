@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Camera, ScanFace, Loader2 } from "lucide-react";
+import { recognizeWorkerFace } from "@/ai/flows/recognize-face-flow";
+
 
 type AttendanceState = Omit<DailyLabourerRecord, "labourerId">;
 
@@ -28,6 +40,139 @@ interface AttendanceFormProps {
   targetDate: Date;
   onSave?: () => void;
 }
+
+function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labourerId: string) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | undefined>(undefined);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { toast } = useToast();
+  const { labourers } = useData();
+
+  const enrolledWorkers = useMemo(() => {
+      return labourers
+          .filter(l => l.face_scan_data_uri)
+          .map(l => ({ labourerId: l.id, faceScanDataUri: l.face_scan_data_uri! }));
+  }, [labourers]);
+
+
+  useEffect(() => {
+    if (isOpen) {
+      setHasCameraPermission(undefined); // Reset on open
+      const getCameraPermission = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+          setHasCameraPermission(true);
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+        }
+      };
+      getCameraPermission();
+    } else {
+      if (videoRef.current && videoRef.current.srcObject) {
+        (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+      }
+    }
+  }, [isOpen]);
+
+  const handleScan = async () => {
+    if (!videoRef.current) return;
+    
+    setIsProcessing(true);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const context = canvas.getContext('2d');
+    context?.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const capturedFaceDataUri = canvas.toDataURL('image/jpeg');
+
+    try {
+        if (enrolledWorkers.length === 0) {
+            toast({
+                variant: 'destructive',
+                title: 'No Workers Enrolled',
+                description: 'Please enroll workers for face recognition in the "Add Worker" page first.',
+            });
+            return;
+        }
+
+        const result = await recognizeWorkerFace({
+            capturedFaceDataUri,
+            enrolledWorkers
+        });
+
+        if (result.labourerId && result.confidence > 0.8) {
+            onFaceRecognized(result.labourerId);
+            const worker = labourers.find(l => l.id === result.labourerId);
+            toast({
+                title: 'Attendance Marked!',
+                description: `${worker?.fullName} has been marked as present. (${(result.confidence * 100).toFixed(0)}% confidence)`,
+            });
+            setIsOpen(false);
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'No Match Found',
+                description: result.reasoning || "Could not identify the worker. Please try again or mark attendance manually.",
+            });
+        }
+
+    } catch (error) {
+        console.error("Face recognition error:", error);
+        toast({
+            variant: 'destructive',
+            title: 'AI Error',
+            description: 'The face recognition service failed. Please try again.',
+        });
+    } finally {
+        setIsProcessing(false);
+    }
+
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline"><ScanFace className="mr-2" />Scan Face for Attendance</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Face Recognition</DialogTitle>
+          <DialogDescription>
+            Position the worker's face in the frame and click scan.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="relative">
+            <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
+            {hasCameraPermission === false && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
+                    <p className="text-white text-center p-4">Camera permission denied. Please enable it in your browser settings.</p>
+                </div>
+            )}
+            {isProcessing && (
+                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-md">
+                    <Loader2 className="h-10 w-10 text-primary animate-spin" />
+                    <p className="text-white mt-4">Analyzing... Please wait.</p>
+                </div>
+            )}
+        </div>
+
+        <DialogFooter>
+          <Button onClick={handleScan} disabled={!hasCameraPermission || isProcessing}>
+            {isProcessing ? <><Loader2 className="animate-spin" /> Processing...</> : <><ScanFace /> Scan & Mark Present</>}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
   const { labourers, attendance, markAttendance } = useData();
@@ -77,6 +222,11 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
       return newMap;
     });
   };
+
+  const handleFaceRecognized = (labourerId: string) => {
+    // Mark the recognized worker as present
+    handleAttendanceChange(labourerId, 'status', 'present');
+  }
 
   const handleSaveAttendance = () => {
     const records: DailyLabourerRecord[] = Array.from(
@@ -134,16 +284,19 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                 {format(targetDate, "EEEE, dd MMMM, yyyy")}
             </p>
         </div>
-        {labourers.length > 0 && (
-            <Button onClick={handleSaveAttendance}>Save Attendance</Button>
-        )}
+        <div className="flex items-center gap-2">
+           <FaceRecognitionDialog onFaceRecognized={handleFaceRecognized} />
+          {labourers.length > 0 && (
+              <Button onClick={handleSaveAttendance}>Save Attendance</Button>
+          )}
+        </div>
       </div>
 
       {labourers.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {labourers.map((labourer) => (
-              <Card key={labourer.id}>
+              <Card key={labourer.id} className={attendanceData.get(labourer.id)?.status === 'present' ? 'border-primary' : ''}>
                 <CardHeader className="flex flex-col items-center gap-2 pb-4">
                   <Avatar className="h-16 w-16">
                     <AvatarImage
