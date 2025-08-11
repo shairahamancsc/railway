@@ -21,7 +21,7 @@ const EnrolledWorkerSchema = z.object({
 });
 
 // Define the input schema for the AI flow
-export const RecognizeWorkerFaceInputSchema = z.object({
+const RecognizeWorkerFaceInputSchema = z.object({
   capturedFaceDataUri: z
     .string()
     .describe(
@@ -36,7 +36,7 @@ export type RecognizeWorkerFaceInput = z.infer<
 >;
 
 // Define the output schema for the AI flow
-export const RecognizedWorkerSchema = z.object({
+const RecognizedWorkerSchema = z.object({
   labourerId: z
     .string()
     .describe(
