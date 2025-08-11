@@ -31,7 +31,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Camera, ScanFace, Loader2 } from "lucide-react";
-import { recognizeWorkerFace } from "@/ai/flows/recognize-face-flow";
+import { compareFaces } from "@/ai/flows/compare-faces-flow";
 
 
 type AttendanceState = Omit<DailyLabourerRecord, "labourerId">;
@@ -44,6 +44,7 @@ interface AttendanceFormProps {
 function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labourerId: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingText, setProcessingText] = useState("Analyzing... Please wait.");
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | undefined>(undefined);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
@@ -52,7 +53,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
   const enrolledWorkers = useMemo(() => {
       return labourers
           .filter(l => l.face_scan_data_uri)
-          .map(l => ({ labourerId: l.id, faceScanDataUri: l.face_scan_data_uri! }));
+          .map(l => ({ labourerId: l.id, fullName: l.fullName, faceScanDataUri: l.face_scan_data_uri! }));
   }, [labourers]);
 
 
@@ -101,24 +102,36 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
             return;
         }
 
-        const result = await recognizeWorkerFace({
-            capturedFaceDataUri,
-            enrolledWorkers
-        });
+        let bestMatch = { labourerId: '', score: 0, workerName: '' };
+        
+        for (let i = 0; i < enrolledWorkers.length; i++) {
+            const worker = enrolledWorkers[i];
+            setProcessingText(`Comparing with ${worker.fullName}... (${i + 1}/${enrolledWorkers.length})`);
+            
+            const result = await compareFaces({
+                livePhotoUri: capturedFaceDataUri,
+                enrolledPhotoUri: worker.faceScanDataUri
+            });
+            
+            if (result.similarity > bestMatch.score) {
+                bestMatch = { labourerId: worker.labourerId, score: result.similarity, workerName: worker.fullName };
+            }
+        }
+        
+        const CONFIDENCE_THRESHOLD = 0.85; // 85%
 
-        if (result.labourerId && result.confidence > 0.8) {
-            onFaceRecognized(result.labourerId);
-            const worker = labourers.find(l => l.id === result.labourerId);
+        if (bestMatch.score >= CONFIDENCE_THRESHOLD) {
+            onFaceRecognized(bestMatch.labourerId);
             toast({
                 title: 'Attendance Marked!',
-                description: `${worker?.fullName} has been marked as present. (${(result.confidence * 100).toFixed(0)}% confidence)`,
+                description: `${bestMatch.workerName} has been marked as present. (${(bestMatch.score * 100).toFixed(0)}% confidence)`,
             });
             setIsOpen(false);
         } else {
              toast({
                 variant: 'destructive',
-                title: 'No Match Found',
-                description: result.reasoning || "Could not identify the worker. Please try again or mark attendance manually.",
+                title: 'No Confident Match Found',
+                description: `Could not identify the worker with enough confidence. Best match was ${bestMatch.workerName} with only ${(bestMatch.score * 100).toFixed(0)}% confidence.`,
             });
         }
 
@@ -131,6 +144,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
         });
     } finally {
         setIsProcessing(false);
+        setProcessingText("Analyzing... Please wait.");
     }
 
   };
@@ -158,7 +172,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
             {isProcessing && (
                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-md">
                     <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                    <p className="text-white mt-4">Analyzing... Please wait.</p>
+                    <p className="text-white mt-4 text-center">{processingText}</p>
                 </div>
             )}
         </div>
@@ -397,3 +411,5 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
+
+    
