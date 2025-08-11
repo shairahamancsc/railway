@@ -63,7 +63,17 @@ export async function recognizeWorkerFace(
       reasoning: 'No workers are enrolled for face recognition.',
     };
   }
-  return recognizeWorkerFlow(input);
+  const result = await recognizeWorkerFlow(input);
+
+  // Add a confidence check here to avoid low-quality matches
+  if (result.confidence < 0.8) {
+      return {
+          labourerId: '',
+          confidence: result.confidence,
+          reasoning: "No confident match found. Please try again or mark attendance manually."
+      }
+  }
+  return result;
 }
 
 // Define the Genkit prompt
