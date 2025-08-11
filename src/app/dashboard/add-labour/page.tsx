@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,8 +32,9 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { UserPlus, Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
+import { UserPlus, Pencil, Trash2, Eye, EyeOff, Upload, Camera, ScanFace } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Labourer, Designation } from "@/types";
@@ -49,6 +50,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const designationValues: [Designation, ...Designation[]] = ["Supervisor", "Skilled Labour", "Unskilled Labour", "Driver", "Office Incharge"];
 
@@ -80,12 +82,123 @@ const labourSchema = z.object({
   aadhaar: z.string().optional(),
   pan: z.string().optional(),
   dl: z.string().optional(),
-  // Fields for new file uploads
   profilePhoto: imageFileSchema,
   aadhaarFile: documentFileSchema,
   panFile: documentFileSchema,
   dlFile: documentFileSchema,
+  faceScanDataUri: z.string().optional(),
 });
+
+
+function FaceScanDialog({ onFaceScan, currentScan }: { onFaceScan: (dataUri: string) => void; currentScan?: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | undefined>(undefined);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { toast } = useToast();
+  const [capturedImage, setCapturedImage] = useState<string | undefined>(currentScan);
+
+  useEffect(() => {
+    if (isOpen) {
+      setHasCameraPermission(undefined); // Reset on open
+      setCapturedImage(currentScan);
+      const getCameraPermission = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+          setHasCameraPermission(true);
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Camera Access Denied',
+            description: 'Please enable camera permissions in your browser settings.',
+          });
+        }
+      };
+      getCameraPermission();
+    } else {
+      // Turn off camera when dialog closes
+      if (videoRef.current && videoRef.current.srcObject) {
+        (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
+      }
+    }
+  }, [isOpen, toast, currentScan]);
+
+  const handleCapture = () => {
+    if (videoRef.current) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const context = canvas.getContext('2d');
+      context?.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      const dataUri = canvas.toDataURL('image/jpeg');
+      setCapturedImage(dataUri);
+    }
+  };
+  
+  const handleSave = () => {
+    if (capturedImage) {
+      onFaceScan(capturedImage);
+      setIsOpen(false);
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" type="button">
+          <ScanFace className="mr-2" />
+          {currentScan || capturedImage ? "View/Retake Face Scan" : "Scan Face"}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Enroll Worker Face</DialogTitle>
+          <DialogDescription>
+            Capture a clear, forward-facing photo of the worker.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="w-full md:w-1/2 relative">
+                <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
+                {hasCameraPermission === false && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
+                        <p className="text-white text-center p-4">Camera permission denied. Please enable it in your browser settings.</p>
+                    </div>
+                )}
+                 {hasCameraPermission === undefined && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
+                        <p className="text-white">Requesting camera...</p>
+                    </div>
+                )}
+            </div>
+            <div className="w-full md:w-1/2">
+                <p className="font-semibold mb-2">Captured Image:</p>
+                {capturedImage ? (
+                    <img src={capturedImage} alt="Captured face" className="w-full aspect-video rounded-md" />
+                ) : (
+                    <div className="w-full aspect-video rounded-md bg-muted flex items-center justify-center">
+                        <p className="text-muted-foreground">No image captured</p>
+                    </div>
+                )}
+            </div>
+        </div>
+
+        <DialogFooter>
+          <Button onClick={handleCapture} disabled={!hasCameraPermission}>
+            <Camera className="mr-2" />
+            {capturedImage ? "Retake" : "Capture"}
+          </Button>
+          <Button onClick={handleSave} disabled={!capturedImage}>Save Face Scan</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 
 interface LabourerFormProps {
@@ -116,24 +229,15 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
       aadhaar: labourer?.documents.aadhaar || "",
       pan: labourer?.documents.pan || "",
       dl: labourer?.documents.dl || "",
+      faceScanDataUri: labourer?.face_scan_data_uri || "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof labourSchema>) => {
     setIsLoading(true);
     const labourerData = {
-      fullName: values.fullName,
-      designation: values.designation,
-      fatherName: values.fatherName,
-      mobile: values.mobile,
-      dailySalary: values.dailySalary,
-      aadhaar: values.aadhaar,
+      ...values,
       pan: values.pan?.toUpperCase(),
-      dl: values.dl,
-      profilePhoto: values.profilePhoto,
-      aadhaarFile: values.aadhaarFile,
-      panFile: values.panFile,
-      dlFile: values.dlFile,
     };
 
     try {
@@ -248,6 +352,10 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
               </FormItem>
             )}
           />
+        </div>
+
+        <h3 className="text-lg font-medium font-headline border-t pt-6">Profile & Face Scan</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
             name="profilePhoto"
@@ -273,7 +381,24 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                 </FormItem>
             )}
           />
+           <FormField
+            control={form.control}
+            name="faceScanDataUri"
+            render={({ field }) => (
+                <FormItem>
+                  <FormLabel>AI Face Recognition</FormLabel>
+                   <FormControl>
+                     <FaceScanDialog 
+                       onFaceScan={(dataUri) => field.onChange(dataUri)}
+                       currentScan={field.value}
+                     />
+                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+            )}
+          />
         </div>
+
 
         <h3 className="text-lg font-medium font-headline border-t pt-6">Documents (Optional)</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -487,6 +612,7 @@ export default function LabourerManagementPage() {
                   <TableHead>Full Name</TableHead>
                   <TableHead>Designation</TableHead>
                   <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
+                  <TableHead>Face Scan</TableHead>
                   {showSalary && <TableHead className="hidden md:table-cell">Daily Salary (₹)</TableHead>}
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -494,13 +620,13 @@ export default function LabourerManagementPage() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={showSalary ? 6 : 5} className="text-center">
+                    <TableCell colSpan={showSalary ? 7 : 6} className="text-center">
                       Loading workers...
                     </TableCell>
                   </TableRow>
                 ) : error ? (
                    <TableRow>
-                    <TableCell colSpan={showSalary ? 6 : 5} className="text-center text-red-500">
+                    <TableCell colSpan={showSalary ? 7 : 6} className="text-center text-red-500">
                       Error loading workers. Please check your connection and refresh.
                     </TableCell>
                   </TableRow>
@@ -522,6 +648,13 @@ export default function LabourerManagementPage() {
                         <Badge variant="secondary">{labourer.designation}</Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
+                      <TableCell>
+                        {labourer.face_scan_data_uri ? (
+                            <Badge variant="default">Enrolled</Badge>
+                        ) : (
+                            <Badge variant="outline">Not Enrolled</Badge>
+                        )}
+                      </TableCell>
                        {showSalary && <TableCell className="hidden md:table-cell">{labourer.daily_salary}</TableCell>}
                       <TableCell className="text-right space-x-2 whitespace-nowrap">
                          <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
@@ -556,7 +689,7 @@ export default function LabourerManagementPage() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={showSalary ? 6 : 5} className="text-center">
+                    <TableCell colSpan={showSalary ? 7 : 6} className="text-center">
                       No workers added yet.
                     </TableCell>
                   </TableRow>

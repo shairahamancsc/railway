@@ -129,6 +129,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       daily_salary: labourerData.dailySalary,
       designation: labourerData.designation,
       profile_photo_url: profilePhotoUrl,
+      face_scan_data_uri: labourerData.faceScanDataUri,
       loan_balance: 0,
       documents: {
         fatherName: labourerData.fatherName,
@@ -165,7 +166,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const dataToUpdate: any = {
       fullName: updatedData.fullName,
       daily_salary: updatedData.dailySalary,
-      designation: updatedData.designation
+      designation: updatedData.designation,
+      face_scan_data_uri: updatedData.faceScanDataUri,
     };
     
     if (profilePhotoUrl) dataToUpdate.profile_photo_url = profilePhotoUrl;

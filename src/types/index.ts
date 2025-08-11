@@ -8,6 +8,7 @@ export interface Labourer {
   daily_salary: number;
   designation: Designation;
   loan_balance: number;
+  face_scan_data_uri?: string;
   documents: {
     fatherName: string;
     mobile: string;
