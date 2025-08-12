@@ -50,36 +50,33 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
   const { labourers } = useData();
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
 
-  useEffect(() => {
-    const loadModels = async () => {
+
+  const loadModelsAndDescriptors = async () => {
+      if (modelsLoaded) return; // Don't load again if already loaded
+
+      setIsLoadingAi(true);
+      setProcessingText('Loading AI models...');
       const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
       try {
-        setProcessingText('Loading AI models...');
         await Promise.all([
             faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
             faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
             faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-            faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
         ]);
         setModelsLoaded(true);
         toast({ title: "AI Ready", description: "Face recognition models loaded."});
-      } catch (error) {
-         console.error("Error loading face-api models", error);
-         toast({ title: "AI Error", description: "Could not load face recognition models.", variant: "destructive"});
-      }
-    };
-    loadModels();
-  }, [toast]);
 
-  const loadLabeledImages = async () => {
+        setProcessingText('Preparing enrolled faces...');
         const enrolledWorkers = labourers.filter(l => l.face_scan_data_uri);
         if (enrolledWorkers.length === 0) {
           toast({title: "No Faces Enrolled", description: "Please enroll workers in the 'Add Worker' page first.", variant: "destructive"});
-          return [];
+          setLabeledFaceDescriptors([]);
+          return;
         }
 
-        return Promise.all(
+        const descriptors = await Promise.all(
             enrolledWorkers.map(async (worker) => {
                 const descriptions = [];
                 try {
@@ -94,18 +91,20 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
                 return new faceapi.LabeledFaceDescriptors(worker.id, descriptions);
             })
         );
-    }
+        setLabeledFaceDescriptors(descriptors.filter(d => d.descriptors.length > 0));
+
+      } catch (error) {
+         console.error("Error loading face-api models", error);
+         toast({ title: "AI Error", description: "Could not load face recognition models.", variant: "destructive"});
+      } finally {
+        setIsLoadingAi(false);
+        setProcessingText('');
+      }
+    };
+
 
   useEffect(() => {
-    if (isOpen && modelsLoaded) {
-      setProcessingText('Preparing enrolled faces...');
-      setIsProcessing(true);
-      loadLabeledImages().then(descriptors => {
-        setLabeledFaceDescriptors(descriptors.filter(d => d.descriptors.length > 0));
-        setIsProcessing(false);
-        setProcessingText('');
-      });
-      
+    if (isOpen) {
       setHasCameraPermission(undefined);
       const getCameraPermission = async () => {
         try {
@@ -126,7 +125,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
         (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
       }
     }
-  }, [isOpen, modelsLoaded, labourers, toast]);
+  }, [isOpen]);
 
   const handleScan = async () => {
     if (!videoRef.current || !labeledFaceDescriptors) return;
@@ -135,16 +134,16 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
     setProcessingText('Detecting face...');
 
     try {
-        const displaySize = { width: videoRef.current.clientWidth, height: videoRef.current.clientHeight };
-        
         const detections = await faceapi.detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
         
         if (detections.length === 0) {
              toast({ title: "No Face Detected", description: "Please position the face clearly in the camera.", variant: "destructive" });
+             setIsProcessing(false);
              return;
         }
         if (detections.length > 1) {
             toast({ title: "Multiple Faces Detected", description: "Please ensure only one person is in the frame.", variant: "destructive" });
+            setIsProcessing(false);
             return;
         }
 
@@ -153,8 +152,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
         const bestMatch = faceMatcher.findBestMatch(detections[0].descriptor);
         const matchedWorker = labourers.find(l => l.id === bestMatch.label);
 
-
-        if (bestMatch.label !== 'unknown' && matchedWorker) {
+        if (bestMatch.label !== 'unknown' && matchedWorker && bestMatch.distance < 0.5) { // 0.6 is a good threshold
             onFaceRecognized(bestMatch.label);
             toast({
                 title: 'Attendance Marked!',
@@ -165,7 +163,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
              toast({
                 variant: 'destructive',
                 title: 'No Match Found',
-                description: `Could not identify the worker.`,
+                description: `Could not identify the worker. Please ensure they are enrolled and the lighting is good.`,
             });
         }
 
@@ -181,12 +179,19 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
         setProcessingText("");
     }
   };
+  
+  const handleOpen = (open: boolean) => {
+    setIsOpen(open);
+    if (open && !modelsLoaded) {
+      loadModelsAndDescriptors();
+    }
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" disabled={!modelsLoaded}><ScanFace className="mr-2" />
-        { !modelsLoaded ? "Loading AI..." : "Scan Face for Attendance" }
+        <Button variant="outline" disabled={isLoadingAi}>
+          { isLoadingAi ? <><Loader2 className="mr-2 animate-spin" /> Loading AI...</> : <><ScanFace className="mr-2" />Scan Face for Attendance</> }
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -204,7 +209,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
                     <p className="text-white text-center p-4">Camera permission denied. Please enable it in your browser settings.</p>
                 </div>
             )}
-            {isProcessing && (
+            {(isProcessing || isLoadingAi) && (
                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-md">
                     <Loader2 className="h-10 w-10 text-primary animate-spin" />
                     <p className="text-white mt-4 text-center">{processingText}</p>
@@ -213,7 +218,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
         </div>
 
         <DialogFooter>
-          <Button onClick={handleScan} disabled={!hasCameraPermission || isProcessing || !labeledFaceDescriptors}>
+          <Button onClick={handleScan} disabled={!hasCameraPermission || isProcessing || isLoadingAi || !labeledFaceDescriptors}>
             {isProcessing ? <><Loader2 className="animate-spin mr-2" /> {processingText}</> : <><ScanFace /> Scan & Mark Present</>}
           </Button>
         </DialogFooter>
