@@ -77,3 +77,15 @@ export interface Settlement {
     overall_totals: OverallTotals;
     created_at: string;
 }
+
+// Add this new type for the attendance form props
+export interface AttendanceFormProps {
+  targetDate: Date;
+  onSave?: () => void;
+}
+
+export interface AttendanceState {
+  status: AttendanceStatus;
+  advance: number;
+  remarks: string;
+}
