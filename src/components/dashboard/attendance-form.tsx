@@ -32,6 +32,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Camera, ScanFace, Loader2 } from "lucide-react";
+import type { AttendanceFormProps, AttendanceState } from "@/types";
 
 
 type LabeledFaceDescriptors = {
@@ -44,7 +45,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingText, setProcessingText] = useState("Analyzing... Please wait.");
   const [modelsLoaded, setModelsLoaded] = useState(false);
-  const [labeledFaceDescriptors, setLabeledFaceDescriptors] = useState<LabeledFaceDescriptors[] | null>(null);
+  const [labeledFaceDescriptors, setLabeledFaceDescriptors] = useState<faceapi.LabeledFaceDescriptors[] | null>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | undefined>(undefined);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
@@ -52,7 +53,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
 
   useEffect(() => {
     const loadModels = async () => {
-      const MODEL_URL = '/models';
+      const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
       try {
         setProcessingText('Loading AI models...');
         await Promise.all([
@@ -90,7 +91,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
                 } catch (error) {
                     console.error(`Could not process image for ${worker.fullName}`, error);
                 }
-                return { label: worker.id, descriptors: descriptions };
+                return new faceapi.LabeledFaceDescriptors(worker.id, descriptions);
             })
         );
     }
@@ -445,3 +446,5 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
+
+    
