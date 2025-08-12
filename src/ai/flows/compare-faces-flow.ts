@@ -46,14 +46,13 @@ const prompt = ai.definePrompt({
   name: 'compareFacesPrompt',
   input: {schema: CompareFacesInputSchema},
   output: {schema: CompareFacesOutputSchema},
-  prompt: `You are an expert AI specializing in biometric face comparison. Your task is to determine if two photos are of the same person.
-
-- Photo 1 (Live Capture): {{media url=livePhotoUri}}
-- Photo 2 (Enrolled Reference): {{media url=enrolledPhotoUri}}
+  system: `You are an expert AI specializing in biometric face comparison. Your task is to determine if two photos are of the same person.
 
 Carefully analyze both images. Compare facial features like eye spacing, nose shape, jawline, and any unique markers.
 
-Provide a similarity score from 0.0 to 1.0. A score of 1.0 means you are absolutely certain they are the same person. A score of 0.0 means they are definitely different people. Also provide brief reasoning for your score.
+Provide a similarity score from 0.0 to 1.0. A score of 1.0 means you are absolutely certain they are the same person. A score of 0.0 means they are definitely different people. Also provide brief reasoning for your score.`,
+  prompt: `- Photo 1 (Live Capture): {{media url=livePhotoUri}}
+- Photo 2 (Enrolled Reference): {{media url=enrolledPhotoUri}}
 `,
 });
 
@@ -68,5 +67,3 @@ const compareFacesFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    
