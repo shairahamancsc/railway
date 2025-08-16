@@ -656,16 +656,16 @@ export default function LabourerManagementPage() {
                         )}
                       </TableCell>
                        {showSalary && <TableCell className="hidden md:table-cell">{labourer.daily_salary}</TableCell>}
-                      <TableCell className="text-right space-x-2 whitespace-nowrap">
+                      <TableCell className="text-right space-x-1 whitespace-nowrap">
                          <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Edit
+                          <Pencil className="mr-1 h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Edit</span>
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                              <Button variant="destructive" size="sm">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
+                                <Trash2 className="mr-1 h-4 w-4 sm:mr-2" />
+                                <span className="hidden sm:inline">Delete</span>
                               </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>

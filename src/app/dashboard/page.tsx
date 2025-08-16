@@ -22,7 +22,7 @@ import { Users, UserCheck } from "lucide-react";
 import { format } from "date-fns";
 
 export default function DashboardPage() {
-  const { labourers, attendance } = useData();
+  const { labourers, attendance } from useData();
 
   const today = format(new Date(), "yyyy-MM-dd");
   const todayAttendance = attendance.find(a => a.date === today);
@@ -67,51 +67,53 @@ export default function DashboardPage() {
           <CardTitle>Worker Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Profile</TableHead>
-                <TableHead>Full Name</TableHead>
-                <TableHead>Father's Name</TableHead>
-                <TableHead>Mobile No.</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {labourers.length > 0 ? (
-                labourers.map((labourer) => (
-                  <TableRow key={labourer.id}>
-                    <TableCell>
-                      <Avatar>
-                        <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
-                        <AvatarFallback>
-                          {labourer.fullName.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {labourer.fullName}
-                    </TableCell>
-                    <TableCell>{labourer.documents.fatherName}</TableCell>
-                    <TableCell>{labourer.documents.mobile}</TableCell>
-                    <TableCell>
-                      {todayAttendance?.presentLabourerIds.includes(labourer.id) ? (
-                        <Badge>Present</Badge>
-                      ) : (
-                        <Badge variant="secondary">Absent</Badge>
-                      )}
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Profile</TableHead>
+                  <TableHead>Full Name</TableHead>
+                  <TableHead className="hidden md:table-cell">Father's Name</TableHead>
+                  <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {labourers.length > 0 ? (
+                  labourers.map((labourer) => (
+                    <TableRow key={labourer.id}>
+                      <TableCell>
+                        <Avatar>
+                          <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
+                          <AvatarFallback>
+                            {labourer.fullName.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {labourer.fullName}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">{labourer.documents.fatherName}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
+                      <TableCell>
+                        {todayAttendance?.presentLabourerIds.includes(labourer.id) ? (
+                          <Badge>Present</Badge>
+                        ) : (
+                          <Badge variant="secondary">Absent</Badge>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center">
+                      No workers added yet.
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center">
-                    No workers added yet.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
