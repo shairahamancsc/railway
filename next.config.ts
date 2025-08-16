@@ -18,17 +18,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Required for face-api.js to work
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-      canvas: false,
-    };
-    return config;
-  }
 };
 
 export default nextConfig;
