@@ -43,9 +43,9 @@ export default function ApiPage() {
         <CardContent className="space-y-6">
           {endpoints.map((endpoint) => (
             <div key={endpoint.path} className="rounded-md border p-4">
-                <div className="flex items-center gap-4">
-                    <span className="font-bold text-primary bg-primary/10 px-2 py-1 rounded-md text-sm">{endpoint.method}</span>
-                    <code className="text-sm font-mono bg-muted px-2 py-1 rounded-md">{endpoint.path}</code>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <span className="font-bold text-primary bg-primary/10 px-2 py-1 rounded-md text-sm w-fit">{endpoint.method}</span>
+                    <code className="text-sm font-mono bg-muted px-2 py-1 rounded-md break-all">{endpoint.path}</code>
                 </div>
                 <p className="text-muted-foreground mt-2">{endpoint.description}</p>
                 {baseUrl && (

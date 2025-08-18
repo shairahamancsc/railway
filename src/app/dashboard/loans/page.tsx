@@ -96,8 +96,8 @@ export default function LoansPage() {
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="md:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle>Worker Loan Balances</CardTitle>
@@ -146,7 +146,7 @@ export default function LoansPage() {
           </Card>
         </div>
 
-        <div className="lg:col-span-1">
+        <div className="md:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle>New Transaction</CardTitle>

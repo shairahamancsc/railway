@@ -149,7 +149,7 @@ function FaceScanDialog({ onFaceScan, currentScan }: { onFaceScan: (dataUri: str
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" type="button">
+        <Button variant="outline" type="button" className="w-full">
           <ScanFace className="mr-2" />
           {currentScan || capturedImage ? "View/Retake Face Scan" : "Scan Face"}
         </Button>
@@ -355,48 +355,48 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
         </div>
 
         <h3 className="text-lg font-medium font-headline border-t pt-6">Profile & Face Scan</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="profilePhoto"
-            render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Profile Photo (Optional)</FormLabel>
-                  <FormControl>
-                    <div>
-                      <Input 
-                        type="file" 
-                        className="hidden"
-                        ref={profilePhotoRef}
-                        onChange={(e) => field.onChange(e.target.files?.[0])}
-                        accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                      />
-                      <Button type="button" variant="outline" onClick={() => profilePhotoRef.current?.click()}>
-                        <Upload className="mr-2 h-4 w-4" />
-                        <span className="truncate max-w-[200px]">{getFileName("profilePhoto")}</span>
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-            )}
-          />
-           <FormField
-            control={form.control}
-            name="faceScanDataUri"
-            render={({ field }) => (
-                <FormItem>
-                  <FormLabel>AI Face Recognition</FormLabel>
-                   <FormControl>
-                     <FaceScanDialog 
-                       onFaceScan={(dataUri) => field.onChange(dataUri)}
-                       currentScan={field.value}
-                     />
-                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-            )}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="profilePhoto"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Profile Photo (Optional)</FormLabel>
+                    <FormControl>
+                      <div className="w-full">
+                        <Input 
+                          type="file" 
+                          className="hidden"
+                          ref={profilePhotoRef}
+                          onChange={(e) => field.onChange(e.target.files?.[0])}
+                          accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                        />
+                        <Button type="button" variant="outline" className="w-full" onClick={() => profilePhotoRef.current?.click()}>
+                          <Upload className="mr-2 h-4 w-4" />
+                          <span className="truncate max-w-[200px]">{getFileName("profilePhoto")}</span>
+                        </Button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="faceScanDataUri"
+              render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>AI Face Recognition</FormLabel>
+                     <FormControl>
+                       <FaceScanDialog 
+                         onFaceScan={(dataUri) => field.onChange(dataUri)}
+                         currentScan={field.value}
+                       />
+                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+              )}
+            />
         </div>
 
 
@@ -444,7 +444,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
         </div>
         
         <h3 className="text-lg font-medium font-headline border-t pt-6">Document Upload (Optional)</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name="aadhaarFile"
@@ -452,7 +452,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                   <FormItem>
                     <FormLabel>Aadhaar Document</FormLabel>
                     <FormControl>
-                      <div>
+                      <div className="w-full">
                         <Input 
                           type="file" 
                           className="hidden"
@@ -460,7 +460,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                           onChange={(e) => field.onChange(e.target.files?.[0])}
                           accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
                         />
-                        <Button type="button" variant="outline" onClick={() => aadhaarFileRef.current?.click()}>
+                        <Button type="button" variant="outline" className="w-full" onClick={() => aadhaarFileRef.current?.click()}>
                           <Upload className="mr-2 h-4 w-4" />
                           <span className="truncate max-w-[200px]">{getFileName("aadhaarFile")}</span>
                         </Button>
@@ -477,7 +477,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                   <FormItem>
                     <FormLabel>PAN Document</FormLabel>
                     <FormControl>
-                      <div>
+                      <div className="w-full">
                         <Input 
                           type="file" 
                           className="hidden"
@@ -485,7 +485,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                           onChange={(e) => field.onChange(e.target.files?.[0])}
                           accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
                         />
-                        <Button type="button" variant="outline" onClick={() => panFileRef.current?.click()}>
+                        <Button type="button" variant="outline" className="w-full" onClick={() => panFileRef.current?.click()}>
                           <Upload className="mr-2 h-4 w-4" />
                           <span className="truncate max-w-[200px]">{getFileName("panFile")}</span>
                         </Button>
@@ -502,7 +502,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                   <FormItem>
                     <FormLabel>DL Document</FormLabel>
                     <FormControl>
-                      <div>
+                      <div className="w-full">
                         <Input 
                           type="file" 
                           className="hidden"
@@ -510,7 +510,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                           onChange={(e) => field.onChange(e.target.files?.[0])}
                           accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
                         />
-                        <Button type="button" variant="outline" onClick={() => dlFileRef.current?.click()}>
+                        <Button type="button" variant="outline" className="w-full" onClick={() => dlFileRef.current?.click()}>
                           <Upload className="mr-2 h-4 w-4" />
                           <span className="truncate max-w-[200px]">{getFileName("dlFile")}</span>
                         </Button>
@@ -592,7 +592,7 @@ export default function LabourerManagementPage() {
 
       <Card>
         <CardHeader>
-           <div className="flex items-center justify-between">
+           <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
             <div>
               <CardTitle>All Workers</CardTitle>
               <CardDescription>View and manage all registered workers.</CardDescription>
@@ -612,7 +612,7 @@ export default function LabourerManagementPage() {
                   <TableHead>Full Name</TableHead>
                   <TableHead>Designation</TableHead>
                   <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
-                  <TableHead>Face Scan</TableHead>
+                  <TableHead className="hidden md:table-cell">Face Scan</TableHead>
                   {showSalary && <TableHead className="hidden md:table-cell">Daily Salary (₹)</TableHead>}
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -648,7 +648,7 @@ export default function LabourerManagementPage() {
                         <Badge variant="secondary">{labourer.designation}</Badge>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
-                      <TableCell>
+                      <TableCell className="hidden md:table-cell">
                         {labourer.face_scan_data_uri ? (
                             <Badge variant="default">Enrolled</Badge>
                         ) : (
@@ -657,14 +657,14 @@ export default function LabourerManagementPage() {
                       </TableCell>
                        {showSalary && <TableCell className="hidden md:table-cell">{labourer.daily_salary}</TableCell>}
                       <TableCell className="text-right space-x-1 whitespace-nowrap">
-                         <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
-                          <Pencil className="mr-1 h-4 w-4 sm:mr-2" />
+                         <Button variant="outline" size="icon" className="sm:size-sm" onClick={() => handleEditClick(labourer)}>
+                          <Pencil className="h-4 w-4 sm:mr-2" />
                           <span className="hidden sm:inline">Edit</span>
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                             <Button variant="destructive" size="sm">
-                                <Trash2 className="mr-1 h-4 w-4 sm:mr-2" />
+                             <Button variant="destructive" size="icon" className="sm:size-sm">
+                                <Trash2 className="h-4 w-4 sm:mr-2" />
                                 <span className="hidden sm:inline">Delete</span>
                               </Button>
                           </AlertDialogTrigger>
