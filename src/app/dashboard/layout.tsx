@@ -48,7 +48,7 @@ export default function DashboardLayout({
           <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6 no-print">
             <MobileSidebar />
           </header>
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-secondary/40">
             <div className="mx-auto w-full max-w-7xl">
               {children}
             </div>

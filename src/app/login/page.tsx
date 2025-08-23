@@ -67,13 +67,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm mx-auto">
+    <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
+      <Card className="w-full max-w-sm mx-auto shadow-xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
             <UserCheck className="h-8 w-8" />
           </div>
-          <CardTitle className="font-headline text-3xl">JRKE Labour Management Utility</CardTitle>
+          <CardTitle className="font-headline text-2xl">JRKE Labour Management Utility</CardTitle>
           <CardDescription>
             Sign in to manage your workforce
           </CardDescription>

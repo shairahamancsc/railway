@@ -277,252 +277,261 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g. Ramesh Kumar" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="designation"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Designation</FormLabel>
-                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a designation" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {designationValues.map(value => (
-                        <SelectItem key={value} value={value}>{value}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="fatherName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Father's Name (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g. Suresh Kumar" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="mobile"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mobile No. (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g. 9876543210" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dailySalary"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Daily Salary (₹) (Optional)</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="e.g. 500" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <h3 className="text-lg font-medium font-headline border-t pt-6">Profile & Face Scan</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div>
+            <h3 className="text-lg font-medium font-headline">Personal Information</h3>
+            <hr className="my-4" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
-              control={form.control}
-              name="profilePhoto"
-              render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Profile Photo (Optional)</FormLabel>
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <div className="w-full">
-                        <Input 
-                          type="file" 
-                          className="hidden"
-                          ref={profilePhotoRef}
-                          onChange={(e) => field.onChange(e.target.files?.[0])}
-                          accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                        />
-                        <Button type="button" variant="outline" className="w-full" onClick={() => profilePhotoRef.current?.click()}>
-                          <Upload className="mr-2 h-4 w-4" />
-                          <span className="truncate max-w-[200px]">{getFileName("profilePhoto")}</span>
-                        </Button>
-                      </div>
+                    <Input placeholder="e.g. Ramesh Kumar" {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-              )}
+                </FormItem>
+                )}
             />
-             <FormField
-              control={form.control}
-              name="faceScanDataUri"
-              render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>AI Face Recognition</FormLabel>
-                     <FormControl>
-                       <FaceScanDialog 
-                         onFaceScan={(dataUri) => field.onChange(dataUri)}
-                         currentScan={field.value}
-                       />
-                     </FormControl>
+            <FormField
+                control={form.control}
+                name="designation"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Designation</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a designation" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                        {designationValues.map(value => (
+                            <SelectItem key={value} value={value}>{value}</SelectItem>
+                        ))}
+                        </SelectContent>
+                    </Select>
                     <FormMessage />
-                  </FormItem>
-              )}
+                </FormItem>
+                )}
             />
-        </div>
-
-
-        <h3 className="text-lg font-medium font-headline border-t pt-6">Documents (Optional)</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="aadhaar"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Aadhaar No.</FormLabel>
-                <FormControl>
-                  <Input placeholder="XXXX XXXX XXXX" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="pan"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>PAN Card No.</FormLabel>
-                <FormControl>
-                  <Input placeholder="ABCDE1234F" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Driving License No.</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g. DL-1420110012345" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+                control={form.control}
+                name="fatherName"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Father's Name (Optional)</FormLabel>
+                    <FormControl>
+                    <Input placeholder="e.g. Suresh Kumar" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="mobile"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Mobile No. (Optional)</FormLabel>
+                    <FormControl>
+                    <Input placeholder="e.g. 9876543210" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="dailySalary"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Daily Salary (₹) (Optional)</FormLabel>
+                    <FormControl>
+                    <Input type="number" placeholder="e.g. 500" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            </div>
         </div>
         
-        <h3 className="text-lg font-medium font-headline border-t pt-6">Document Upload (Optional)</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="aadhaarFile"
-              render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Aadhaar Document</FormLabel>
-                    <FormControl>
-                      <div className="w-full">
-                        <Input 
-                          type="file" 
-                          className="hidden"
-                          ref={aadhaarFileRef}
-                          onChange={(e) => field.onChange(e.target.files?.[0])}
-                          accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
+        <div>
+            <h3 className="text-lg font-medium font-headline">Profile & Face Scan</h3>
+            <hr className="my-4" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                control={form.control}
+                name="profilePhoto"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Profile Photo (Optional)</FormLabel>
+                        <FormControl>
+                        <div className="w-full">
+                            <Input 
+                            type="file" 
+                            className="hidden"
+                            ref={profilePhotoRef}
+                            onChange={(e) => field.onChange(e.target.files?.[0])}
+                            accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                            />
+                            <Button type="button" variant="outline" className="w-full" onClick={() => profilePhotoRef.current?.click()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            <span className="truncate max-w-[200px]">{getFileName("profilePhoto")}</span>
+                            </Button>
+                        </div>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="faceScanDataUri"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>AI Face Recognition</FormLabel>
+                        <FormControl>
+                        <FaceScanDialog 
+                            onFaceScan={(dataUri) => field.onChange(dataUri)}
+                            currentScan={field.value}
                         />
-                        <Button type="button" variant="outline" className="w-full" onClick={() => aadhaarFileRef.current?.click()}>
-                          <Upload className="mr-2 h-4 w-4" />
-                          <span className="truncate max-w-[200px]">{getFileName("aadhaarFile")}</span>
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="panFile"
-              render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>PAN Document</FormLabel>
-                    <FormControl>
-                      <div className="w-full">
-                        <Input 
-                          type="file" 
-                          className="hidden"
-                          ref={panFileRef}
-                          onChange={(e) => field.onChange(e.target.files?.[0])}
-                          accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
-                        />
-                        <Button type="button" variant="outline" className="w-full" onClick={() => panFileRef.current?.click()}>
-                          <Upload className="mr-2 h-4 w-4" />
-                          <span className="truncate max-w-[200px]">{getFileName("panFile")}</span>
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="dlFile"
-              render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>DL Document</FormLabel>
-                    <FormControl>
-                      <div className="w-full">
-                        <Input 
-                          type="file" 
-                          className="hidden"
-                          ref={dlFileRef}
-                          onChange={(e) => field.onChange(e.target.files?.[0])}
-                          accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
-                        />
-                        <Button type="button" variant="outline" className="w-full" onClick={() => dlFileRef.current?.click()}>
-                          <Upload className="mr-2 h-4 w-4" />
-                          <span className="truncate max-w-[200px]">{getFileName("dlFile")}</span>
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-              )}
-            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
         </div>
 
+        <div>
+            <h3 className="text-lg font-medium font-headline">Documents (Optional)</h3>
+            <hr className="my-4" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+                control={form.control}
+                name="aadhaar"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Aadhaar No.</FormLabel>
+                    <FormControl>
+                    <Input placeholder="XXXX XXXX XXXX" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="pan"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>PAN Card No.</FormLabel>
+                    <FormControl>
+                    <Input placeholder="ABCDE1234F" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="dl"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Driving License No.</FormLabel>
+                    <FormControl>
+                    <Input placeholder="e.g. DL-1420110012345" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            </div>
+            
+            <h3 className="text-lg font-medium font-headline mt-8">Document Upload (Optional)</h3>
+            <hr className="my-4" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <FormField
+                control={form.control}
+                name="aadhaarFile"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Aadhaar Document</FormLabel>
+                        <FormControl>
+                        <div className="w-full">
+                            <Input 
+                            type="file" 
+                            className="hidden"
+                            ref={aadhaarFileRef}
+                            onChange={(e) => field.onChange(e.target.files?.[0])}
+                            accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
+                            />
+                            <Button type="button" variant="outline" className="w-full" onClick={() => aadhaarFileRef.current?.click()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            <span className="truncate max-w-[200px]">{getFileName("aadhaarFile")}</span>
+                            </Button>
+                        </div>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="panFile"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>PAN Document</FormLabel>
+                        <FormControl>
+                        <div className="w-full">
+                            <Input 
+                            type="file" 
+                            className="hidden"
+                            ref={panFileRef}
+                            onChange={(e) => field.onChange(e.target.files?.[0])}
+                            accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
+                            />
+                            <Button type="button" variant="outline" className="w-full" onClick={() => panFileRef.current?.click()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            <span className="truncate max-w-[200px]">{getFileName("panFile")}</span>
+                            </Button>
+                        </div>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="dlFile"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>DL Document</FormLabel>
+                        <FormControl>
+                        <div className="w-full">
+                            <Input 
+                            type="file" 
+                            className="hidden"
+                            ref={dlFileRef}
+                            onChange={(e) => field.onChange(e.target.files?.[0])}
+                            accept={ACCEPTED_DOCUMENT_TYPES.join(",")}
+                            />
+                            <Button type="button" variant="outline" className="w-full" onClick={() => dlFileRef.current?.click()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            <span className="truncate max-w-[200px]">{getFileName("dlFile")}</span>
+                            </Button>
+                        </div>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
+        </div>
 
         <div className="flex justify-end pt-4">
           <Button type="submit" disabled={isLoading}>
