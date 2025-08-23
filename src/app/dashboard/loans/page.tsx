@@ -106,7 +106,6 @@ export default function LoansPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="relative w-full overflow-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -143,7 +142,6 @@ export default function LoansPage() {
                     )}
                   </TableBody>
                 </Table>
-              </div>
             </CardContent>
           </Card>
         </div>

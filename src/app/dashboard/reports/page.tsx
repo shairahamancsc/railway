@@ -255,7 +255,6 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent>
           {labourers.length > 0 ? (
-            <div className="relative w-full overflow-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -386,7 +385,6 @@ export default function ReportsPage() {
                     ))}
                 </TableBody>
               </Table>
-            </div>
           ) : (
             <p className="text-muted-foreground text-center py-8">
               No worker data available for this report.

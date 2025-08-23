@@ -615,7 +615,6 @@ export default function LabourerManagementPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -709,7 +708,6 @@ export default function LabourerManagementPage() {
                 )}
               </TableBody>
             </Table>
-          </div>
         </CardContent>
       </Card>
       

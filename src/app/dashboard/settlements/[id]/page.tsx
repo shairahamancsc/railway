@@ -142,7 +142,6 @@ export default function SettlementDetailPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -207,7 +206,6 @@ export default function SettlementDetailPage() {
                   ))}
               </TableBody>
             </Table>
-          </div>
         </CardContent>
       </Card>
     </div>
