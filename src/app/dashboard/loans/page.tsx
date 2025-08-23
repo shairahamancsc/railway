@@ -106,42 +106,44 @@ export default function LoansPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Worker</TableHead>
-                    <TableHead className="text-right">Loan Balance (₹)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={2} className="text-center">Loading...</TableCell>
+                      <TableHead>Worker</TableHead>
+                      <TableHead className="text-right">Loan Balance (₹)</TableHead>
                     </TableRow>
-                  ) : labourers.length > 0 ? (
-                    labourers.sort((a,b) => (b.loan_balance || 0) - (a.loan_balance || 0)).map((labourer) => (
-                      <TableRow key={labourer.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar>
-                              <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} />
-                              <AvatarFallback>{labourer.fullName.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium">{labourer.fullName}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className={`text-right font-bold ${labourer.loan_balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                          {(labourer.loan_balance || 0).toFixed(2)}
-                        </TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={2} className="text-center">Loading...</TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={2} className="text-center">No workers found.</TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                    ) : labourers.length > 0 ? (
+                      labourers.sort((a,b) => (b.loan_balance || 0) - (a.loan_balance || 0)).map((labourer) => (
+                        <TableRow key={labourer.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar>
+                                <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} />
+                                <AvatarFallback>{labourer.fullName.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium">{labourer.fullName}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className={`text-right font-bold ${labourer.loan_balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            {(labourer.loan_balance || 0).toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={2} className="text-center">No workers found.</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </div>

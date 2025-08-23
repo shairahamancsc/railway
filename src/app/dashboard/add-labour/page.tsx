@@ -656,34 +656,36 @@ export default function LabourerManagementPage() {
                         )}
                       </TableCell>
                        {showSalary && <TableCell className="hidden md:table-cell">{labourer.daily_salary}</TableCell>}
-                      <TableCell className="text-right space-x-1 whitespace-nowrap">
-                         <Button variant="outline" size="icon" className="sm:size-sm" onClick={() => handleEditClick(labourer)}>
-                          <Pencil className="h-4 w-4 sm:mr-2" />
-                          <span className="hidden sm:inline">Edit</span>
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                             <Button variant="destructive" size="icon" className="sm:size-sm">
-                                <Trash2 className="h-4 w-4 sm:mr-2" />
-                                <span className="hidden sm:inline">Delete</span>
-                              </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the
-                                worker and all their associated data from the database.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(labourer.id)}>
-                                Continue
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                      <TableCell className="text-right">
+                         <div className="flex flex-wrap items-center justify-end gap-1">
+                             <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
+                              <Pencil className="h-4 w-4 sm:mr-2" />
+                              <span className="hidden sm:inline">Edit</span>
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                 <Button variant="destructive" size="sm">
+                                    <Trash2 className="h-4 w-4 sm:mr-2" />
+                                    <span className="hidden sm:inline">Delete</span>
+                                  </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the
+                                    worker and all their associated data from the database.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDelete(labourer.id)}>
+                                    Continue
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                         </div>
                       </TableCell>
                     </TableRow>
                   ))
