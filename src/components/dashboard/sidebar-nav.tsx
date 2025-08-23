@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   LayoutDashboard,
   UserPlus,
@@ -32,7 +33,7 @@ const navItems = [
   { href: "/dashboard/api", icon: Code, label: "API" },
 ];
 
-function SidebarContentNav() {
+function SidebarContentNav({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
@@ -44,7 +45,22 @@ function SidebarContentNav() {
       description: "You have been successfully logged out.",
     });
     router.push("/login");
+    if (onLinkClick) {
+      onLinkClick();
+    }
   };
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Only call onLinkClick if the path is actually changing,
+    // otherwise the sheet closes even when clicking the current page.
+    if (pathname !== href && onLinkClick) {
+      onLinkClick();
+    } else if (pathname === href && onLinkClick) {
+      // Still close it if they click the same link
+      onLinkClick();
+    }
+  };
+
 
   return (
     <div className="flex h-full flex-col gap-2">
@@ -60,6 +76,7 @@ function SidebarContentNav() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={(e) => handleLinkClick(e, item.href)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
                 pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard') ? "bg-muted text-primary" : ""
               }`}
@@ -91,8 +108,10 @@ export function SidebarNav() {
 }
 
 export function MobileSidebar() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button
           variant="outline"
@@ -105,7 +124,7 @@ export function MobileSidebar() {
       </SheetTrigger>
       <SheetContent side="left" className="flex flex-col p-0">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-        <SidebarContentNav />
+        <SidebarContentNav onLinkClick={() => setIsOpen(false)} />
       </SheetContent>
     </Sheet>
   )
