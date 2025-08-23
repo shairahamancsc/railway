@@ -90,7 +90,7 @@ export default function SettlementDetailPage() {
                     This is the total payroll summary that was settled for this period.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-4">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Gross Wages</CardTitle>
@@ -142,7 +142,7 @@ export default function SettlementDetailPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -164,7 +164,7 @@ export default function SettlementDetailPage() {
               <TableBody>
                 {report_data.map((data) => (
                     <TableRow key={data.labourerId}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium whitespace-nowrap">
                         {data.fullName}
                       </TableCell>
                       <TableCell className="text-right">

@@ -96,8 +96,8 @@ export default function LoansPage() {
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle>Worker Loan Balances</CardTitle>
@@ -106,7 +106,7 @@ export default function LoansPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
+              <div className="relative w-full overflow-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -128,7 +128,7 @@ export default function LoansPage() {
                                 <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} />
                                 <AvatarFallback>{labourer.fullName.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <span className="font-medium">{labourer.fullName}</span>
+                              <span className="font-medium whitespace-nowrap">{labourer.fullName}</span>
                             </div>
                           </TableCell>
                           <TableCell className={`text-right font-bold ${labourer.loan_balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
@@ -148,7 +148,7 @@ export default function LoansPage() {
           </Card>
         </div>
 
-        <div className="md:col-span-1">
+        <div className="lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle>New Transaction</CardTitle>

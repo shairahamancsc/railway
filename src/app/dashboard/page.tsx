@@ -79,7 +79,7 @@ export default function DashboardPage() {
           <CardTitle>Worker Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>

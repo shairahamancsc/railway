@@ -51,6 +51,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const designationValues: [Designation, ...Designation[]] = ["Supervisor", "Skilled Labour", "Unskilled Labour", "Driver", "Office Incharge"];
 
@@ -540,6 +541,7 @@ export default function LabourerManagementPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showSalary, setShowSalary] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const handleEditClick = (labourer: Labourer) => {
     setEditLabourer(labourer);
@@ -592,7 +594,7 @@ export default function LabourerManagementPage() {
 
       <Card>
         <CardHeader>
-           <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div>
               <CardTitle>All Workers</CardTitle>
               <CardDescription>View and manage all registered workers.</CardDescription>
@@ -604,7 +606,7 @@ export default function LabourerManagementPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          <div className="relative w-full overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -613,7 +615,7 @@ export default function LabourerManagementPage() {
                   <TableHead>Designation</TableHead>
                   <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
                   <TableHead className="hidden md:table-cell">Face Scan</TableHead>
-                  {showSalary && <TableHead className="hidden md:table-cell">Daily Salary (₹)</TableHead>}
+                  {showSalary && <TableHead className="hidden lg:table-cell">Daily Salary (₹)</TableHead>}
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -655,9 +657,9 @@ export default function LabourerManagementPage() {
                             <Badge variant="outline">Not Enrolled</Badge>
                         )}
                       </TableCell>
-                       {showSalary && <TableCell className="hidden md:table-cell">{labourer.daily_salary}</TableCell>}
+                       {showSalary && <TableCell className="hidden lg:table-cell">{labourer.daily_salary}</TableCell>}
                       <TableCell className="text-right">
-                         <div className="flex flex-wrap items-center justify-end gap-1">
+                         <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1">
                              <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
                               <Pencil className="h-4 w-4 sm:mr-2" />
                               <span className="hidden sm:inline">Edit</span>

@@ -255,7 +255,7 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent>
           {labourers.length > 0 ? (
-            <div className="overflow-x-auto">
+            <div className="relative w-full overflow-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
