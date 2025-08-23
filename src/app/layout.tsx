@@ -7,6 +7,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import useSmoothScroll from "@/hooks/use-smooth-scroll";
+import { ThemeProvider } from "@/components/theme-provider";
+
 
 export default function RootLayout({
   children,
@@ -29,10 +31,17 @@ export default function RootLayout({
         className="font-body antialiased"
         suppressHydrationWarning={true}
       >
-        {children}
-        <Analytics />
-        <SpeedInsights />
-        <Toaster />
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
+            {children}
+            <Analytics />
+            <SpeedInsights />
+            <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "./theme-toggle";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -69,7 +70,8 @@ function SidebarContentNav() {
           ))}
         </nav>
       </div>
-      <div className="mt-auto p-4">
+      <div className="mt-auto p-4 space-y-2">
+        <ThemeToggle />
         <Button size="sm" className="w-full" onClick={handleLogout}>
             <LogOut className="h-4 w-4 mr-2" />
             Logout
