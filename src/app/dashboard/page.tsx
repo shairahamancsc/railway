@@ -1,6 +1,8 @@
 
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useData } from "@/hooks/useData";
 import {
   Card,
@@ -22,7 +24,17 @@ import { Users, UserCheck } from "lucide-react";
 import { format } from "date-fns";
 
 export default function DashboardPage() {
-  const { labourers, attendance } from useData();
+  const router = useRouter();
+  const { labourers, attendance } = useData();
+
+  useEffect(() => {
+    const authToken = localStorage.getItem("auth-token");
+
+    if (authToken !== "authenticated") {
+      router.push("/login");
+    }
+  }, [router]);
+
 
   const today = format(new Date(), "yyyy-MM-dd");
   const todayAttendance = attendance.find(a => a.date === today);

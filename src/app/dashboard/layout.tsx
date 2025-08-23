@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -13,29 +12,29 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [isAuthChecked, setIsAuthChecked] = useState(typeof window !== "undefined" ? localStorage.getItem("auth-token") === "authenticated" : false);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("auth-token") === "authenticated";
     if (!isAuthenticated) {
       router.replace("/login");
-    } else {
+    } else if (!isAuthChecked) {
       setIsAuthChecked(true);
     }
-  }, [router]);
+  }, [router, isAuthChecked]);
 
   if (!isAuthChecked) {
     return (
-        <div className="flex min-h-screen w-full">
-            <div className="hidden md:block">
-                <Skeleton className="h-full w-64" />
-            </div>
-            <div className="flex-1 p-8">
-                <Skeleton className="h-16 w-full mb-8" />
-                <Skeleton className="h-64 w-full" />
-            </div>
+      <div className="flex min-h-screen w-full">
+        <div className="hidden md:block">
+          <Skeleton className="h-full w-64" />
         </div>
-    )
+        <div className="flex-1 p-8">
+          <Skeleton className="h-16 w-full mb-8" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    );
   }
 
   return (
