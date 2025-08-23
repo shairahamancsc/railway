@@ -50,7 +50,7 @@ function SidebarContentNav() {
        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <BrandIcon className="h-6 w-6" />
-          <span className="">AttendEase</span>
+          <span className="">JRKE Labour Management Utility</span>
         </Link>
       </div>
       <div className="flex-1">

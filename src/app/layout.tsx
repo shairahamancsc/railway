@@ -18,8 +18,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>AttendEase</title>
-        <meta name="description" content="Labour Attendance Web App" />
+        <title>JRKE Labour Management Utility</title>
+        <meta name="description" content="JRKE Labour Management Utility" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
