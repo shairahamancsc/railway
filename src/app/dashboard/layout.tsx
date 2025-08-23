@@ -13,16 +13,16 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [isAuthChecked, setIsAuthChecked] = useState(typeof window !== "undefined" ? localStorage.getItem("auth-token") === "authenticated" : false);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("auth-token") === "authenticated";
     if (!isAuthenticated) {
       router.replace("/login");
-    } else if (!isAuthChecked) {
+    } else {
       setIsAuthChecked(true);
     }
-  }, [router, isAuthChecked]);
+  }, [router]);
 
   if (!isAuthChecked) {
     return (
@@ -41,11 +41,11 @@ export default function DashboardLayout({
   return (
     <DataProvider>
       <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr]">
-        <div className="hidden border-r bg-card md:block">
+        <aside className="hidden border-r bg-card md:block">
           <SidebarNav />
-        </div>
+        </aside>
         <div className="flex flex-col">
-          <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6 md:hidden no-print">
+          <header className="flex h-14 items-center gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6 no-print">
             <MobileSidebar />
           </header>
           <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
