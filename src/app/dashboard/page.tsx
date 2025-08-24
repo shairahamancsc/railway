@@ -186,7 +186,7 @@ export default function DashboardPage() {
                   labourers.map((labourer) => (
                     <TableRow key={labourer.id}>
                       <TableCell>
-                        <Avatar>
+                        <Avatar className="h-10 w-10">
                           <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
                           <AvatarFallback>
                             {labourer.fullName.charAt(0)}

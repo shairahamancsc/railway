@@ -4,10 +4,23 @@
 import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Inter, Space_Grotesk } from 'next/font/google'
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import useSmoothScroll from "@/hooks/use-smooth-scroll";
 import { ThemeProvider } from "@/components/theme-provider";
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-grotesk',
+})
 
 
 export default function RootLayout({
@@ -18,7 +31,7 @@ export default function RootLayout({
   useSmoothScroll();
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
         <title>JRKE Labour Management Utility</title>
         <meta name="description" content="JRKE Labour Management Utility" />

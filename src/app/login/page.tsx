@@ -70,7 +70,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-sm mx-auto shadow-xl">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary" style={{width: '64px', height: '64px'}}>
             <UserCheck className="h-8 w-8" />
           </div>
           <CardTitle className="font-headline text-2xl">JRKE Labour Management Utility</CardTitle>
