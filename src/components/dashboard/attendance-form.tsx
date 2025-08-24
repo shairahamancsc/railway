@@ -229,7 +229,7 @@ function FaceRecognitionDialog({ onFaceRecognized }: { onFaceRecognized: (labour
 
 
 export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
-  const { labourers, attendance, markAttendance } = useData();
+  const { labourers, attendance, markAttendance, loading } = useData();
   const { toast } = useToast();
 
   const dateStr = useMemo(() => format(targetDate, "yyyy-MM-dd"), [targetDate]);
@@ -239,24 +239,29 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const targetAttendanceRecord = attendance.find((a) => a.date === dateStr);
-    const initialData = new Map<string, AttendanceState>();
+    // Only set initial state when data is not loading anymore
+    if (!loading) {
+      const targetAttendanceRecord = attendance.find((a) => a.date === dateStr);
+      const initialData = new Map<string, AttendanceState>();
 
-    if (labourers.length > 0) {
-      labourers.forEach((labourer) => {
-        const record = targetAttendanceRecord?.records?.find(
-          (r) => r.labourerId === labourer.id
-        );
-        initialData.set(
-          labourer.id,
-          record || { status: "absent", advance: 0, remarks: "" }
-        );
-      });
+      if (labourers.length > 0) {
+        labourers.forEach((labourer) => {
+          const record = targetAttendanceRecord?.records?.find(
+            (r) => r.labourerId === labourer.id
+          );
+          initialData.set(
+            labourer.id,
+            record || { status: "absent", advance: 0, remarks: "" }
+          );
+        });
+      }
+      setAttendanceData(initialData);
+      setWorkDetails(targetAttendanceRecord?.workDetails || "");
+      setIsLoaded(true);
+    } else {
+        setIsLoaded(false);
     }
-    setAttendanceData(initialData);
-    setWorkDetails(targetAttendanceRecord?.workDetails || "");
-    setIsLoaded(true);
-  }, [attendance, labourers, dateStr]);
+  }, [attendance, labourers, dateStr, loading]);
 
   const handleAttendanceChange = (
     labourerId: string,
@@ -299,16 +304,9 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     }
   };
 
-  if (!isLoaded) {
+  if (!isLoaded || loading) {
     return (
       <div className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-              <Skeleton className="h-9 w-64 mb-2" />
-              <Skeleton className="h-5 w-48" />
-          </div>
-          <Skeleton className="h-10 w-36" />
-        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1,2,3].map(i => (
              <Card key={i}>
@@ -329,21 +327,11 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <h1 className="text-3xl font-headline font-bold tracking-tight">
-                Mark Attendance
-            </h1>
-            <p className="text-muted-foreground">
-                {format(targetDate, "EEEE, dd MMMM, yyyy")}
-            </p>
-        </div>
-        <div className="flex items-center gap-2">
-           <FaceRecognitionDialog onFaceRecognized={handleFaceRecognized} />
-          {labourers.length > 0 && (
-              <Button onClick={handleSaveAttendance}>Save Attendance</Button>
-          )}
-        </div>
+      <div className="flex items-center justify-end gap-2">
+         <FaceRecognitionDialog onFaceRecognized={handleFaceRecognized} />
+        {labourers.length > 0 && (
+            <Button onClick={handleSaveAttendance}>Save Attendance</Button>
+        )}
       </div>
 
       {labourers.length > 0 ? (
@@ -359,7 +347,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                     />
                     <AvatarFallback className="text-2xl">
                       {labourer.fullName.charAt(0)}
-                    </AvatarFallback>
+                    </Fallback>
                   </Avatar>
                   <CardTitle className="text-lg text-center">{labourer.fullName}</CardTitle>
                 </CardHeader>
@@ -451,5 +439,3 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
-
-    
