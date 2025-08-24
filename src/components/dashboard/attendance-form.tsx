@@ -322,7 +322,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   return (
