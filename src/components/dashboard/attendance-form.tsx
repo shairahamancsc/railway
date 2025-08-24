@@ -347,7 +347,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                     />
                     <AvatarFallback className="text-2xl">
                       {labourer.fullName.charAt(0)}
-                    </Fallback>
+                    </AvatarFallback>
                   </Avatar>
                   <CardTitle className="text-lg text-center">{labourer.fullName}</CardTitle>
                 </CardHeader>
