@@ -23,8 +23,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    clientComponents: ['face-api.js'],
+  webpack: (config, { isServer }) => {
+    // This is to solve the 'fs' module not found error in face-api.js
+    if (!isServer) {
+        config.resolve.fallback.fs = false;
+    }
+    return config;
   },
 };
 
