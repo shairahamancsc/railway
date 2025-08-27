@@ -3,11 +3,12 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { format, eachDayOfInterval, startOfMonth, endOfMonth, isAfter } from "date-fns";
+import * as XLSX from "xlsx";
 import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet, Archive, Banknote } from "lucide-react";
+import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet, Archive, Banknote, FileDown, FileUp } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,48 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 
+
+const exportToExcel = (reportData: ReportData[], overallTotals: OverallTotals, dateRange: DateRange | undefined) => {
+    const dataForSheet = reportData.map(d => ({
+        "Worker Name": d.fullName,
+        "Present": d.presentDays,
+        "Half": d.halfDays,
+        "Total Salary": d.totalSalary,
+        "Daily Advance": d.totalAdvance,
+        "Net Payable": d.netPayable,
+        "Current Loan": d.currentLoan,
+        "Loan Repayment": d.loanRepayment,
+        "New Loan": d.newLoan,
+        "Updated Loan Bal.": d.updatedLoanBalance,
+        "Final Amount Paid": d.finalAmountPaid,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataForSheet);
+
+    // Add overall totals at the bottom
+    XLSX.utils.sheet_add_aoa(worksheet, [[]], { origin: -1 }); // Spacer row
+    XLSX.utils.sheet_add_aoa(worksheet, [["Overall Summary"]], { origin: -1 });
+    XLSX.utils.sheet_add_aoa(worksheet, [
+        ["Total Gross Wages", overallTotals.totalGrossWages],
+        ["Total Daily Advance", overallTotals.totalAdvancePaid],
+        ["Total Loan Repayments", overallTotals.totalLoanRepayments],
+        ["Total New Loans Given", overallTotals.totalNewLoans],
+        ["Total Final Paid Amount", overallTotals.totalFinalPaid],
+    ], { origin: -1 });
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Payroll Report");
+
+    // Auto-fit columns
+    const cols = Object.keys(dataForSheet[0] || {}).map(key => ({
+        wch: Math.max(20, ...dataForSheet.map(d => (d[key as keyof typeof d] || '').toString().length), key.length)
+    }));
+    worksheet["!cols"] = cols;
+
+    const fromDate = dateRange?.from ? format(dateRange.from, "dd-MMM-yy") : '';
+    const toDate = dateRange?.to ? format(dateRange.to, "dd-MMM-yy") : '';
+    XLSX.writeFile(workbook, `Payroll Report ${fromDate} to ${toDate}.xlsx`);
+}
 
 export default function ReportsPage() {
   const { labourers, attendance, addSettlement } = useData();
@@ -216,11 +259,21 @@ export default function ReportsPage() {
                     disabled={(date) => isAfter(date, new Date())}
                   />
                 </PopoverContent>
-              </Popover>
-          <Button onClick={handlePrint} className="gap-2 w-full sm:w-auto">
-            <Printer className="h-4 w-4" />
-            Print
-          </Button>
+            </Popover>
+          <div className="flex w-full sm:w-auto items-center gap-2">
+            <Button onClick={handlePrint} className="gap-2 w-full">
+                <Printer className="h-4 w-4" />
+                Print
+            </Button>
+            <Button onClick={() => exportToExcel(reportData, overallTotals, dateRange)} variant="secondary" className="gap-2 w-full">
+                <FileDown className="h-4 w-4" />
+                Export
+            </Button>
+            <Button disabled className="gap-2 w-full">
+                <FileUp className="h-4 w-4" />
+                Import
+            </Button>
+          </div>
         </div>
       </div>
 
