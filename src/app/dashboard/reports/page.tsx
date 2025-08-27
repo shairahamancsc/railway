@@ -57,19 +57,15 @@ const exportToExcel = (reportData: ReportData[], overallTotals: OverallTotals, d
             }
 
             const record = d.attendance[dayStr] as DailyLabourerRecord | { status: 'absent' };
-            let statusChar = 'A';
+            let statusValue: number | string = 0;
             if (record) {
                 switch(record.status) {
-                    case 'present': statusChar = 'P'; break;
-                    case 'half-day': statusChar = 'H'; break;
-                    default: statusChar = 'A';
-                }
-                const advance = 'advance' in record && record.advance ? record.advance : 0;
-                if (advance > 0) {
-                    statusChar += ` (Adv: ${advance})`;
+                    case 'present': statusValue = 1; break;
+                    case 'half-day': statusValue = 0.5; break;
+                    default: statusValue = 0;
                 }
             }
-            row[dateHeader] = statusChar;
+            row[dateHeader] = statusValue;
         });
 
         row["Present"] = d.presentDays;
@@ -548,5 +544,7 @@ export default function ReportsPage() {
     </div>
   );
 }
+
+    
 
     
