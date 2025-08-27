@@ -34,21 +34,59 @@ import { useRouter } from "next/navigation";
 
 
 const exportToExcel = (reportData: ReportData[], overallTotals: OverallTotals, dateRange: DateRange | undefined) => {
-    const dataForSheet = reportData.map(d => ({
-        "Worker Name": d.fullName,
-        "Present": d.presentDays,
-        "Half": d.halfDays,
-        "Total Salary": d.totalSalary,
-        "Daily Advance": d.totalAdvance,
-        "Net Payable": d.netPayable,
-        "Current Loan": d.currentLoan,
-        "Loan Repayment": d.loanRepayment,
-        "New Loan": d.newLoan,
-        "Updated Loan Bal.": d.updatedLoanBalance,
-        "Final Amount Paid": d.finalAmountPaid,
-    }));
+    if (!dateRange?.from || !dateRange?.to) return;
+    
+    const days = eachDayOfInterval({ start: dateRange.from, end: dateRange.to });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    const worksheet = XLSX.utils.json_to_sheet(dataForSheet);
+    const headers = ["Worker Name"];
+    days.forEach(day => headers.push(format(day, "dd-MMM-yy")));
+    headers.push("Present", "Half", "Total Salary", "Daily Advance", "Net Payable", "Current Loan", "Loan Repayment", "New Loan", "Updated Loan Bal.", "Final Amount Paid");
+
+    const dataForSheet = reportData.map(d => {
+        const row: { [key: string]: any } = { "Worker Name": d.fullName };
+        
+        days.forEach(day => {
+            const dayStr = format(day, "yyyy-MM-dd");
+            const dateHeader = format(day, "dd-MMM-yy");
+            
+            if (isAfter(day, today)) {
+                row[dateHeader] = '-';
+                return;
+            }
+
+            const record = d.attendance[dayStr] as DailyLabourerRecord | { status: 'absent' };
+            let statusChar = 'A';
+            if (record) {
+                switch(record.status) {
+                    case 'present': statusChar = 'P'; break;
+                    case 'half-day': statusChar = 'H'; break;
+                    default: statusChar = 'A';
+                }
+                const advance = 'advance' in record && record.advance ? record.advance : 0;
+                if (advance > 0) {
+                    statusChar += ` (Adv: ${advance})`;
+                }
+            }
+            row[dateHeader] = statusChar;
+        });
+
+        row["Present"] = d.presentDays;
+        row["Half"] = d.halfDays;
+        row["Total Salary"] = d.totalSalary;
+        row["Daily Advance"] = d.totalAdvance;
+        row["Net Payable"] = d.netPayable;
+        row["Current Loan"] = d.currentLoan;
+        row["Loan Repayment"] = d.loanRepayment;
+        row["New Loan"] = d.newLoan;
+        row["Updated Loan Bal."] = d.updatedLoanBalance;
+        row["Final Amount Paid"] = d.finalAmountPaid;
+        
+        return row;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(dataForSheet, { header: headers });
 
     // Add overall totals at the bottom
     XLSX.utils.sheet_add_aoa(worksheet, [[]], { origin: -1 }); // Spacer row
@@ -65,8 +103,8 @@ const exportToExcel = (reportData: ReportData[], overallTotals: OverallTotals, d
     XLSX.utils.book_append_sheet(workbook, worksheet, "Payroll Report");
 
     // Auto-fit columns
-    const cols = Object.keys(dataForSheet[0] || {}).map(key => ({
-        wch: Math.max(20, ...dataForSheet.map(d => (d[key as keyof typeof d] || '').toString().length), key.length)
+    const cols = headers.map(header => ({
+        wch: Math.max(15, ...dataForSheet.map(d => (d[header] || '').toString().length), header.length)
     }));
     worksheet["!cols"] = cols;
 
