@@ -8,7 +8,12 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from('attendance')
-      .select('*');
+      .select(`
+        date,
+        records,
+        work_details,
+        present_labourer_ids
+      `);
 
     if (error) {
       console.error('Supabase error:', error.message);

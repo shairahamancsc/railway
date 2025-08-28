@@ -8,7 +8,11 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from('supervisors')
-      .select('*');
+      .select(`
+        id,
+        name,
+        created_at
+      `);
 
     if (error) {
       console.error('Supabase error:', error.message);

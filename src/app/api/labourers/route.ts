@@ -8,7 +8,17 @@ export async function GET() {
   try {
     const { data, error } = await supabase
       .from('labourers')
-      .select('*');
+      .select(`
+        id,
+        profile_photo_url,
+        fullName,
+        daily_salary,
+        designation,
+        loan_balance,
+        face_scan_data_uri,
+        documents,
+        created_at
+      `);
 
     if (error) {
       console.error('Supabase error:', error.message);
