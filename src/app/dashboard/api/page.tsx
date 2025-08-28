@@ -60,11 +60,16 @@ export default function ApiPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-4">
-        <Code className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-headline font-bold tracking-tight">
-          API Documentation
-        </h1>
+      <div className="flex items-start gap-4">
+        <Code className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+        <div>
+            <h1 className="text-3xl font-headline font-bold tracking-tight">
+            API Documentation
+            </h1>
+            <p className="text-muted-foreground mt-1">
+                A guide to interacting with the application's API endpoints.
+            </p>
+        </div>
       </div>
 
       <Card>
@@ -96,7 +101,7 @@ export default function ApiPage() {
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="curl">
-                    <TabsList>
+                    <TabsList className="w-full sm:w-auto h-auto flex-wrap justify-start">
                         {endpoint.method === "POST" && <TabsTrigger value="body">Request Body</TabsTrigger>}
                         <TabsTrigger value="curl">cURL</TabsTrigger>
                         <TabsTrigger value="success">Success Response</TabsTrigger>

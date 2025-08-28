@@ -113,7 +113,7 @@ export default function DashboardPage() {
               <CardTitle>Today's Attendance Status</CardTitle>
               <CardDescription>A quick look at who is present and absent today.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -171,47 +171,49 @@ export default function DashboardPage() {
           <CardDescription>A comprehensive list of all registered workers in the system.</CardDescription>
         </CardHeader>
         <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Profile</TableHead>
-                  <TableHead>Full Name</TableHead>
-                  <TableHead className="hidden md:table-cell">Father's Name</TableHead>
-                  <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
-                  <TableHead>Designation</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {labourers.length > 0 ? (
-                  labourers.map((labourer) => (
-                    <TableRow key={labourer.id}>
-                      <TableCell>
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
-                          <AvatarFallback>
-                            {labourer.fullName.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </TableCell>
-                      <TableCell className="font-medium whitespace-nowrap">
-                        {labourer.fullName}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">{labourer.documents.fatherName}</TableCell>
-                      <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{labourer.designation}</Badge>
-                      </TableCell>
+            <div className="overflow-x-auto">
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead>Profile</TableHead>
+                    <TableHead>Full Name</TableHead>
+                    <TableHead className="hidden md:table-cell">Father's Name</TableHead>
+                    <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
+                    <TableHead>Designation</TableHead>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      No workers added yet.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                    {labourers.length > 0 ? (
+                    labourers.map((labourer) => (
+                        <TableRow key={labourer.id}>
+                        <TableCell>
+                            <Avatar className="h-10 w-10">
+                            <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
+                            <AvatarFallback>
+                                {labourer.fullName.charAt(0)}
+                            </AvatarFallback>
+                            </Avatar>
+                        </TableCell>
+                        <TableCell className="font-medium whitespace-nowrap">
+                            {labourer.fullName}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">{labourer.documents.fatherName}</TableCell>
+                        <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
+                        <TableCell>
+                            <Badge variant="outline">{labourer.designation}</Badge>
+                        </TableCell>
+                        </TableRow>
+                    ))
+                    ) : (
+                    <TableRow>
+                        <TableCell colSpan={5} className="text-center">
+                        No workers added yet.
+                        </TableCell>
+                    </TableRow>
+                    )}
+                </TableBody>
+                </Table>
+            </div>
         </CardContent>
       </Card>
     </div>

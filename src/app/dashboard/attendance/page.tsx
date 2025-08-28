@@ -52,7 +52,7 @@ function AttendanceContent() {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-[280px] justify-start text-left font-normal",
+                    "w-full sm:w-[280px] justify-start text-left font-normal",
                     !targetDate && "text-muted-foreground"
                   )}
                 >
@@ -87,10 +87,10 @@ export default function AttendancePage() {
               <Skeleton className="h-9 w-64 mb-2" />
               <Skeleton className="h-5 w-48" />
             </div>
-            <Skeleton className="h-10 w-36" />
+            <Skeleton className="h-10 w-full sm:w-36" />
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <Card key={i}>
                 <CardHeader className="flex flex-col items-center gap-4 pb-4">
                   <Skeleton className="h-16 w-16 rounded-full" />

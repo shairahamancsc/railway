@@ -341,142 +341,144 @@ export default function ReportsPage() {
             </div>
         </CardHeader>
         <CardContent>
-          {labourers.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="sticky left-0 bg-card z-10 whitespace-nowrap min-w-[150px]">Worker Name</TableHead>
-                    {daysInInterval.map((day) => (
-                      <TableHead key={day.toString()} className="text-center min-w-[120px]">
-                         <div className="flex items-center justify-center gap-2">
-                          {format(day, "dd-MMM")}
-                          {!isAfter(day, today) && (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 no-print" onClick={() => handleEditClick(day)}>
-                                      <Pencil className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Edit Attendance</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          )}
-                        </div>
-                      </TableHead>
-                    ))}
-                    <TableHead className="text-right font-bold min-w-[80px]">Present</TableHead>
-                    <TableHead className="text-right font-bold min-w-[80px]">Half</TableHead>
-                    <TableHead className="text-right font-bold min-w-[120px]">Total Salary</TableHead>
-                    <TableHead className="text-right font-bold min-w-[120px]">Daily Advance</TableHead>
-                    <TableHead className="text-right font-bold min-w-[120px]">Net Payable</TableHead>
-                    <TableHead className="text-right font-bold min-w-[140px]">Current Loan</TableHead>
-                    <TableHead className="text-right font-bold min-w-[180px] no-print">Loan Repayment</TableHead>
-                    <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan</TableHead>
-                    <TableHead className="text-right font-bold min-w-[140px]">Updated Loan Bal.</TableHead>
-                    <TableHead className="text-right font-bold text-primary min-w-[140px]">Final Amount Paid</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {reportData.map((data) => (
-                      <TableRow key={data.labourerId}>
-                        <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-card z-10">{data.fullName}</TableCell>
-                        {daysInInterval.map((day) => {
-                          const dayStr = format(day, "yyyy-MM-dd");
-                          const record = data.attendance[dayStr] as DailyLabourerRecord | { status: 'absent' };
-                          
-                          if (isAfter(day, today) || !record) {
-                              return <TableCell key={dayStr} className="text-center text-muted-foreground">-</TableCell>;
-                          }
+          <div className="overflow-x-auto">
+            {labourers.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="sticky left-0 bg-card z-10 whitespace-nowrap min-w-[150px]">Worker Name</TableHead>
+                      {daysInInterval.map((day) => (
+                        <TableHead key={day.toString()} className="text-center min-w-[120px]">
+                          <div className="flex items-center justify-center gap-2">
+                            {format(day, "dd-MMM")}
+                            {!isAfter(day, today) && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6 no-print" onClick={() => handleEditClick(day)}>
+                                        <Pencil className="h-3 w-3" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Edit Attendance</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </div>
+                        </TableHead>
+                      ))}
+                      <TableHead className="text-right font-bold min-w-[80px]">Present</TableHead>
+                      <TableHead className="text-right font-bold min-w-[80px]">Half</TableHead>
+                      <TableHead className="text-right font-bold min-w-[120px]">Total Salary</TableHead>
+                      <TableHead className="text-right font-bold min-w-[120px]">Daily Advance</TableHead>
+                      <TableHead className="text-right font-bold min-w-[120px]">Net Payable</TableHead>
+                      <TableHead className="text-right font-bold min-w-[140px]">Current Loan</TableHead>
+                      <TableHead className="text-right font-bold min-w-[180px] no-print">Loan Repayment</TableHead>
+                      <TableHead className="text-right font-bold min-w-[180px] no-print">New Loan</TableHead>
+                      <TableHead className="text-right font-bold min-w-[140px]">Updated Loan Bal.</TableHead>
+                      <TableHead className="text-right font-bold text-primary min-w-[140px]">Final Amount Paid</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {reportData.map((data) => (
+                        <TableRow key={data.labourerId}>
+                          <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-card z-10">{data.fullName}</TableCell>
+                          {daysInInterval.map((day) => {
+                            const dayStr = format(day, "yyyy-MM-dd");
+                            const record = data.attendance[dayStr] as DailyLabourerRecord | { status: 'absent' };
+                            
+                            if (isAfter(day, today) || !record) {
+                                return <TableCell key={dayStr} className="text-center text-muted-foreground">-</TableCell>;
+                            }
 
-                          let statusChar = 'A';
-                          let colorClass = 'text-red-600';
+                            let statusChar = 'A';
+                            let colorClass = 'text-red-600';
 
-                          switch(record.status) {
-                              case 'present':
-                                  statusChar = 'P';
-                                  colorClass = 'text-green-600';
-                                  break;
-                              case 'half-day':
-                                  statusChar = 'H';
-                                  colorClass = 'text-yellow-600';
-                                  break;
-                              case 'absent':
-                              default:
-                                  statusChar = 'A';
-                                  colorClass = 'text-red-600';
-                                  break;
-                          }
-                          
-                          const hasAdvance = 'advance' in record && record.advance && record.advance > 0;
+                            switch(record.status) {
+                                case 'present':
+                                    statusChar = 'P';
+                                    colorClass = 'text-green-600';
+                                    break;
+                                case 'half-day':
+                                    statusChar = 'H';
+                                    colorClass = 'text-yellow-600';
+                                    break;
+                                case 'absent':
+                                default:
+                                    statusChar = 'A';
+                                    colorClass = 'text-red-600';
+                                    break;
+                            }
+                            
+                            const hasAdvance = 'advance' in record && record.advance && record.advance > 0;
 
-                          return (
-                            <TableCell key={dayStr} className="text-center">
-                              <div className="flex items-center justify-center gap-1">
-                                <span className={`font-bold ${colorClass}`}>
-                                    {statusChar}
-                                </span>
-                                {hasAdvance && (
-                                  <TooltipProvider>
-                                    <Tooltip>
-                                      <TooltipTrigger>
-                                        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p>Advance: ₹{record.advance}</p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </TooltipProvider>
-                                )}
-                              </div>
-                            </TableCell>
-                          );
-                        })}
-                        <TableCell className="text-right font-medium">{data.presentDays}</TableCell>
-                        <TableCell className="text-right font-medium">{data.halfDays}</TableCell>
-                        <TableCell className="text-right">{data.totalSalary.toFixed(2)}</TableCell>
-                        <TableCell className="text-right text-red-600">{data.totalAdvance.toFixed(2)}</TableCell>
-                        <TableCell className={`text-right font-bold ${data.netPayable >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-                          {data.netPayable.toFixed(2)}
-                        </TableCell>
-                         <TableCell className={`text-right ${data.currentLoan > 0 ? 'text-red-600' : ''}`}>
-                          {data.currentLoan.toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-right no-print">
-                           <Input 
-                            type="number"
-                            placeholder="0"
-                            className="text-right h-8"
-                            value={loanRepayments[data.labourerId] || ''}
-                            onChange={(e) => setLoanRepayments(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
-                           />
-                         </TableCell>
-                         <TableCell className="text-right no-print">
-                           <Input 
-                            type="number"
-                            placeholder="0"
-                            className="text-right h-8"
-                            value={newLoans[data.labourerId] || ''}
-                            onChange={(e) => setNewLoans(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
-                           />
-                         </TableCell>
-                         <TableCell className={`text-right font-bold ${data.updatedLoanBalance > 0 ? 'text-red-600' : ''}`}>
-                          {data.updatedLoanBalance.toFixed(2)}
-                         </TableCell>
-                        <TableCell className={`text-right font-bold text-primary`}>
-                          {data.finalAmountPaid.toFixed(2)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-          ) : (
-            <p className="text-muted-foreground text-center py-8">
-              No worker data available for this report.
-            </p>
-          )}
+                            return (
+                              <TableCell key={dayStr} className="text-center">
+                                <div className="flex items-center justify-center gap-1">
+                                  <span className={`font-bold ${colorClass}`}>
+                                      {statusChar}
+                                  </span>
+                                  {hasAdvance && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger>
+                                          <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Advance: ₹{record.advance}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </TableCell>
+                            );
+                          })}
+                          <TableCell className="text-right font-medium">{data.presentDays}</TableCell>
+                          <TableCell className="text-right font-medium">{data.halfDays}</TableCell>
+                          <TableCell className="text-right">{data.totalSalary.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-red-600">{data.totalAdvance.toFixed(2)}</TableCell>
+                          <TableCell className={`text-right font-bold ${data.netPayable >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+                            {data.netPayable.toFixed(2)}
+                          </TableCell>
+                          <TableCell className={`text-right ${data.currentLoan > 0 ? 'text-red-600' : ''}`}>
+                            {data.currentLoan.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right no-print">
+                            <Input 
+                              type="number"
+                              placeholder="0"
+                              className="text-right h-8"
+                              value={loanRepayments[data.labourerId] || ''}
+                              onChange={(e) => setLoanRepayments(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
+                            />
+                          </TableCell>
+                          <TableCell className="text-right no-print">
+                            <Input 
+                              type="number"
+                              placeholder="0"
+                              className="text-right h-8"
+                              value={newLoans[data.labourerId] || ''}
+                              onChange={(e) => setNewLoans(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
+                            />
+                          </TableCell>
+                          <TableCell className={`text-right font-bold ${data.updatedLoanBalance > 0 ? 'text-red-600' : ''}`}>
+                            {data.updatedLoanBalance.toFixed(2)}
+                          </TableCell>
+                          <TableCell className={`text-right font-bold text-primary`}>
+                            {data.finalAmountPaid.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+            ) : (
+              <p className="text-muted-foreground text-center py-8">
+                No worker data available for this report.
+              </p>
+            )}
+          </div>
         </CardContent>
       </Card>
       
@@ -526,8 +528,7 @@ export default function ReportsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-primary">₹{overallTotals.totalFinalPaid.toFixed(2)}</div>
-                        <p className="text-xs text-muted-foreground">Final amount paid to all workers.</p>
-                    </CardContent>
+                        <p className="text-xs text-muted-foreground">Final amount paid to all workers.</p>                    </CardContent>
                 </Card>
             </CardContent>
         </Card>
@@ -544,7 +545,3 @@ export default function ReportsPage() {
     </div>
   );
 }
-
-    
-
-    

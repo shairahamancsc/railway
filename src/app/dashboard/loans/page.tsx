@@ -75,7 +75,7 @@ export default function LoansPage() {
         title: "Success",
         description: `Transaction of ₹${values.amount} for ${selectedLabourer?.fullName} has been recorded.`,
       });
-      form.reset();
+      form.reset({ amount: 0, notes: "" });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -89,11 +89,14 @@ export default function LoansPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-4">
-        <Landmark className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-headline font-bold tracking-tight">
-          Loan Management
-        </h1>
+      <div className="flex items-start gap-4">
+        <Landmark className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
+        <div>
+            <h1 className="text-3xl font-headline font-bold tracking-tight">
+            Loan Management
+            </h1>
+            <p className="text-muted-foreground mt-1">Record loans and repayments, and view worker balances.</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -106,42 +109,44 @@ export default function LoansPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Worker</TableHead>
-                      <TableHead className="text-right">Loan Balance (₹)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={2} className="text-center">Loading...</TableCell>
-                      </TableRow>
-                    ) : labourers.length > 0 ? (
-                      labourers.sort((a,b) => (b.loan_balance || 0) - (a.loan_balance || 0)).map((labourer) => (
-                        <TableRow key={labourer.id}>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <Avatar>
-                                <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} />
-                                <AvatarFallback>{labourer.fullName.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <span className="font-medium whitespace-nowrap">{labourer.fullName}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className={`text-right font-bold ${labourer.loan_balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                            {(labourer.loan_balance || 0).toFixed(2)}
-                          </TableCell>
+                <div className="overflow-x-auto">
+                    <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Worker</TableHead>
+                        <TableHead className="text-right">Loan Balance (₹)</TableHead>
                         </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={2} className="text-center">No workers found.</TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {loading ? (
+                        <TableRow>
+                            <TableCell colSpan={2} className="text-center">Loading...</TableCell>
+                        </TableRow>
+                        ) : labourers.length > 0 ? (
+                        labourers.sort((a,b) => (b.loan_balance || 0) - (a.loan_balance || 0)).map((labourer) => (
+                            <TableRow key={labourer.id}>
+                            <TableCell>
+                                <div className="flex items-center gap-3">
+                                <Avatar>
+                                    <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} />
+                                    <AvatarFallback>{labourer.fullName.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <span className="font-medium whitespace-nowrap">{labourer.fullName}</span>
+                                </div>
+                            </TableCell>
+                            <TableCell className={`text-right font-bold ${labourer.loan_balance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                                {(labourer.loan_balance || 0).toFixed(2)}
+                            </TableCell>
+                            </TableRow>
+                        ))
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={2} className="text-center">No workers found.</TableCell>
+                        </TableRow>
+                        )}
+                    </TableBody>
+                    </Table>
+                </div>
             </CardContent>
           </Card>
         </div>

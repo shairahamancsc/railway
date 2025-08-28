@@ -51,12 +51,12 @@ export default function SettlementsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-headline font-bold tracking-tight">
             Settled Reports
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             View historical snapshots of your payroll reports.
           </p>
         </div>
@@ -80,7 +80,7 @@ export default function SettlementsPage() {
                 >
                   <div className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50">
                     <div className="flex items-center gap-4">
-                        <Archive className="h-6 w-6 text-primary" />
+                        <Archive className="h-6 w-6 text-primary flex-shrink-0" />
                         <div>
                             <p className="font-bold">
                                 {format(new Date(settlement.start_date), "dd MMM, yyyy")} - {format(new Date(settlement.end_date), "dd MMM, yyyy")}
@@ -90,7 +90,7 @@ export default function SettlementsPage() {
                             </p>
                         </div>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                   </div>
                 </Link>
               ))}

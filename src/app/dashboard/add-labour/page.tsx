@@ -615,99 +615,101 @@ export default function LabourerManagementPage() {
           </div>
         </CardHeader>
         <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Profile</TableHead>
-                  <TableHead>Full Name</TableHead>
-                  <TableHead>Designation</TableHead>
-                  <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
-                  <TableHead className="hidden md:table-cell">Face Scan</TableHead>
-                  {showSalary && <TableHead className="hidden lg:table-cell">Daily Salary (₹)</TableHead>}
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={showSalary ? 7 : 6} className="text-center">
-                      Loading workers...
-                    </TableCell>
+                    <TableHead>Profile</TableHead>
+                    <TableHead>Full Name</TableHead>
+                    <TableHead>Designation</TableHead>
+                    <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
+                    <TableHead className="hidden md:table-cell">Face Scan</TableHead>
+                    {showSalary && <TableHead className="hidden lg:table-cell">Daily Salary (₹)</TableHead>}
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ) : error ? (
-                   <TableRow>
-                    <TableCell colSpan={showSalary ? 7 : 6} className="text-center text-red-500">
-                      Error loading workers. Please check your connection and refresh.
-                    </TableCell>
-                  </TableRow>
-                ) : labourers.length > 0 ? (
-                  labourers.map((labourer) => (
-                    <TableRow key={labourer.id}>
-                      <TableCell>
-                        <Avatar>
-                          <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
-                          <AvatarFallback>
-                            {labourer.fullName?.charAt(0) || 'W'}
-                          </AvatarFallback>
-                        </Avatar>
-                      </TableCell>
-                      <TableCell className="font-medium whitespace-nowrap">
-                        {labourer.fullName}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{labourer.designation}</Badge>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {labourer.face_scan_data_uri ? (
-                            <Badge variant="default">Enrolled</Badge>
-                        ) : (
-                            <Badge variant="outline">Not Enrolled</Badge>
-                        )}
-                      </TableCell>
-                       {showSalary && <TableCell className="hidden lg:table-cell">{labourer.daily_salary}</TableCell>}
-                      <TableCell className="text-right">
-                         <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1">
-                             <Button variant="outline" size="sm" onClick={() => handleEditClick(labourer)}>
-                              <Pencil className="h-4 w-4 sm:mr-2" />
-                              <span className="hidden sm:inline">Edit</span>
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                 <Button variant="destructive" size="sm">
-                                    <Trash2 className="h-4 w-4 sm:mr-2" />
-                                    <span className="hidden sm:inline">Delete</span>
-                                  </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the
-                                    worker and all their associated data from the database.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDelete(labourer.id)}>
-                                    Continue
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                         </div>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={showSalary ? 7 : 6} className="text-center">
+                        Loading workers...
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={showSalary ? 7 : 6} className="text-center">
-                      No workers added yet.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                  ) : error ? (
+                    <TableRow>
+                      <TableCell colSpan={showSalary ? 7 : 6} className="text-center text-red-500">
+                        Error loading workers. Please check your connection and refresh.
+                      </TableCell>
+                    </TableRow>
+                  ) : labourers.length > 0 ? (
+                    labourers.map((labourer) => (
+                      <TableRow key={labourer.id}>
+                        <TableCell>
+                          <Avatar>
+                            <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
+                            <AvatarFallback>
+                              {labourer.fullName?.charAt(0) || 'W'}
+                            </AvatarFallback>
+                          </Avatar>
+                        </TableCell>
+                        <TableCell className="font-medium whitespace-nowrap">
+                          {labourer.fullName}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{labourer.designation}</Badge>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {labourer.face_scan_data_uri ? (
+                              <Badge variant="default">Enrolled</Badge>
+                          ) : (
+                              <Badge variant="outline">Not Enrolled</Badge>
+                          )}
+                        </TableCell>
+                        {showSalary && <TableCell className="hidden lg:table-cell">{labourer.daily_salary}</TableCell>}
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                              <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleEditClick(labourer)}>
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="destructive" size="icon" className="h-8 w-8">
+                                      <Trash2 className="h-4 w-4" />
+                                      <span className="sr-only">Delete</span>
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This action cannot be undone. This will permanently delete the
+                                      worker and all their associated data from the database.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(labourer.id)}>
+                                      Continue
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={showSalary ? 7 : 6} className="text-center">
+                        No workers added yet.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
         </CardContent>
       </Card>
       
