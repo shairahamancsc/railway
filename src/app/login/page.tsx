@@ -44,26 +44,42 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      if (values.username === "Admin" && values.password === "password") {
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         toast({
           title: "Login Successful",
           description: "Welcome back!",
         });
-        localStorage.setItem("auth-token", "authenticated");
+        localStorage.setItem("auth-token", data.token);
         router.push("/dashboard");
       } else {
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: "Invalid username or password.",
+          description: data.message || "Invalid username or password.",
         });
-        setIsLoading(false);
       }
-    }, 1000);
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Network Error",
+        description: "Could not connect to the server. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -117,3 +133,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
