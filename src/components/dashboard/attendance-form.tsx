@@ -31,7 +31,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Camera, ScanFace, Loader2 } from "lucide-react";
+import { Camera, ScanFace, Loader2, Search } from "lucide-react";
 import type { AttendanceFormProps, AttendanceState } from "@/types";
 
 
@@ -237,6 +237,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
   const [attendanceData, setAttendanceData] = useState<Map<string, AttendanceState>>(new Map());
   const [workDetails, setWorkDetails] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     // Only set initial state when data is not loading anymore
@@ -304,6 +305,12 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     }
   };
 
+  const filteredLabourers = useMemo(() => {
+    return labourers.filter(labourer => 
+      labourer.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [labourers, searchTerm]);
+
   if (!isLoaded || loading) {
     return (
       <div className="space-y-8">
@@ -327,17 +334,29 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-end gap-2">
-         <FaceRecognitionDialog onFaceRecognized={handleFaceRecognized} />
-        {labourers.length > 0 && (
-            <Button onClick={handleSaveAttendance}>Save Attendance</Button>
-        )}
+      <div className="flex flex-col sm:flex-row items-center gap-2">
+        <div className="relative w-full sm:max-w-xs">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input 
+            type="search"
+            placeholder="Search workers..."
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="flex w-full sm:w-auto items-center gap-2">
+            <FaceRecognitionDialog onFaceRecognized={handleFaceRecognized} />
+            {labourers.length > 0 && (
+                <Button onClick={handleSaveAttendance} className="w-full">Save Attendance</Button>
+            )}
+        </div>
       </div>
 
       {labourers.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {labourers.map((labourer) => (
+            {filteredLabourers.map((labourer) => (
               <Card key={labourer.id} className={attendanceData.get(labourer.id)?.status === 'present' ? 'border-primary' : ''}>
                 <CardHeader className="flex flex-col items-center gap-2 pb-4">
                   <Avatar className="h-16 w-16">
@@ -413,6 +432,15 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
               </Card>
             ))}
           </div>
+          {filteredLabourers.length === 0 && (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-muted-foreground text-center">
+                  No workers found matching "{searchTerm}".
+                </p>
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardHeader>
               <CardTitle>Work Details for Today</CardTitle>
