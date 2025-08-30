@@ -577,9 +577,11 @@ export default function LabourerManagementPage() {
   return (
     <div className="space-y-8">
        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-headline font-bold tracking-tight">
-          Worker Management
-        </h1>
+        <div>
+          <h1 className="text-3xl font-headline font-bold tracking-tight">
+            Worker Management
+          </h1>
+        </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button>
