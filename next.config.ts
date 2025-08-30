@@ -24,9 +24,10 @@ const nextConfig: NextConfig = {
     ],
   },
   webpack: (config, { isServer }) => {
-    // This is to solve the 'fs' module not found error in face-api.js
+    // This is to solve the 'fs' and 'encoding' module not found errors in face-api.js and its dependencies
     if (!isServer) {
         config.resolve.fallback.fs = false;
+        config.resolve.fallback.encoding = false;
     }
     return config;
   },
