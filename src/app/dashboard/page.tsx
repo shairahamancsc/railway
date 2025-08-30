@@ -53,7 +53,9 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <Skeleton className="h-9 w-64" />
+        <h1 className="text-3xl font-headline font-bold tracking-tight hidden md:block">
+          Dashboard
+        </h1>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
            <Skeleton className="h-32" />
            <Skeleton className="h-32" />
@@ -66,7 +68,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-headline font-bold tracking-tight">
+      <h1 className="text-3xl font-headline font-bold tracking-tight hidden md:block">
         Dashboard
       </h1>
       

@@ -62,7 +62,7 @@ export default function ApiPage() {
     <div className="space-y-8">
       <div className="flex items-start gap-4">
         <Code className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
-        <div>
+        <div className="hidden md:block">
             <h1 className="text-3xl font-headline font-bold tracking-tight">
             API Documentation
             </h1>

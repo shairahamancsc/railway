@@ -52,7 +52,7 @@ export default function SupervisorsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-headline font-bold tracking-tight">
+      <h1 className="text-3xl font-headline font-bold tracking-tight hidden md:block">
         Manage Supervisors
       </h1>
       <div className="grid gap-8 md:grid-cols-2">

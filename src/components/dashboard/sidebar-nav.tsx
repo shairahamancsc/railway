@@ -3,7 +3,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   LayoutDashboard,
   UserPlus,
@@ -107,25 +108,61 @@ export function SidebarNav() {
   );
 }
 
+function MobileHeaderTitle() {
+    const pathname = usePathname();
+    const [title, setTitle] = useState("");
+    const [target, setTarget] = useState<HTMLElement | null>(null);
+
+    useEffect(() => {
+        // This ensures the code only runs on the client where the DOM is available
+        setTarget(document.getElementById("mobile-header-title"));
+    }, []);
+
+    useEffect(() => {
+        let currentLabel = "Dashboard"; // Default title
+        if (pathname.includes('/settlements/')) {
+            currentLabel = "Settlement Details";
+        } else {
+            const currentNavItem = navItems.find(item => pathname.startsWith(item.href) && item.href !== '/dashboard');
+            if (pathname === '/dashboard') {
+              currentLabel = "Dashboard";
+            } else if (currentNavItem) {
+                currentLabel = currentNavItem.label;
+            }
+        }
+        setTitle(currentLabel);
+    }, [pathname]);
+
+    if (!target) {
+        return null;
+    }
+
+    return createPortal(title, target);
+}
+
+
 export function MobileSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className="shrink-0 md:hidden"
-        >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle navigation menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="flex flex-col p-0">
-        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-        <SidebarContentNav onLinkClick={() => setIsOpen(false)} />
-      </SheetContent>
-    </Sheet>
+    <>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="shrink-0 md:hidden"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle navigation menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="flex flex-col p-0">
+          <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+          <SidebarContentNav onLinkClick={() => setIsOpen(false)} />
+        </SheetContent>
+      </Sheet>
+      <MobileHeaderTitle />
+    </>
   )
 }

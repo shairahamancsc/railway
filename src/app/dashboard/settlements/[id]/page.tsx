@@ -71,10 +71,10 @@ export default function SettlementDetailPage() {
   return (
     <div className="space-y-8">
        <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => router.back()}>
+          <Button variant="outline" size="icon" onClick={() => router.back()} className="md:hidden">
             <ArrowLeft />
           </Button>
-          <div>
+          <div className="hidden md:block">
             <h1 className="text-3xl font-headline font-bold tracking-tight">
               Settlement Details
             </h1>

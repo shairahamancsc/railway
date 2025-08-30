@@ -253,7 +253,7 @@ export default function ReportsPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-headline font-bold tracking-tight">
+        <h1 className="text-3xl font-headline font-bold tracking-tight hidden md:block">
           Attendance Reports
         </h1>
         <div className="flex flex-col sm:flex-row items-center gap-2 no-print">

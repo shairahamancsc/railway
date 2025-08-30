@@ -22,7 +22,7 @@ export default function SettlementsPage() {
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
-                <div>
+                <div className="hidden md:block">
                     <Skeleton className="h-9 w-64 mb-2" />
                     <Skeleton className="h-5 w-80" />
                 </div>
@@ -51,7 +51,7 @@ export default function SettlementsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-start justify-between gap-4">
+      <div className="items-start justify-between gap-4 hidden md:flex">
         <div>
           <h1 className="text-3xl font-headline font-bold tracking-tight">
             Settled Reports
