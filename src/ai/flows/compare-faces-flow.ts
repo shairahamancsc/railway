@@ -10,14 +10,16 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { supabase } from '@/lib/supabaseClient';
-import type { Labourer } from '@/types';
+import * as FormData from 'form-data';
+import * as https from 'https';
+import { PassThrough } from 'stream';
 
 // Input: The image captured from the webcam
 const CompareFacesInputSchema = z.object({
   capturedFaceDataUri: z
     .string()
     .describe(
-      "A photo of a person to identify, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "A photo of a person to identify, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
     ),
 });
 export type CompareFacesInput = z.infer<typeof CompareFacesInputSchema>;
@@ -36,16 +38,12 @@ export async function compareFaces(input: CompareFacesInput): Promise<CompareFac
 }
 
 
-// Converts a data URI to a Blob object
-function dataURItoBlob(dataURI: string) {
-    const byteString = atob(dataURI.split(',')[1]);
-    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
+// Converts a data URI to a Buffer object
+function dataURItoBuffer(dataURI: string) {
+    if (!dataURI.includes(',')) {
+        throw new Error('Invalid data URI format');
     }
-    return new Blob([ab], { type: mimeString });
+    return Buffer.from(dataURI.split(',')[1], 'base64');
 }
 
 
@@ -72,61 +70,91 @@ const compareFacesFlow = ai.defineFlow(
       return { matchFound: false };
     }
 
-    // 2. Prepare the form data for the external API call
-    const formData = new FormData();
-    const imageBlob = dataURItoBlob(input.capturedFaceDataUri);
-    formData.append('image', imageBlob, 'captured_face.jpg');
+    // 2. Prepare the form data for the external API call using form-data library
+    const form = new FormData();
+    const imageBuffer = dataURItoBuffer(input.capturedFaceDataUri);
+    
+    // Add the image to be searched for
+    form.append('image', imageBuffer, {
+        filename: 'captured_face.jpg',
+        contentType: 'image/jpeg',
+    });
     
     // Add all enrolled faces to the repository for comparison
     labourers.forEach((labourer) => {
-        const repoImageBlob = dataURItoBlob(labourer.face_scan_data_uri!);
-        // The API expects the repository images to be named with the identifier
-        formData.append('repository[]', repoImageBlob, `${labourer.id}.jpg`);
+        if(labourer.face_scan_data_uri) {
+            try {
+                const repoImageBuffer = dataURItoBuffer(labourer.face_scan_data_uri);
+                form.append('repository[]', repoImageBuffer, {
+                    filename: `${labourer.id}.jpg`,
+                    contentType: 'image/jpeg',
+                });
+            } catch (e) {
+                console.warn(`Could not process face scan for labourer ${labourer.id}. Skipping.`);
+            }
+        }
     });
 
-    // 3. Call the external Face Analyzer API
-    try {
-      const response = await fetch('https://faceanalyzer-ai.p.rapidapi.com/search-face-in-repository', {
-        method: 'POST',
-        headers: {
-          'x-rapidapi-host': 'faceanalyzer-ai.p.rapidapi.com',
-          // IMPORTANT: Replace with your actual RapidAPI key, preferably from environment variables
-          'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
-        },
-        body: formData,
-      });
+    // 3. Call the external Face Analyzer API using https module for better control
+    return new Promise((resolve, reject) => {
+        const options = {
+            method: 'POST',
+            hostname: 'faceanalyzer-ai.p.rapidapi.com',
+            path: '/search-face-in-repository',
+            headers: {
+                ...form.getHeaders(),
+                'x-rapidapi-host': 'faceanalyzer-ai.p.rapidapi.com',
+                'x-rapidapi-key': process.env.RAPIDAPI_KEY!,
+            },
+        };
 
-      if (!response.ok) {
-        const errorBody = await response.text();
-        console.error(`API Error (${response.status}):`, errorBody);
-        throw new Error(`The face recognition service failed with status: ${response.status}`);
-      }
+        const req = https.request(options, (res) => {
+            const chunks: Buffer[] = [];
 
-      const result = await response.json();
+            res.on('data', (chunk) => {
+                chunks.push(chunk);
+            });
 
-      // 4. Process the API response
-      // The API returns an array of matches. We'll take the best one.
-      if (result && result.length > 0) {
-        const bestMatch = result[0];
-        const labourerId = bestMatch.filename.replace('.jpg', ''); // Extract ID from filename
-        const confidence = bestMatch.similarity;
+            res.on('end', () => {
+                const body = Buffer.concat(chunks).toString();
+                if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
+                    console.error(`API Error (${res.statusCode}):`, body);
+                    return reject(new Error(`The face recognition service failed with status: ${res.statusCode}`));
+                }
 
-        // You might want to set a threshold for confidence
-        if (confidence > 0.7) { // Example threshold
-          return {
-            matchFound: true,
-            labourerId: labourerId,
-            confidence: confidence,
-          };
-        }
-      }
-      
-      // If no matches or confidence is too low
-      return { matchFound: false };
+                try {
+                    const result = JSON.parse(body);
 
-    } catch (error) {
-      console.error('Error calling Face Analyzer API:', error);
-      throw new Error('An error occurred while communicating with the face recognition service.');
-    }
+                    // 4. Process the API response
+                    if (result && result.length > 0) {
+                        const bestMatch = result[0];
+                        const labourerId = bestMatch.filename.replace('.jpg', ''); // Extract ID from filename
+                        const confidence = bestMatch.similarity;
+
+                        if (confidence > 0.7) { // Example threshold
+                            return resolve({
+                                matchFound: true,
+                                labourerId: labourerId,
+                                confidence: confidence,
+                            });
+                        }
+                    }
+                    // If no matches or confidence is too low
+                    return resolve({ matchFound: false });
+                } catch (jsonError) {
+                    console.error('Error parsing API response:', jsonError);
+                    reject(new Error('Failed to parse response from face recognition service.'));
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            console.error('Error calling Face Analyzer API:', error);
+            reject(new Error('An error occurred while communicating with the face recognition service.'));
+        });
+
+        // Pipe the form data to the request
+        form.pipe(req);
+    });
   }
 );
