@@ -238,6 +238,12 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
   const [workDetails, setWorkDetails] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState<string>("all");
+
+  const workerGroups = useMemo(() => {
+    const groups = new Set(labourers.map(l => l.group).filter(Boolean));
+    return ["all", ...Array.from(groups)];
+  }, [labourers]);
 
   useEffect(() => {
     // Only set initial state when data is not loading anymore
@@ -306,10 +312,12 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
   };
 
   const filteredLabourers = useMemo(() => {
-    return labourers.filter(labourer => 
-      labourer.fullName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [labourers, searchTerm]);
+    return labourers.filter(labourer => {
+      const matchesSearch = labourer.fullName.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesGroup = selectedGroup === 'all' || labourer.group === selectedGroup;
+      return matchesSearch && matchesGroup;
+    });
+  }, [labourers, searchTerm, selectedGroup]);
 
   if (!isLoaded || loading) {
     return (
@@ -334,23 +342,39 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row items-center gap-2">
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input 
-            type="search"
-            placeholder="Search workers..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row items-center gap-2">
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+              type="search"
+              placeholder="Search workers..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="flex w-full sm:w-auto items-center gap-2">
+              <FaceRecognitionDialog onFaceRecognized={handleFaceRecognized} />
+              {labourers.length > 0 && (
+                  <Button onClick={handleSaveAttendance} className="w-full">Save Attendance</Button>
+              )}
+          </div>
         </div>
-        <div className="flex w-full sm:w-auto items-center gap-2">
-            <FaceRecognitionDialog onFaceRecognized={handleFaceRecognized} />
-            {labourers.length > 0 && (
-                <Button onClick={handleSaveAttendance} className="w-full">Save Attendance</Button>
-            )}
-        </div>
+        {workerGroups.length > 1 && (
+          <div className="flex flex-wrap gap-2">
+            {workerGroups.map(group => (
+              <Button 
+                key={group} 
+                variant={selectedGroup === group ? "default" : "outline"}
+                onClick={() => setSelectedGroup(group)}
+                className="capitalize"
+              >
+                {group}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
 
       {labourers.length > 0 ? (
@@ -436,7 +460,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
             <Card>
               <CardContent className="pt-6">
                 <p className="text-muted-foreground text-center">
-                  No workers found matching "{searchTerm}".
+                  No workers found matching your search or filter.
                 </p>
               </CardContent>
             </Card>
@@ -467,3 +491,5 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
+
+    

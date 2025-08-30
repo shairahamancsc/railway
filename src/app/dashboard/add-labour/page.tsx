@@ -77,6 +77,7 @@ const documentFileSchema = fileSchema.refine(
 const labourSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   designation: z.enum(designationValues, { required_error: "Designation is required" }),
+  group: z.string().optional(),
   fatherName: z.string().optional(),
   mobile: z.string().optional(),
   dailySalary: z.coerce.number().optional(),
@@ -168,7 +169,7 @@ function FaceScanDialog({ onFaceScan, currentScan }: { onFaceScan: (dataUri: str
                 <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
                 {hasCameraPermission === false && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
-                        <p className="text-white text-center p-4">Camera permission denied. Please enable it in your browser settings.</p>
+                        <p className="text-white text-center p-4">Camera permission denied. Please enable camera permissions in your browser settings.</p>
                     </div>
                 )}
                  {hasCameraPermission === undefined && (
@@ -224,6 +225,7 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
     defaultValues: {
       fullName: labourer?.fullName || "",
       designation: labourer?.designation,
+      group: labourer?.group || "",
       fatherName: labourer?.documents.fatherName || "",
       mobile: labourer?.documents.mobile || "",
       dailySalary: labourer?.daily_salary || 0,
@@ -338,6 +340,19 @@ function LabourerForm({ onFinished, labourer }: LabourerFormProps) {
                     <FormLabel>Mobile No. (Optional)</FormLabel>
                     <FormControl>
                     <Input placeholder="e.g. 9876543210" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+             <FormField
+                control={form.control}
+                name="group"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Group Name (Optional)</FormLabel>
+                    <FormControl>
+                    <Input placeholder="e.g. Tamana or Bikrampur" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -624,6 +639,7 @@ export default function LabourerManagementPage() {
                     <TableHead>Profile</TableHead>
                     <TableHead>Full Name</TableHead>
                     <TableHead>Designation</TableHead>
+                    <TableHead className="hidden lg:table-cell">Group</TableHead>
                     <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
                     <TableHead className="hidden md:table-cell">Face Scan</TableHead>
                     {showSalary && <TableHead className="hidden lg:table-cell">Daily Salary (₹)</TableHead>}
@@ -633,13 +649,13 @@ export default function LabourerManagementPage() {
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={showSalary ? 7 : 6} className="text-center">
+                      <TableCell colSpan={showSalary ? 8 : 7} className="text-center">
                         Loading workers...
                       </TableCell>
                     </TableRow>
                   ) : error ? (
                     <TableRow>
-                      <TableCell colSpan={showSalary ? 7 : 6} className="text-center text-red-500">
+                      <TableCell colSpan={showSalary ? 8 : 7} className="text-center text-red-500">
                         Error loading workers. Please check your connection and refresh.
                       </TableCell>
                     </TableRow>
@@ -659,6 +675,9 @@ export default function LabourerManagementPage() {
                         </TableCell>
                         <TableCell>
                           <Badge variant="secondary">{labourer.designation}</Badge>
+                        </TableCell>
+                         <TableCell className="hidden lg:table-cell">
+                          {labourer.group ? <Badge variant="outline">{labourer.group}</Badge> : 'N/A'}
                         </TableCell>
                         <TableCell className="hidden sm:table-cell">{labourer.documents.mobile}</TableCell>
                         <TableCell className="hidden md:table-cell">
@@ -704,7 +723,7 @@ export default function LabourerManagementPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={showSalary ? 7 : 6} className="text-center">
+                      <TableCell colSpan={showSalary ? 8 : 7} className="text-center">
                         No workers added yet.
                       </TableCell>
                     </TableRow>
@@ -731,3 +750,5 @@ export default function LabourerManagementPage() {
     </div>
   );
 }
+
+    

@@ -53,9 +53,11 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <h1 className="text-3xl font-headline font-bold tracking-tight hidden md:block">
-          Dashboard
-        </h1>
+        <div className="hidden md:block">
+            <h1 className="text-3xl font-headline font-bold tracking-tight">
+              Dashboard
+            </h1>
+        </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
            <Skeleton className="h-32" />
            <Skeleton className="h-32" />
@@ -68,9 +70,11 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-headline font-bold tracking-tight hidden md:block">
-        Dashboard
-      </h1>
+      <div className="hidden md:block">
+        <h1 className="text-3xl font-headline font-bold tracking-tight">
+          Dashboard
+        </h1>
+      </div>
       
       <div className="grid gap-6 lg:grid-cols-2">
           <div className="grid gap-6 sm:grid-cols-2">
@@ -182,6 +186,7 @@ export default function DashboardPage() {
                     <TableHead className="hidden md:table-cell">Father's Name</TableHead>
                     <TableHead className="hidden sm:table-cell">Mobile No.</TableHead>
                     <TableHead>Designation</TableHead>
+                    <TableHead>Group</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -204,13 +209,16 @@ export default function DashboardPage() {
                         <TableCell>
                             <Badge variant="outline">{labourer.designation}</Badge>
                         </TableCell>
+                        <TableCell>
+                            {labourer.group ? <Badge variant="secondary">{labourer.group}</Badge> : 'N/A'}
+                        </TableCell>
                         </TableRow>
                     ))
                     ) : (
                     <TableRow>
-                        <TableCell colSpan={5} className="text-center">
+                        <TableCell colSpan={6} className="text-center">
                         No workers added yet.
-                        </TableCell>
+                        </TableCell>c
                     </TableRow>
                     )}
                 </TableBody>
@@ -221,3 +229,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

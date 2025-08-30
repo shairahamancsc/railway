@@ -7,6 +7,7 @@ export interface Labourer {
   fullName: string;
   daily_salary: number;
   designation: Designation;
+  group?: string;
   loan_balance: number;
   face_scan_data_uri?: string;
   documents: {
@@ -89,3 +90,5 @@ export interface AttendanceState {
   advance: number;
   remarks: string;
 }
+
+    

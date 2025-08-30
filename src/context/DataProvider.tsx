@@ -128,6 +128,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       fullName: labourerData.fullName,
       daily_salary: labourerData.dailySalary,
       designation: labourerData.designation,
+      group: labourerData.group,
       profile_photo_url: profilePhotoUrl,
       face_scan_data_uri: labourerData.faceScanDataUri,
       loan_balance: 0,
@@ -167,6 +168,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       fullName: updatedData.fullName,
       daily_salary: updatedData.dailySalary,
       designation: updatedData.designation,
+      group: updatedData.group,
       face_scan_data_uri: updatedData.faceScanDataUri,
     };
     
@@ -339,3 +341,5 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     </DataContext.Provider>
   );
 };
+
+    
