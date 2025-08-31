@@ -33,8 +33,15 @@ export default function SettlementDetailPage() {
   if (loading) {
      return (
         <div className="space-y-8">
-            <Skeleton className="h-9 w-64 mb-2" />
-            <Skeleton className="h-5 w-80" />
+            <div className="flex items-start gap-4">
+                <Button variant="outline" size="icon" className="md:hidden">
+                    <Skeleton className="h-5 w-5" />
+                </Button>
+                <div>
+                  <Skeleton className="h-9 w-64 mb-2 hidden md:block" />
+                  <Skeleton className="h-5 w-80 hidden md:block" />
+                </div>
+            </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Skeleton className="h-28 w-full" />
                 <Skeleton className="h-28 w-full" />
@@ -214,3 +221,5 @@ export default function SettlementDetailPage() {
     </div>
   );
 }
+
+    

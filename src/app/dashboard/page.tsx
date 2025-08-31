@@ -58,10 +58,21 @@ export default function DashboardPage() {
               Dashboard
             </h1>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-           <Skeleton className="h-32" />
-           <Skeleton className="h-32" />
-           <Skeleton className="h-[400px] md:col-span-2 lg:col-span-4" />
+        <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2">
+                <Skeleton className="h-32" />
+                <Skeleton className="h-32" />
+                <Card className="sm:col-span-2">
+                  <CardHeader>
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                  </CardHeader>
+                  <CardContent>
+                      <Skeleton className="h-[250px] w-full" />
+                  </CardContent>
+                </Card>
+            </div>
+            <Skeleton className="h-[400px]" />
         </div>
          <Skeleton className="h-64" />
       </div>
@@ -134,7 +145,7 @@ export default function DashboardPage() {
                           <TableCell>
                             <div className="flex items-center gap-3">
                                 <Avatar className="h-8 w-8">
-                                  <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
+                                  <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" width={32} height={32}/>
                                   <AvatarFallback>
                                     {labourer.fullName.charAt(0)}
                                   </AvatarFallback>
@@ -195,7 +206,7 @@ export default function DashboardPage() {
                         <TableRow key={labourer.id}>
                         <TableCell>
                             <Avatar className="h-10 w-10">
-                            <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" />
+                            <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" width={40} height={40}/>
                             <AvatarFallback>
                                 {labourer.fullName.charAt(0)}
                             </AvatarFallback>

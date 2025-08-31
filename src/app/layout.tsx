@@ -1,10 +1,9 @@
 
 "use client"
 
-import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Inter, Space_Grotesk } from 'next/font/google'
+import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google'
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import useSmoothScroll from "@/hooks/use-smooth-scroll";
@@ -16,7 +15,7 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-const spaceGrotesk = Space_Grotesk({
+const spaceGrotesk = SpaceGrotesk({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-space-grotesk',
@@ -59,3 +58,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

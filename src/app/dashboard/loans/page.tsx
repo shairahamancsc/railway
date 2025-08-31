@@ -128,7 +128,7 @@ export default function LoansPage() {
                             <TableCell>
                                 <div className="flex items-center gap-3">
                                 <Avatar>
-                                    <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} />
+                                    <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} width={40} height={40}/>
                                     <AvatarFallback>{labourer.fullName.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <span className="font-medium whitespace-nowrap">{labourer.fullName}</span>
@@ -250,3 +250,5 @@ export default function LoansPage() {
     </div>
   );
 }
+
+    

@@ -27,11 +27,17 @@ export default function SettlementsPage() {
                     <Skeleton className="h-5 w-80" />
                 </div>
             </div>
-            <div className="space-y-4">
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-            </div>
+             <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-4 w-48" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                </CardContent>
+            </Card>
         </div>
     )
   }
@@ -41,7 +47,7 @@ export default function SettlementsPage() {
         <Card>
             <CardHeader>
                 <CardTitle>Error</CardTitle>
-            </CardHeader>
+            </Header>
             <CardContent>
                 <p className="text-destructive">Failed to load settlements. Please try again later.</p>
             </CardContent>
@@ -112,3 +118,5 @@ export default function SettlementsPage() {
     </div>
   );
 }
+
+    
