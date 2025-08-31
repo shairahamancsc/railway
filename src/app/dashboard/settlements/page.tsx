@@ -47,7 +47,7 @@ export default function SettlementsPage() {
         <Card>
             <CardHeader>
                 <CardTitle>Error</CardTitle>
-            </Header>
+            </CardHeader>
             <CardContent>
                 <p className="text-destructive">Failed to load settlements. Please try again later.</p>
             </CardContent>
@@ -118,5 +118,3 @@ export default function SettlementsPage() {
     </div>
   );
 }
-
-    
