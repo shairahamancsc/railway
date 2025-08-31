@@ -38,6 +38,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
         <meta name="theme-color" content="#3F51B5" />
+        <meta name="google-site-verification" content="oEH0uuMTn5LfTSRZSgCMrNK7s727uY5Jsgpm1DLmYDs" />
       </head>
       <body
         className="font-body antialiased"
@@ -58,5 +59,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    
