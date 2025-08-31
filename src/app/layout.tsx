@@ -11,6 +11,7 @@ import useSmoothScroll from "@/hooks/use-smooth-scroll";
 import { ThemeProvider } from "@/components/theme-provider";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { PublicLayout } from '@/components/landing/public-layout';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,18 +28,18 @@ const spaceGrotesk = SpaceGrotesk({
 const AppMetadata: Metadata = {
   metadataBase: new URL('https://www.jrkelabour.com'),
   title: {
-    default: 'JRKE Labour Management Utility - Simplified Workforce Management',
-    template: '%s | JRKE Labour Management Utility',
+    default: 'JRKE - Electrical & Civil Contracting Solutions',
+    template: '%s | JRKE Contracting',
   },
-  description: "Efficiently manage worker attendance, payroll, and loans with the JRKE Labour Management Utility. Streamline your operations with AI-powered face recognition and detailed reporting.",
+  description: "Expert electrical and civil contracting services. We specialize in high-voltage installations, transformer services, and robust site development for industrial and commercial projects.",
   openGraph: {
-    title: 'JRKE Labour Management Utility',
-    description: 'Simplified workforce management for construction and contracting.',
+    title: 'JRKE - Electrical & Civil Contracting Solutions',
+    description: 'Leading provider of integrated electrical and civil engineering services.',
     url: 'https://www.jrkelabour.com',
-    siteName: 'JRKE Labour Management',
+    siteName: 'JRKE Contracting',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.png', // Make sure to create this file in /public
         width: 1200,
         height: 630,
       },
@@ -48,9 +49,9 @@ const AppMetadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'JRKE Labour Management Utility',
-    description: 'Simplified workforce management for construction and contracting.',
-    images: ['/og-image.png'],
+    title: 'JRKE - Electrical & Civil Contracting Solutions',
+    description: 'Leading provider of integrated electrical and civil engineering services.',
+    images: ['/og-image.png'], // Make sure to create this file in /public
   },
   robots: {
     index: true,
@@ -90,27 +91,33 @@ export default function RootLayout({
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "JRKE Labour Management Utility",
+    "name": "JRKE Contracting",
     "url": "https://www.jrkelabour.com",
     "logo": "https://www.jrkelabour.com/icons/android-chrome-192x192.png",
     "contactPoint": {
       "@type": "ContactPoint",
       "email": "contact@jrkelabour.com",
       "contactType": "Customer Service"
-    }
+    },
+    "sameAs": [
+      // Add social media links here if available
+    ]
   };
 
   const websiteSchema = {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "url": "https://www.jrkelabour.com",
-      "name": "JRKE Labour Management Utility",
+      "name": "JRKE Contracting",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://www.jrkelabour.com/dashboard?q={search_term_string}",
+        "target": "https://www.jrkelabour.com/?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
   };
+
+  // Determine if the current path is part of the public site or the dashboard
+  const isDashboard = pathname.startsWith('/dashboard');
 
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
@@ -138,7 +145,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            {children}
+            {isDashboard ? children : children}
             <Analytics />
             <SpeedInsights />
             <Toaster />

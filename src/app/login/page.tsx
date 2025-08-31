@@ -25,8 +25,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { UserCheck } from "lucide-react";
+import { UserCheck, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { PublicLayout } from "@/components/landing/public-layout";
 
 const loginSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
@@ -85,58 +86,63 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
-      <Card className="w-full max-w-sm mx-auto shadow-xl">
-        <CardHeader className="text-center p-4 sm:p-6">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary" style={{width: '64px', height: '64px'}}>
-            <UserCheck className="h-8 w-8" />
-          </div>
-          <CardTitle className="font-headline text-xl sm:text-2xl">JRKE Labour Management Utility</CardTitle>
-          <CardDescription>
-            Sign in to manage your workforce
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Admin" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="•••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing In..." : "Sign In"}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex justify-center p-4">
-          <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary">
-            Privacy Policy
-          </Link>
-        </CardFooter>
-      </Card>
-    </div>
+    <PublicLayout>
+        <div className="flex min-h-[calc(100vh-128px)] items-center justify-center bg-secondary/20 p-4">
+          <Card className="w-full max-w-sm mx-auto shadow-xl">
+            <CardHeader className="text-center p-4 sm:p-6">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary" style={{width: '64px', height: '64px'}}>
+                <UserCheck className="h-8 w-8" />
+              </div>
+              <CardTitle className="font-headline text-xl sm:text-2xl">Admin Portal Login</CardTitle>
+              <CardDescription>
+                Sign in to manage your workforce
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Admin" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="•••••••••" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Signing In..." : "Sign In"}
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+             <CardFooter className="flex justify-center p-4">
+                <Button asChild variant="ghost" size="sm">
+                    <Link href="/">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Home
+                    </Link>
+                </Button>
+            </CardFooter>
+          </Card>
+        </div>
+    </PublicLayout>
   );
 }
