@@ -1,6 +1,7 @@
 
 "use client";
 
+import type { Metadata } from 'next';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -27,6 +28,11 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+
+export const metadata: Metadata = {
+  title: 'Manage Supervisors',
+  description: 'Add new supervisors and view the list of all registered supervisors in the system.',
+};
 
 const supervisorSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),

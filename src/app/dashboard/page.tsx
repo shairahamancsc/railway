@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import type { Metadata } from 'next';
 import { useRouter } from "next/navigation";
 import { useData } from "@/hooks/useData";
 import {
@@ -25,6 +26,11 @@ import { Users, UserCheck } from "lucide-react";
 import { format } from "date-fns";
 import { DesignationChart } from "@/components/dashboard/designation-chart";
 import { Skeleton } from "@/components/ui/skeleton";
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+  description: 'Get a real-time overview of your workforce, including total workers, daily attendance, designation breakdowns, and recent activity.',
+};
 
 export default function DashboardPage() {
   const router = useRouter();

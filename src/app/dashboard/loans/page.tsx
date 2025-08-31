@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import type { Metadata } from 'next';
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -42,6 +43,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { HandCoins, Landmark } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+export const metadata: Metadata = {
+  title: 'Loan Management',
+  description: 'Record new loans and repayments for workers, and view all outstanding loan balances in a centralized location.',
+};
 
 const loanSchema = z.object({
   labourerId: z.string({ required_error: "Please select a worker." }),

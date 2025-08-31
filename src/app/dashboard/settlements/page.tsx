@@ -1,6 +1,7 @@
 
 "use client";
 
+import type { Metadata } from 'next';
 import { useData } from "@/hooks/useData";
 import {
   Card,
@@ -14,6 +15,11 @@ import { format } from "date-fns";
 import { Archive, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+
+export const metadata: Metadata = {
+  title: 'Settlements',
+  description: 'View a complete history of all settled payroll reports. Each settlement is a permanent, un-editable snapshot of a pay period.',
+};
 
 export default function SettlementsPage() {
   const { settlements, loading, error } = useData();

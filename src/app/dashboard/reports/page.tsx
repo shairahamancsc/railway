@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import type { Metadata } from 'next';
 import { format, eachDayOfInterval, startOfMonth, endOfMonth, isAfter } from "date-fns";
 import * as XLSX from "xlsx";
 import { useData } from "@/hooks/useData";
@@ -31,6 +32,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: 'Attendance Reports',
+  description: 'Generate, view, and export detailed payroll and attendance reports for any date range. Settle reports to create a permanent historical record.',
+};
 
 
 const exportToExcel = (reportData: ReportData[], overallTotals: OverallTotals, dateRange: DateRange | undefined) => {
