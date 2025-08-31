@@ -2,7 +2,6 @@
 "use client";
 
 import { useMemo, Suspense } from "react";
-import type { Metadata } from 'next';
 import { parse, isValid, format } from "date-fns";
 import { useSearchParams, useRouter } from "next/navigation";
 import { AttendanceForm } from "@/components/dashboard/attendance-form";
@@ -13,11 +12,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-
-export const metadata: Metadata = {
-  title: 'Mark Attendance',
-  description: 'Mark daily attendance for all workers, record advances, and add remarks for the day.',
-};
 
 function AttendanceContent() {
   const searchParams = useSearchParams();

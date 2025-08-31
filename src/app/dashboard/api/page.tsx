@@ -1,16 +1,10 @@
 
 "use client"
-import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Code, KeyRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-
-export const metadata: Metadata = {
-  title: 'API Documentation',
-  description: 'A guide to interacting with the application\'s API endpoints for labourers, supervisors, and attendance.',
-};
 
 const CodeBlock = ({ code }: { code: string }) => (
     <pre className="mt-2 rounded-md bg-muted p-4 text-sm font-mono overflow-x-auto">
