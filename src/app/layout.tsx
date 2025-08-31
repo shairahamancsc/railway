@@ -11,7 +11,6 @@ import useSmoothScroll from "@/hooks/use-smooth-scroll";
 import { ThemeProvider } from "@/components/theme-provider";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PublicLayout } from '@/components/landing/public-layout';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -78,15 +77,14 @@ export default function RootLayout({
 }) {
   useSmoothScroll();
   const pathname = usePathname();
-  const [origin, setOrigin] = useState("");
+  const [canonicalUrl, setCanonicalUrl] = useState("");
 
   useEffect(() => {
+    // This code now runs only on the client
     if (typeof window !== "undefined") {
-      setOrigin(window.location.origin);
+      setCanonicalUrl(window.location.origin + pathname);
     }
-  }, []);
-
-  const canonicalUrl = origin + pathname;
+  }, [pathname]);
 
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -99,9 +97,7 @@ export default function RootLayout({
       "email": "contact@jrkelabour.com",
       "contactType": "Customer Service"
     },
-    "sameAs": [
-      // Add social media links here if available
-    ]
+    "sameAs": []
   };
 
   const websiteSchema = {
@@ -116,15 +112,12 @@ export default function RootLayout({
       }
   };
 
-  // Determine if the current path is part of the public site or the dashboard
-  const isDashboard = pathname.startsWith('/dashboard');
-
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
         <title>{AppMetadata.title?.default?.toString()}</title>
         <meta name="description" content={AppMetadata.description!} />
-        <link rel="canonical" href={canonicalUrl} />
+        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"></link>
@@ -145,7 +138,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            {isDashboard ? children : children}
+            {children}
             <Analytics />
             <SpeedInsights />
             <Toaster />
