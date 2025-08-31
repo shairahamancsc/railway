@@ -77,9 +77,11 @@ export default function RootLayout({
 }) {
   useSmoothScroll();
   const pathname = usePathname();
-  const [canonicalUrl, setCanonicalUrl] = useState("");
+  const [canonicalUrl, setCanonicalUrl] = useState("https://www.jrkelabour.com");
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     // This code now runs only on the client
     if (typeof window !== "undefined") {
       setCanonicalUrl(window.location.origin + pathname);
@@ -117,7 +119,7 @@ export default function RootLayout({
       <head>
         <title>{AppMetadata.title?.default?.toString()}</title>
         <meta name="description" content={AppMetadata.description!} />
-        {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+        {isMounted && <link rel="canonical" href={canonicalUrl} />}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"></link>
@@ -125,8 +127,12 @@ export default function RootLayout({
         <meta name="google-site-verification" content="oEH0uuMTn5LfTSRZSgCMrNK7s727uY5Jsgpm1DLmYDs" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2534450356938343"
      crossOrigin="anonymous"></script>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
+        {isMounted && (
+          <>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
+          </>
+        )}
       </head>
       <body
         className="font-body antialiased"
