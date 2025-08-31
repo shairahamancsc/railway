@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -25,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { UserCheck } from "lucide-react";
+import Link from "next/link";
 
 const loginSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
@@ -129,6 +131,11 @@ export default function LoginPage() {
             </form>
           </Form>
         </CardContent>
+        <CardFooter className="flex justify-center p-4">
+          <Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary">
+            Privacy Policy
+          </Link>
+        </CardFooter>
       </Card>
     </div>
   );
