@@ -1,20 +1,19 @@
-
 {
-  "name": "JRKE Labour Management Utility",
+  "name": "JRKE Labour Management",
   "short_name": "JRKE Labour",
-  "description": "A utility to manage labour, attendance, and payroll.",
+  "description": "A comprehensive tool for managing labour, attendance, and payroll for contracting projects.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3F51B5",
   "icons": [
     {
-      "src": "icon-192x192.png",
+      "src": "/icons/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512x512.png",
+      "src": "/icons/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
