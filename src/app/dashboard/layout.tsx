@@ -60,15 +60,17 @@ export default function DashboardLayout({
         <aside className="hidden border-r bg-card md:block">
           <SidebarNav />
         </aside>
-        <div className="flex flex-col">
-          <header className="flex h-14 items-center justify-between gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6 no-print">
+        <div className="flex flex-col h-screen">
+          <header className="flex h-14 items-center justify-between gap-4 border-b bg-card px-4 shrink-0 lg:h-[60px] lg:px-6 no-print">
             <MobileSidebar />
             <div id="mobile-header-title" className="text-lg font-semibold md:hidden" />
             <div className="w-8" /> 
           </header>
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-secondary/40">
-            <div className="mx-auto w-full max-w-7xl">
-              {children}
+          <main className="flex-1 overflow-y-auto bg-secondary/40">
+            <div className="p-4 sm:p-6 lg:p-8">
+              <div className="mx-auto w-full max-w-7xl">
+                {children}
+              </div>
             </div>
           </main>
         </div>
