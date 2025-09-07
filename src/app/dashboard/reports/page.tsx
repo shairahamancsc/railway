@@ -345,17 +345,17 @@ export default function ReportsPage() {
                 <Table className="text-xs">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="sticky left-0 bg-card z-10 whitespace-nowrap min-w-[120px] px-1 py-1">Worker Name</TableHead>
+                      <TableHead className="sticky left-0 bg-card z-10 whitespace-nowrap min-w-[100px] px-1 py-1">Worker Name</TableHead>
                       {daysInInterval.map((day) => (
-                        <TableHead key={day.toString()} className="text-center min-w-[80px] px-1 py-1">
+                        <TableHead key={day.toString()} className="text-center min-w-[60px] px-1 py-1">
                           <div className="flex flex-col items-center justify-center gap-1">
                             <span>{format(day, "dd-MMM")}</span>
                             {!isAfter(day, today) && (
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-5 w-5 no-print" onClick={() => handleEditClick(day)}>
-                                        <Pencil className="h-2.5 w-2.5" />
+                                    <Button variant="ghost" size="icon" className="h-4 w-4 no-print" onClick={() => handleEditClick(day)}>
+                                        <Pencil className="h-2 w-2" />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -367,16 +367,16 @@ export default function ReportsPage() {
                           </div>
                         </TableHead>
                       ))}
-                      <TableHead className="text-right font-bold min-w-[50px] px-1 py-1">P</TableHead>
-                      <TableHead className="text-right font-bold min-w-[50px] px-1 py-1">H</TableHead>
-                      <TableHead className="text-right font-bold min-w-[90px] px-1 py-1">Total Salary</TableHead>
-                      <TableHead className="text-right font-bold min-w-[90px] px-1 py-1">Daily Adv.</TableHead>
-                      <TableHead className="text-right font-bold min-w-[90px] px-1 py-1">Net Payable</TableHead>
-                      <TableHead className="text-right font-bold min-w-[90px] px-1 py-1">Current Loan</TableHead>
-                      <TableHead className="text-right font-bold min-w-[120px] no-print px-1 py-1">Loan Repay</TableHead>
-                      <TableHead className="text-right font-bold min-w-[120px] no-print px-1 py-1">New Loan</TableHead>
-                      <TableHead className="text-right font-bold min-w-[90px] px-1 py-1">Updated Loan</TableHead>
-                      <TableHead className="text-right font-bold text-primary min-w-[100px] px-1 py-1">Final Paid</TableHead>
+                      <TableHead className="text-right font-bold min-w-[30px] px-1 py-1">P</TableHead>
+                      <TableHead className="text-right font-bold min-w-[30px] px-1 py-1">H</TableHead>
+                      <TableHead className="text-right font-bold min-w-[70px] px-1 py-1">Total Salary</TableHead>
+                      <TableHead className="text-right font-bold min-w-[70px] px-1 py-1">Daily Adv.</TableHead>
+                      <TableHead className="text-right font-bold min-w-[70px] px-1 py-1">Net Payable</TableHead>
+                      <TableHead className="text-right font-bold min-w-[70px] px-1 py-1">Current Loan</TableHead>
+                      <TableHead className="text-right font-bold min-w-[80px] no-print px-1 py-1">Loan Repay</TableHead>
+                      <TableHead className="text-right font-bold min-w-[80px] no-print px-1 py-1">New Loan</TableHead>
+                      <TableHead className="text-right font-bold min-w-[70px] px-1 py-1">Updated Loan</TableHead>
+                      <TableHead className="text-right font-bold text-primary min-w-[80px] px-1 py-1">Final Paid</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -448,7 +448,7 @@ export default function ReportsPage() {
                             <Input 
                               type="number"
                               placeholder="0"
-                              className="text-right h-7 text-xs"
+                              className="text-right h-7 text-xs p-1"
                               value={loanRepayments[data.labourerId] || ''}
                               onChange={(e) => setLoanRepayments(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
                             />
@@ -457,7 +457,7 @@ export default function ReportsPage() {
                             <Input 
                               type="number"
                               placeholder="0"
-                              className="text-right h-7 text-xs"
+                              className="text-right h-7 text-xs p-1"
                               value={newLoans[data.labourerId] || ''}
                               onChange={(e) => setNewLoans(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
                             />
