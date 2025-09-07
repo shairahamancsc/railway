@@ -32,7 +32,7 @@ export default function BlogPage() {
             <Card className="text-center py-12">
               <CardHeader>
                 <CardTitle>Coming Soon!</CardTitle>
-              </Header>
+              </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">We are working on some great content. Please check back later!</p>
               </CardContent>
