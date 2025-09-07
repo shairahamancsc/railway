@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Palette, Font, Image as ImageIcon } from "lucide-react";
+import { Palette, Type, Image as ImageIcon } from "lucide-react";
 import { useThemeCustomizer } from "@/context/ThemeCustomizerProvider";
 import { Label } from "@/components/ui/label";
 
@@ -138,7 +138,7 @@ export default function ThemePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Font className="h-5 w-5" />
+                <Type className="h-5 w-5" />
                 Typography
               </CardTitle>
               <CardDescription>
