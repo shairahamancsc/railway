@@ -11,7 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     useSmoothScroll();
     
     const pathname = usePathname();
-    const [canonicalUrl, setCanonicalUrl] = useState("https://www.jrkelabour.com");
+    const [canonicalUrl, setCanonicalUrl] = useState("");
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -21,6 +21,21 @@ export function Providers({ children }: { children: React.ReactNode }) {
         }
     }, [pathname]);
 
+    if (!isMounted) {
+        return (
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+            >
+                <ThemeCustomizerProvider>
+                    {children}
+                </ThemeCustomizerProvider>
+            </ThemeProvider>
+        )
+    }
+
     return (
         <ThemeProvider
             attribute="class"
@@ -29,7 +44,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             disableTransitionOnChange
         >
             <ThemeCustomizerProvider>
-                {isMounted && <link rel="canonical" href={canonicalUrl} />}
+                <link rel="canonical" href={canonicalUrl} />
                 {children}
             </ThemeCustomizerProvider>
         </ThemeProvider>
