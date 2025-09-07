@@ -345,9 +345,9 @@ export default function ReportsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="sticky left-0 bg-card z-10 whitespace-nowrap min-w-[150px] py-2">Worker Name</TableHead>
+                      <TableHead className="sticky left-0 bg-card z-10 whitespace-nowrap min-w-[150px] px-2 py-1">Worker Name</TableHead>
                       {daysInInterval.map((day) => (
-                        <TableHead key={day.toString()} className="text-center min-w-[120px] py-2">
+                        <TableHead key={day.toString()} className="text-center min-w-[120px] px-2 py-1">
                           <div className="flex items-center justify-center gap-2">
                             {format(day, "dd-MMM")}
                             {!isAfter(day, today) && (
@@ -367,28 +367,28 @@ export default function ReportsPage() {
                           </div>
                         </TableHead>
                       ))}
-                      <TableHead className="text-right font-bold min-w-[80px] py-2">Present</TableHead>
-                      <TableHead className="text-right font-bold min-w-[80px] py-2">Half</TableHead>
-                      <TableHead className="text-right font-bold min-w-[120px] py-2">Total Salary</TableHead>
-                      <TableHead className="text-right font-bold min-w-[120px] py-2">Daily Advance</TableHead>
-                      <TableHead className="text-right font-bold min-w-[120px] py-2">Net Payable</TableHead>
-                      <TableHead className="text-right font-bold min-w-[140px] py-2">Current Loan</TableHead>
-                      <TableHead className="text-right font-bold min-w-[180px] no-print py-2">Loan Repayment</TableHead>
-                      <TableHead className="text-right font-bold min-w-[180px] no-print py-2">New Loan</TableHead>
-                      <TableHead className="text-right font-bold min-w-[140px] py-2">Updated Loan Bal.</TableHead>
-                      <TableHead className="text-right font-bold text-primary min-w-[140px] py-2">Final Amount Paid</TableHead>
+                      <TableHead className="text-right font-bold min-w-[80px] px-2 py-1">Present</TableHead>
+                      <TableHead className="text-right font-bold min-w-[80px] px-2 py-1">Half</TableHead>
+                      <TableHead className="text-right font-bold min-w-[120px] px-2 py-1">Total Salary</TableHead>
+                      <TableHead className="text-right font-bold min-w-[120px] px-2 py-1">Daily Advance</TableHead>
+                      <TableHead className="text-right font-bold min-w-[120px] px-2 py-1">Net Payable</TableHead>
+                      <TableHead className="text-right font-bold min-w-[140px] px-2 py-1">Current Loan</TableHead>
+                      <TableHead className="text-right font-bold min-w-[180px] no-print px-2 py-1">Loan Repayment</TableHead>
+                      <TableHead className="text-right font-bold min-w-[180px] no-print px-2 py-1">New Loan</TableHead>
+                      <TableHead className="text-right font-bold min-w-[140px] px-2 py-1">Updated Loan Bal.</TableHead>
+                      <TableHead className="text-right font-bold text-primary min-w-[140px] px-2 py-1">Final Amount Paid</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {reportData.map((data) => (
                         <TableRow key={data.labourerId}>
-                          <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-card z-10 py-2">{data.fullName}</TableCell>
+                          <TableCell className="font-medium whitespace-nowrap sticky left-0 bg-card z-10 px-2 py-1">{data.fullName}</TableCell>
                           {daysInInterval.map((day) => {
                             const dayStr = format(day, "yyyy-MM-dd");
                             const record = data.attendance[dayStr] as DailyLabourerRecord | { status: 'absent' };
                             
                             if (isAfter(day, today) || !record) {
-                                return <TableCell key={dayStr} className="text-center text-muted-foreground py-2">-</TableCell>;
+                                return <TableCell key={dayStr} className="text-center text-muted-foreground px-2 py-1">-</TableCell>;
                             }
 
                             let statusChar = 'A';
@@ -413,7 +413,7 @@ export default function ReportsPage() {
                             const hasAdvance = 'advance' in record && record.advance && record.advance > 0;
 
                             return (
-                              <TableCell key={dayStr} className="text-center py-2">
+                              <TableCell key={dayStr} className="text-center px-2 py-1">
                                 <div className="flex items-center justify-center gap-1">
                                   <span className={`font-bold ${colorClass}`}>
                                       {statusChar}
@@ -434,17 +434,17 @@ export default function ReportsPage() {
                               </TableCell>
                             );
                           })}
-                          <TableCell className="text-right font-medium py-2">{data.presentDays}</TableCell>
-                          <TableCell className="text-right font-medium py-2">{data.halfDays}</TableCell>
-                          <TableCell className="text-right py-2">{data.totalSalary.toFixed(2)}</TableCell>
-                          <TableCell className="text-right text-red-600 py-2">{data.totalAdvance.toFixed(2)}</TableCell>
-                          <TableCell className={`text-right font-bold ${data.netPayable >= 0 ? 'text-green-700' : 'text-red-700'} py-2`}>
+                          <TableCell className="text-right font-medium px-2 py-1">{data.presentDays}</TableCell>
+                          <TableCell className="text-right font-medium px-2 py-1">{data.halfDays}</TableCell>
+                          <TableCell className="text-right px-2 py-1">{data.totalSalary.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-red-600 px-2 py-1">{data.totalAdvance.toFixed(2)}</TableCell>
+                          <TableCell className={`text-right font-bold ${data.netPayable >= 0 ? 'text-green-700' : 'text-red-700'} px-2 py-1`}>
                             {data.netPayable.toFixed(2)}
                           </TableCell>
-                          <TableCell className={`text-right ${data.currentLoan > 0 ? 'text-red-600' : ''} py-2`}>
+                          <TableCell className={`text-right ${data.currentLoan > 0 ? 'text-red-600' : ''} px-2 py-1`}>
                             {data.currentLoan.toFixed(2)}
                           </TableCell>
-                          <TableCell className="text-right no-print py-2">
+                          <TableCell className="text-right no-print px-2 py-1">
                             <Input 
                               type="number"
                               placeholder="0"
@@ -453,7 +453,7 @@ export default function ReportsPage() {
                               onChange={(e) => setLoanRepayments(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
                             />
                           </TableCell>
-                          <TableCell className="text-right no-print py-2">
+                          <TableCell className="text-right no-print px-2 py-1">
                             <Input 
                               type="number"
                               placeholder="0"
@@ -462,10 +462,10 @@ export default function ReportsPage() {
                               onChange={(e) => setNewLoans(prev => ({...prev, [data.labourerId]: e.target.valueAsNumber || 0}))}
                             />
                           </TableCell>
-                          <TableCell className={`text-right font-bold ${data.updatedLoanBalance > 0 ? 'text-red-600' : ''} py-2`}>
+                          <TableCell className={`text-right font-bold ${data.updatedLoanBalance > 0 ? 'text-red-600' : ''} px-2 py-1`}>
                             {data.updatedLoanBalance.toFixed(2)}
                           </TableCell>
-                          <TableCell className={`text-right font-bold text-primary py-2`}>
+                          <TableCell className={`text-right font-bold text-primary px-2 py-1`}>
                             {data.finalAmountPaid.toFixed(2)}
                           </TableCell>
                         </TableRow>
@@ -544,3 +544,5 @@ export default function ReportsPage() {
     </div>
   );
 }
+
+    
