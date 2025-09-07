@@ -1,22 +1,4 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
-#
-# To allow all robots to crawl your site, use the following line:
-# User-agent: *
-# Disallow:
-#
-# To prevent all robots from crawling your site, use the following line:
-# User-agent: *
-# Disallow: /
-#
-# To prevent a specific robot from crawling your site, use the following line:
-# User-agent: Googlebot
-# Disallow: /
-#
-# You can also specify which parts of your site you don't want to be crawled.
-# For example, to disallow crawling of the /dashboard/ directory:
-# User-agent: *
-# Disallow: /dashboard/
-
 User-agent: *
 Allow: /
+
 Sitemap: https://www.jrkelabour.com/sitemap.xml
