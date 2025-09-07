@@ -57,7 +57,7 @@ export default function DashboardLayout({
   return (
     <DataProvider>
       <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr]">
-        <aside className="hidden border-r bg-card md:block">
+        <aside className="hidden border-r bg-card md:block h-full">
           <SidebarNav />
         </aside>
         <div className="flex flex-col h-screen">
