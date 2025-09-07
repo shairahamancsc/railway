@@ -88,7 +88,7 @@ function SidebarContentNav({ onLinkClick }: { onLinkClick?: () => void }) {
           ))}
         </nav>
       </div>
-      <div className="mt-auto border-t p-4 space-y-2 shrink-0">
+      <div className="mt-auto shrink-0 border-t p-4 space-y-2">
         <ThemeToggle />
         <Button size="sm" className="w-full" onClick={handleLogout}>
             <LogOut className="h-4 w-4 mr-2" />

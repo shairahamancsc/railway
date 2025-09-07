@@ -56,12 +56,12 @@ export default function DashboardLayout({
 
   return (
     <DataProvider>
-      <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr]">
-        <aside className="hidden border-r bg-card md:block h-full">
+      <div className="grid h-screen w-full overflow-hidden md:grid-cols-[240px_1fr]">
+        <aside className="hidden border-r bg-card md:block">
           <SidebarNav />
         </aside>
-        <div className="flex flex-col h-screen">
-          <header className="flex h-14 items-center justify-between gap-4 border-b bg-card px-4 shrink-0 lg:h-[60px] lg:px-6 no-print">
+        <div className="flex flex-col">
+          <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6 no-print">
             <MobileSidebar />
             <div id="mobile-header-title" className="text-lg font-semibold md:hidden" />
             <div className="w-8" /> 
