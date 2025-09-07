@@ -52,12 +52,9 @@ function SidebarContentNav({ onLinkClick }: { onLinkClick?: () => void }) {
   };
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // Only call onLinkClick if the path is actually changing,
-    // otherwise the sheet closes even when clicking the current page.
     if (pathname !== href && onLinkClick) {
       onLinkClick();
     } else if (pathname === href && onLinkClick) {
-      // Still close it if they click the same link
       onLinkClick();
     }
   };
@@ -102,9 +99,7 @@ function SidebarContentNav({ onLinkClick }: { onLinkClick?: () => void }) {
 
 export function SidebarNav() {
   return (
-    <div className="flex h-full max-h-screen flex-col">
-      <SidebarContentNav />
-    </div>
+    <SidebarContentNav />
   );
 }
 
@@ -114,12 +109,11 @@ function MobileHeaderTitle() {
     const [target, setTarget] = useState<HTMLElement | null>(null);
 
     useEffect(() => {
-        // This ensures the code only runs on the client where the DOM is available
         setTarget(document.getElementById("mobile-header-title"));
     }, []);
 
     useEffect(() => {
-        let currentLabel = "Dashboard"; // Default title
+        let currentLabel = "Dashboard"; 
         if (pathname.includes('/settlements/')) {
             currentLabel = "Settlement Details";
         } else {

@@ -60,7 +60,7 @@ export default function DashboardLayout({
         <aside className="hidden border-r bg-card md:block">
           <SidebarNav />
         </aside>
-        <div className="flex flex-col">
+        <div className="flex flex-col overflow-hidden">
           <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-card px-4 lg:h-[60px] lg:px-6 no-print">
             <MobileSidebar />
             <div id="mobile-header-title" className="text-lg font-semibold md:hidden" />
