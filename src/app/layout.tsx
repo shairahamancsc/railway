@@ -19,59 +19,58 @@ export const metadata: Metadata = {
   description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
 };
 
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "JRKE Contracting",
+  "url": "https://www.jrkelabour.com",
+  "logo": "https://www.jrkelabour.com/icons/android-chrome-192x192.png",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "contact@jrkelabour.com",
+    "contactType": "Customer Service"
+  },
+  "sameAs": [],
+  "description": "Expert electrical and civil contracting services. We specialize in high-voltage installations, transformer services, and robust site development for industrial and commercial projects.",
+  "knowsAbout": ["Electrical Contracting", "Civil Engineering", "Transformer Services", "Site Development", "High-Voltage Installation"]
+};
+
+const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://www.jrkelabour.com",
+    "name": "JRKE Contracting",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.jrkelabour.com/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+};
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": [
+    "Electrical Contracting",
+    "Civil Engineering",
+    "Transformer Services"
+  ],
+  "provider": {
+    "@type": "Organization",
+    "name": "JRKE Contracting"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "IN"
+  },
+  "description": "Providing top-tier electrical and civil contracting services including high-voltage installations and site development."
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "JRKE Contracting",
-    "url": "https://www.jrkelabour.com",
-    "logo": "https://www.jrkelabour.com/icons/android-chrome-192x192.png",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "email": "contact@jrkelabour.com",
-      "contactType": "Customer Service"
-    },
-    "sameAs": [],
-    "description": "Expert electrical and civil contracting services. We specialize in high-voltage installations, transformer services, and robust site development for industrial and commercial projects.",
-    "knowsAbout": ["Electrical Contracting", "Civil Engineering", "Transformer Services", "Site Development", "High-Voltage Installation"]
-  };
-
-  const websiteSchema = {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "url": "https://www.jrkelabour.com",
-      "name": "JRKE Contracting",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://www.jrkelabour.com/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-  };
-
-  const serviceSchema = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "serviceType": [
-      "Electrical Contracting",
-      "Civil Engineering",
-      "Transformer Services"
-    ],
-    "provider": {
-      "@type": "Organization",
-      "name": "JRKE Contracting"
-    },
-    "areaServed": {
-      "@type": "Country",
-      "name": "IN"
-    },
-    "description": "Providing top-tier electrical and civil contracting services including high-voltage installations and site development."
-  };
 
   return (
     <html lang="en" suppressHydrationWarning className={`${poppins.variable}`}>
