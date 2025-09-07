@@ -1,8 +1,24 @@
 
+
 import Image from "next/image";
 import { PublicLayout } from "@/components/landing/public-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, Award, Users } from "lucide-react";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About JRKE Contracting',
+  description: 'Learn about JRKE Contracting, our mission, and our unwavering commitment to quality, safety, and integrity in the electrical and civil contracting industry.',
+  openGraph: {
+    title: 'About JRKE Contracting',
+    description: 'Discover our mission to deliver excellence in electrical and civil engineering services.',
+  },
+  twitter: {
+    title: 'About JRKE Contracting',
+    description: 'Discover our mission to deliver excellence in electrical and civil engineering services.',
+  },
+};
+
 
 export default function AboutPage() {
   return (
@@ -11,15 +27,15 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 py-16 md:py-24">
           
           {/* Header Section */}
-          <div className="text-center mb-16">
+          <header className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-extrabold font-headline tracking-tight">About JRKE Labour Management</h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-3xl mx-auto">
               Your trusted partner in delivering cutting-edge electrical and civil contracting solutions with a commitment to quality, safety, and innovation.
             </p>
-          </div>
+          </header>
 
           {/* Company Image and Mission */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
             <div>
               <Image
                 src="https://picsum.photos/800/600"
@@ -39,10 +55,10 @@ export default function AboutPage() {
                 We aim to power communities and build the future by providing reliable infrastructure that stands the test of time.
               </p>
             </div>
-          </div>
+          </section>
           
           {/* Core Values Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="mx-auto bg-primary/10 rounded-full p-3 w-fit mb-3">
@@ -76,7 +92,7 @@ export default function AboutPage() {
                 <p className="text-muted-foreground">Conducting our business with honesty, transparency, and a strong sense of professional ethics.</p>
               </CardContent>
             </Card>
-          </div>
+          </section>
 
         </div>
       </div>

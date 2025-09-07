@@ -320,6 +320,7 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
                   <Avatar className="h-16 w-16">
                     <AvatarImage
                       src={labourer.profile_photo_url}
+                      alt={`${labourer.fullName} profile photo`}
                       data-ai-hint="profile person"
                     />
                     <AvatarFallback className="text-2xl">
@@ -425,5 +426,3 @@ export function AttendanceForm({ targetDate, onSave }: AttendanceFormProps) {
     </div>
   );
 }
-
-    

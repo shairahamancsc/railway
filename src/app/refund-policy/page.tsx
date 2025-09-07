@@ -1,6 +1,17 @@
 
+
 import { PublicLayout } from "@/components/landing/public-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Refund Policy - JRKE Contracting',
+  description: 'Read the refund policy for services and products provided by JRKE Contracting. Understand the terms for service payments, deposits, and product returns.',
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
 
 export default function RefundPolicyPage() {
   return (

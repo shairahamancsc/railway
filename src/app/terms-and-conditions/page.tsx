@@ -1,6 +1,17 @@
 
+
 import { PublicLayout } from "@/components/landing/public-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Terms and Conditions - JRKE Contracting',
+  description: 'Please read our terms and conditions carefully before using our website and services. This page outlines the rules and regulations for the use of jrkelabour.com.',
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
 
 export default function TermsAndConditionsPage() {
   return (

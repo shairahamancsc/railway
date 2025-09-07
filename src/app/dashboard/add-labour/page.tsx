@@ -664,7 +664,7 @@ export default function LabourerManagementPage() {
                       <TableRow key={labourer.id}>
                         <TableCell>
                           <Avatar>
-                            <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" width={40} height={40}/>
+                            <AvatarImage src={labourer.profile_photo_url} alt={`${labourer.fullName} profile photo`} data-ai-hint="profile person" width={40} height={40}/>
                             <AvatarFallback>
                               {labourer.fullName?.charAt(0) || 'W'}
                             </AvatarFallback>

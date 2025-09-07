@@ -21,52 +21,6 @@ const poppins = Poppins({
 })
 
 
-const AppMetadata: Metadata = {
-  metadataBase: new URL('https://www.jrkelabour.com'),
-  title: {
-    default: 'JRKE - Electrical & Civil Contracting Solutions',
-    template: '%s | JRKE Contracting',
-  },
-  description: "Expert electrical and civil contracting services. We specialize in high-voltage installations, transformer services, and robust site development for industrial and commercial projects.",
-  openGraph: {
-    title: 'JRKE - Electrical & Civil Contracting Solutions',
-    description: 'Leading provider of integrated electrical and civil engineering services.',
-    url: 'https://www.jrkelabour.com',
-    siteName: 'JRKE Contracting',
-    images: [
-      {
-        url: '/og-image.png', // Make sure to create this file in /public
-        width: 1200,
-        height: 630,
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'JRKE - Electrical & Civil Contracting Solutions',
-    description: 'Leading provider of integrated electrical and civil engineering services.',
-    images: ['/og-image.png'], // Make sure to create this file in /public
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
-  },
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -102,7 +56,9 @@ export default function RootLayout({
       "email": "contact@jrkelabour.com",
       "contactType": "Customer Service"
     },
-    "sameAs": []
+    "sameAs": [],
+    "description": "Expert electrical and civil contracting services. We specialize in high-voltage installations, transformer services, and robust site development for industrial and commercial projects.",
+    "knowsAbout": ["Electrical Contracting", "Civil Engineering", "Transformer Services", "Site Development", "High-Voltage Installation"]
   };
 
   const websiteSchema = {
@@ -117,11 +73,28 @@ export default function RootLayout({
       }
   };
 
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": [
+      "Electrical Contracting",
+      "Civil Engineering",
+      "Transformer Services"
+    ],
+    "provider": {
+      "@type": "Organization",
+      "name": "JRKE Contracting"
+    },
+    "areaServed": {
+      "@type": "Country",
+      "name": "IN"
+    },
+    "description": "Providing top-tier electrical and civil contracting services including high-voltage installations and site development."
+  };
+
   return (
     <html lang="en" suppressHydrationWarning className={`${poppins.variable}`}>
       <head>
-        <title>{AppMetadata.title?.default?.toString()}</title>
-        <meta name="description" content={AppMetadata.description!} />
         {isMounted && <link rel="canonical" href={canonicalUrl} />}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="manifest" href="/manifest.json" />
@@ -134,6 +107,7 @@ export default function RootLayout({
           <>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
           </>
         )}
       </head>

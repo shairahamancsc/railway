@@ -145,7 +145,7 @@ export default function DashboardPage() {
                           <TableCell>
                             <div className="flex items-center gap-3">
                                 <Avatar className="h-8 w-8">
-                                  <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" width={32} height={32}/>
+                                  <AvatarImage src={labourer.profile_photo_url} alt={`${labourer.fullName} profile photo`} data-ai-hint="profile person" width={32} height={32}/>
                                   <AvatarFallback>
                                     {labourer.fullName.charAt(0)}
                                   </AvatarFallback>
@@ -206,7 +206,7 @@ export default function DashboardPage() {
                         <TableRow key={labourer.id}>
                         <TableCell>
                             <Avatar className="h-10 w-10">
-                            <AvatarImage src={labourer.profile_photo_url} alt={labourer.fullName} data-ai-hint="profile person" width={40} height={40}/>
+                            <AvatarImage src={labourer.profile_photo_url} alt={`${labourer.fullName} profile photo`} data-ai-hint="profile person" width={40} height={40}/>
                             <AvatarFallback>
                                 {labourer.fullName.charAt(0)}
                             </AvatarFallback>

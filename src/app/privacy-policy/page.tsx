@@ -1,6 +1,18 @@
 
+
 import { PublicLayout } from "@/components/landing/public-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy - JRKE Contracting',
+  description: 'Our privacy policy details how we collect, use, and protect your personal data. Learn about your privacy rights and our use of cookies and tracking technologies.',
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
+
 
 export default function PrivacyPolicyPage() {
   return (
