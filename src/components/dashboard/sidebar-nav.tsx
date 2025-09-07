@@ -65,7 +65,7 @@ function SidebarContentNav({ onLinkClick }: { onLinkClick?: () => void }) {
        <div className="flex h-14 shrink-0 items-center border-b px-4 lg:h-[60px] lg:px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <BrandIcon className="h-6 w-6" />
-          <span className="">JRKE Labour Management Utility</span>
+          <span className="">JRKE Labour Utility</span>
         </Link>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -162,3 +162,5 @@ export function MobileSidebar() {
     </>
   )
 }
+
+    

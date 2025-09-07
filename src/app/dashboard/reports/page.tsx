@@ -8,7 +8,7 @@ import { useData } from "@/hooks/useData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet, Archive, Banknote, FileDown, FileUp } from "lucide-react";
+import { Calendar as CalendarIcon, Printer, Pencil, TrendingUp, TrendingDown, Wallet, Archive, Banknote, FileDown, FileUp, FileText as PageIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -252,9 +252,16 @@ export default function ReportsPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-headline font-bold tracking-tight hidden md:block">
-          Attendance Reports
-        </h1>
+        <div className="items-start justify-between gap-4 hidden md:flex">
+            <div>
+              <h1 className="text-3xl font-headline font-bold tracking-tight">
+                Attendance Reports
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Generate, view, and settle periodic payroll reports.
+              </p>
+            </div>
+          </div>
         <div className="flex flex-col sm:flex-row items-center gap-2 no-print">
             <Popover>
                 <PopoverTrigger asChild>
@@ -314,7 +321,7 @@ export default function ReportsPage() {
         <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <CardTitle>Worker Attendance & Salary Report</CardTitle>
+                    <CardTitle>Payroll Report</CardTitle>
                     <CardDescription>P = Present, A = Absent, H = Half Day. All amounts are in ₹.</CardDescription>
                 </div>
                 <AlertDialog>
