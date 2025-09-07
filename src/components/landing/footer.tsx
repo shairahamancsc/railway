@@ -1,5 +1,6 @@
+
 import Link from 'next/link';
-import { UserCheck } from 'lucide-react';
+import { UserCheck, Facebook, Twitter, Linkedin } from 'lucide-react';
 
 const footerLinks = [
   { href: '/about', label: 'About Us' },
@@ -15,6 +16,12 @@ const legalLinks = [
   { href: '/refund-policy', label: 'Refund Policy' },
 ];
 
+const socialLinks = [
+    { href: '#', icon: <Facebook className="h-5 w-5" />, label: 'Facebook' },
+    { href: '#', icon: <Twitter className="h-5 w-5" />, label: 'Twitter' },
+    { href: '#', icon: <Linkedin className="h-5 w-5" />, label: 'LinkedIn' },
+]
+
 export function Footer() {
   return (
     <footer className="bg-card border-t">
@@ -26,9 +33,16 @@ export function Footer() {
               <UserCheck className="h-8 w-8 text-primary" />
               <span className="text-xl font-headline">JRKE Contracting</span>
             </Link>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-4">
               Your trusted partner in electrical and civil engineering projects.
             </p>
+            <div className="flex space-x-4">
+                {socialLinks.map(link => (
+                    <Link key={link.label} href={link.href} className="text-muted-foreground hover:text-primary" aria-label={link.label}>
+                        {link.icon}
+                    </Link>
+                ))}
+            </div>
           </div>
 
           {/* Quick Links */}
