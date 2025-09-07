@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { PublicLayout } from '@/components/landing/public-layout';
 import { BlogPostCard } from '@/components/landing/blog-post-card';
@@ -5,8 +6,8 @@ import { posts } from '@/lib/blog-posts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'Blog - JRKE Contracting',
-  description: 'Explore articles and insights on electrical contracting, civil engineering, and industry best practices from the experts at JRKE Contracting.',
+  title: 'Blog - Electrical & Civil Contracting Insights',
+  description: 'Explore articles and insights on electrical contracting, civil engineering, transformer maintenance, and industry best practices from the experts at JRKE Contracting.',
 };
 
 export default function BlogPage() {
@@ -31,7 +32,7 @@ export default function BlogPage() {
             <Card className="text-center py-12">
               <CardHeader>
                 <CardTitle>Coming Soon!</CardTitle>
-              </CardHeader>
+              </Header>
               <CardContent>
                 <p className="text-muted-foreground">We are working on some great content. Please check back later!</p>
               </CardContent>

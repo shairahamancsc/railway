@@ -1,3 +1,4 @@
+
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { PublicLayout } from '@/components/landing/public-layout';
@@ -23,10 +24,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   return {
-    title: `${post.title} - JRKE Contracting Blog`,
+    title: `${post.title} | JRKE Contracting Blog`,
     description: post.excerpt,
     openGraph: {
-        title: post.title,
+        title: `${post.title} | JRKE Contracting Blog`,
         description: post.excerpt,
         type: 'article',
         publishedTime: post.date,
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     },
     twitter: {
         card: 'summary_large_image',
-        title: post.title,
+        title: `${post.title} | JRKE Contracting Blog`,
         description: post.excerpt,
         images: [post.imageUrl],
     },

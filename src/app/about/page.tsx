@@ -7,15 +7,15 @@ import { Building, Award, Users } from "lucide-react";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About JRKE Contracting',
+  title: 'About JRKE | Electrical & Civil Engineering Contractors',
   description: 'Learn about JRKE Contracting, our mission, and our unwavering commitment to quality, safety, and integrity in the electrical and civil contracting industry.',
   openGraph: {
-    title: 'About JRKE Contracting',
-    description: 'Discover our mission to deliver excellence in electrical and civil engineering services.',
+    title: 'About JRKE | Electrical & Civil Engineering Contractors',
+    description: 'Discover our mission to deliver excellence in electrical and civil engineering services, from transformer installation to complete site development.',
   },
   twitter: {
-    title: 'About JRKE Contracting',
-    description: 'Discover our mission to deliver excellence in electrical and civil engineering services.',
+    title: 'About JRKE | Electrical & Civil Engineering Contractors',
+    description: 'Discover our mission to deliver excellence in electrical and civil engineering services, from transformer installation to complete site development.',
   },
 };
 
