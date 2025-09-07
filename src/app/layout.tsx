@@ -26,14 +26,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const isDashboard = pathname.startsWith('/dashboard');
-
-  if (!isDashboard) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useSmoothScroll();
-  }
+  useSmoothScroll();
   
+  const pathname = usePathname();
   const [canonicalUrl, setCanonicalUrl] = useState("https://www.jrkelabour.com");
   const [isMounted, setIsMounted] = useState(false);
 
