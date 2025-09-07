@@ -4,7 +4,7 @@
 import type { Metadata } from 'next'
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google'
+import { Lato, Lora } from 'next/font/google'
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import useSmoothScroll from "@/hooks/use-smooth-scroll";
@@ -12,16 +12,18 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const inter = Inter({
+const lato = Lato({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-lato',
+  weight: ['400', '700']
 })
 
-const spaceGrotesk = SpaceGrotesk({
+const lora = Lora({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-lora',
+  weight: ['400', '700']
 })
 
 const AppMetadata: Metadata = {
@@ -121,7 +123,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${lato.variable} ${lora.variable}`}>
       <head>
         <title>{AppMetadata.title?.default?.toString()}</title>
         <meta name="description" content={AppMetadata.description!} />

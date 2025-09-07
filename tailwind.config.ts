@@ -19,8 +19,8 @@ const config = {
     },
     extend: {
       fontFamily: {
-        body: ['var(--font-inter)', 'sans-serif'],
-        headline: ['var(--font-space-grotesk)', 'sans-serif'],
+        body: ['var(--font-lato)', 'sans-serif'],
+        headline: ['var(--font-lora)', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
