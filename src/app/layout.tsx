@@ -14,11 +14,6 @@ const poppins = Poppins({
   weight: ['400', '500', '600', '700']
 });
 
-export const metadata: Metadata = {
-  title: 'JRKE Contracting | Electrical & Civil Engineering',
-  description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
-};
-
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -66,6 +61,22 @@ const serviceSchema = {
   "description": "Providing top-tier electrical and civil contracting services including high-voltage installations and site development."
 };
 
+export const metadata: Metadata = {
+  title: 'JRKE Contracting | Electrical & Civil Engineering',
+  description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
+  verification: {
+    google: 'oEH0uuMTn5LfTSRZSgCMrNK7s727uY5Jsgpm1DLmYDs',
+  },
+  other: {
+    'script[type="application/ld+json"]': [
+      JSON.stringify(organizationSchema),
+      JSON.stringify(websiteSchema),
+      JSON.stringify(serviceSchema),
+    ],
+  },
+};
+
+
 export default function RootLayout({
   children,
 }: {
@@ -79,12 +90,8 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"></link>
         <meta name="theme-color" content="#3F51B5" />
-        <meta name="google-site-verification" content="oEH0uuMTn5LfTSRZSgCMrNK7s727uY5Jsgpm1DLmYDs" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2534450356938343"
      crossOrigin="anonymous"></script>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
       </head>
       <body
         className="font-body antialiased"
