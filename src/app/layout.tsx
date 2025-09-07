@@ -4,27 +4,21 @@
 import type { Metadata } from 'next'
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Lato, Lora } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import useSmoothScroll from "@/hooks/use-smooth-scroll";
 import { ThemeProvider } from "@/components/theme-provider";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import useSmoothScroll from '@/hooks/use-smooth-scroll';
 
-const lato = Lato({
+const poppins = Poppins({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-lato',
-  weight: ['400', '700']
+  variable: '--font-poppins',
+  weight: ['400', '500', '600', '700']
 })
 
-const lora = Lora({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-lora',
-  weight: ['400', '700']
-})
 
 const AppMetadata: Metadata = {
   metadataBase: new URL('https://www.jrkelabour.com'),
@@ -123,7 +117,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${lato.variable} ${lora.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${poppins.variable}`}>
       <head>
         <title>{AppMetadata.title?.default?.toString()}</title>
         <meta name="description" content={AppMetadata.description!} />
