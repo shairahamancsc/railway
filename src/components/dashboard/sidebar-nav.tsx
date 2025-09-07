@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -17,6 +16,7 @@ import {
   Code,
   Archive,
   Landmark,
+  Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -31,6 +31,7 @@ const navItems = [
   { href: "/dashboard/loans", icon: Landmark, label: "Loans" },
   { href: "/dashboard/reports", icon: FileText, label: "Reports" },
   { href: "/dashboard/settlements", icon: Archive, label: "Settlements" },
+  { href: "/dashboard/theme", icon: Palette, label: "Theme" },
   { href: "/dashboard/api", icon: Code, label: "API" },
 ];
 
@@ -162,5 +163,3 @@ export function MobileSidebar() {
     </>
   )
 }
-
-    

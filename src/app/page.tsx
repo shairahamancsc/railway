@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ArrowRight, Zap, HardHat, Phone } from "lucide-react";
 import { PublicLayout } from "@/components/landing/public-layout";
+import { useThemeCustomizer } from "@/context/ThemeCustomizerProvider";
 
 const services = [
   {
@@ -51,12 +52,14 @@ const products = [
 ];
 
 export default function HomePage() {
+  const { theme } = useThemeCustomizer();
+
   return (
     <PublicLayout>
       {/* Hero Section with Parallax */}
       <section 
         className="relative h-[60vh] min-h-[400px] flex items-center justify-center text-white bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: "url('https://picsum.photos/1920/1080?grayscale&blur=2')" }}
+        style={{ backgroundImage: `url('${theme.images.heroImage}')` }}
       >
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 text-center p-4">

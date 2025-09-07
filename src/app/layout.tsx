@@ -4,13 +4,14 @@
 import type { Metadata } from 'next'
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Poppins } from 'next/font/google'
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSmoothScroll from '@/hooks/use-smooth-scroll';
+import { ThemeCustomizerProvider } from '@/context/ThemeCustomizerProvider';
+import { Poppins } from 'next/font/google'
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -146,10 +147,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
+          <ThemeCustomizerProvider>
             {children}
             <Analytics />
             <SpeedInsights />
             <Toaster />
+          </ThemeCustomizerProvider>
         </ThemeProvider>
       </body>
     </html>
