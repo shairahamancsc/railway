@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { UserCheck } from 'lucide-react';
 
@@ -6,6 +5,7 @@ const footerLinks = [
   { href: '/about', label: 'About Us' },
   { href: '/#services', label: 'Services' },
   { href: '/#products', label: 'Products' },
+  { href: '/blog', label: 'Blog' },
   { href: '/#contact', label: 'Contact' },
 ];
 

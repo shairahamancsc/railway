@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -12,6 +11,7 @@ const navLinks = [
   { href: '/#services', label: 'Services' },
   { href: '/#products', label: 'Products' },
   { href: '/about', label: 'About Us' },
+  { href: '/blog', label: 'Blog' },
   { href: '/#contact', label: 'Contact' },
 ];
 
