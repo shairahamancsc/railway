@@ -32,7 +32,6 @@ export default function RootLayout({
 
   useEffect(() => {
     setIsMounted(true);
-    // This code now runs only on the client
     if (typeof window !== "undefined") {
       setCanonicalUrl(window.location.origin + pathname);
     }

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 
 export const metadata: Metadata = {
   title: 'Blog - Electrical & Civil Contracting Insights',
-  description: 'Explore articles and insights on electrical contracting, civil engineering, transformer maintenance, and industry best practices from the experts at JRKE Contracting.',
+  description: 'Explore articles, case studies, and insights on electrical contracting, civil engineering, transformer maintenance, and industry best practices from the experts at JRKE Contracting.',
 };
 
 export default function BlogPage() {

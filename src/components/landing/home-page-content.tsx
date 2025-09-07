@@ -67,7 +67,7 @@ export function HomePageContent() {
             Leading Electrical & Civil Engineering Contractors
           </h1>
           <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8">
-            Powering progress with state-of-the-art infrastructure solutions, from high-voltage transformer installations to robust site development projects. Our commitment is to deliver quality and safety on every project, ensuring reliable outcomes for our clients.
+            As leading electrical and civil engineering contractors, we specialize in powering progress with state-of-the-art infrastructure solutions. From high-voltage transformer installations to robust site development projects, our commitment is to deliver quality and safety on every project, ensuring reliable outcomes for our clients.
           </p>
           <Button asChild size="lg">
             <Link href="#contact">
