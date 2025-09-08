@@ -33,21 +33,21 @@ const products = [
   {
     name: "Distribution Transformer",
     description: "Highly efficient and reliable distribution transformers for power networks. Available in various ratings and configurations to meet your project's specific voltage and load requirements. Built for longevity and performance.",
-    image: "https://picsum.photos/600/400?random=4",
+    image: "https://picsum.photos/seed/transformer/600/400",
     price: "Inquire for Price",
     hint: "electrical transformer"
   },
   {
     name: "Steel Utility Pole",
     description: "Durable, weather-resistant galvanized steel utility poles for power lines and telecommunications infrastructure. A superior, low-maintenance alternative to traditional materials, engineered for high-load capacity.",
-    image: "https://picsum.photos/600/400?random=5",
+    image: "https://picsum.photos/seed/pole/600/400",
     price: "Inquire for Price",
     hint: "steel utility pole"
   },
   {
     name: "High-Voltage Cables",
     description: "Suppliers of a wide range of armored and unarmored high-voltage cables designed for safe and efficient power transmission. Our cables meet stringent industry standards for safety, reliability, and durability in any environment.",
-    image: "https://picsum.photos/600/400?random=6",
+    image: "https://picsum.photos/seed/cables/600/400",
     price: "Inquire for Price",
     hint: "high voltage electrical cable"
   },
@@ -107,7 +107,7 @@ export function HomePageContent() {
             Leading Electrical & Civil Engineering Contractors
           </h1>
           <p className="text-lg md:text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8">
-            As leading electrical and civil engineering contractors, we specialize in powering progress with state-of-the-art infrastructure solutions. From high-voltage transformer installations to robust site development projects, our commitment is to deliver quality and safety on every project, ensuring reliable outcomes for our clients.
+            Expert electrical & civil engineering contractors. We specialize in high-voltage transformer installations and robust site development. Quality and safety on every project.
           </p>
           <Button asChild size="lg">
             <Link href="#contact">
