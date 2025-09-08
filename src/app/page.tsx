@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
   openGraph: {
     title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
-    description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
+    description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
     url: 'https://www.jrkelabour.com',
     siteName: 'JRKE Contracting',
     images: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
-    description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
+    description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
     // images: ['https://www.jrkelabour.com/twitter-image.jpg'], // And a twitter specific one
   },
 };
