@@ -4,14 +4,14 @@ import { HomePageContent } from '@/components/landing/home-page-content';
 
 export const metadata: Metadata = {
   title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
-  description: 'JRKE Contracting provides expert electrical and civil engineering solutions, including high-voltage transformer installations, site development, and industrial construction. Contact us for a consultation.',
+  description: 'Power your next project with JRKE Contracting. We deliver expert electrical and civil engineering, from high-voltage transformer installations to full site development. Get a professional consultation today.',
   openGraph: {
     title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
-    description: 'Specializing in electrical and civil engineering, we deliver reliable infrastructure solutions for commercial and industrial projects.',
+    description: 'Power your next project with JRKE Contracting. We deliver expert electrical and civil engineering, from high-voltage transformer installations to full site development. Get a professional consultation today.',
   },
   twitter: {
     title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
-    description: 'Specializing in electrical and civil engineering, we deliver reliable infrastructure solutions for commercial and industrial projects.',
+    description: 'Power your next project with JRKE Contracting. We deliver expert electrical and civil engineering, from high-voltage transformer installations to full site development. Get a professional consultation today.',
   },
 };
 
