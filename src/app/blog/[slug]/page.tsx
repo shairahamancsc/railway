@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         url: `https://www.jrkelabour.com/blog/${post.slug}`,
         type: 'article',
         publishedTime: post.date,
+        modifiedTime: post.date,
         authors: ['JRKE Contracting'],
         images: [
             {
