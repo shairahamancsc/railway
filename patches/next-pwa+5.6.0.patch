@@ -1,0 +1,14 @@
+diff --git a/node_modules/next-pwa/build/index.js b/node_modules/next-pwa/build/index.js
+index 237a7751c6b55239e2332616f731e847c2310116..95e54d8b940989f50e64906f8564177421868516 100644
+--- a/node_modules/next-pwa/build/index.js
++++ b/node_modules/next-pwa/build/index.js
+@@ -52,7 +52,7 @@ function withPWA(nextConfig = {}) {
+       webpack(webpackConfig, options) {
+         const { isServer, dev, config } = options;
+         const {
+-          pwa: {
++          pwa: { // @ts-expect-error: `pwa` is not in `NextConfig` type
+             dest = "public",
+             sw = "sw.js",
+             cacheStartUrl = true,
+

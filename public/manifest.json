@@ -2,10 +2,10 @@
 {
   "name": "JRKE Contracting",
   "short_name": "JRKE",
-  "description": "Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development. Quality and safety on every project.",
+  "description": "Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F8FAFC",
+  "background_color": "#3F51B5",
   "theme_color": "#3F51B5",
   "icons": [
     {

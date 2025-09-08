@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+import slugify from "slugify";
 
 export const dynamic = 'force-dynamic';
 

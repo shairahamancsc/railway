@@ -8,6 +8,8 @@ import { Poppins, Inter, Roboto, Lato, Montserrat, Open_Sans } from 'next/font/g
 import type { Metadata, Viewport } from 'next';
 import { DynamicThemeColor } from "@/components/dynamic-theme-color";
 
+
+
 const poppins = Poppins({
   subsets: ['latin'],
   display: 'swap',
@@ -99,6 +101,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
     description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
+    images: ['https://www.jrkelabour.com/twitter-image.jpg'],
   },
   other: {
     'script[type="application/ld+json"]': [
@@ -124,8 +127,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${inter.variable} ${roboto.variable} ${lato.variable} ${montserrat.variable} ${openSans.variable}`}>
       <head>
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"></link>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2534450356938343"
-     crossOrigin="anonymous"></script>
       </head>
       <body
         className="font-body antialiased"
@@ -138,6 +139,8 @@ export default function RootLayout({
             <SpeedInsights />
             <Toaster />
         </Providers>
+         
+         
       </body>
     </html>
   );

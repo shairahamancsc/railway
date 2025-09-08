@@ -1,35 +1,48 @@
 
 import { MetadataRoute } from 'next';
-import { getAllPosts } from '@/lib/blog-posts';
-import type { Post } from '@/types';
 import { supabase } from '@/lib/supabaseClient';
-import type { Product } from '@/types';
+import type { Post, Product } from '@/types';
 
 const BASE_URL = 'https://www.jrkelabour.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages = [
-    { url: `${BASE_URL}/`, lastModified: new Date(), changeFrequency: 'monthly', priority: 1 },
-    { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
-    { url: `${BASE_URL}/login`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.5 },
-    { url: `${BASE_URL}/privacy-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/terms-and-conditions`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${BASE_URL}/refund-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
-  ];
+    '/',
+    '/about',
+    '/blog',
+    '/login',
+    '/privacy-policy',
+    '/terms-and-conditions',
+    '/refund-policy',
+  ].map(route => ({
+    url: `${BASE_URL}${route}`,
+    lastModified: new Date(),
+  }));
 
-  const posts = await getAllPosts();
+  const { data: postsData, error: postsError } = await supabase
+    .from('posts')
+    .select('slug, date');
 
-  const blogPostPages = (posts as Post[] || []).map((post) => ({
+  if (postsError) {
+    console.warn("Sitemap: Could not fetch blog posts from database.", postsError.message);
+  }
+
+  const blogPostPages = (postsData as Post[] || []).map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
     lastModified: new Date(post.date),
-    changeFrequency: 'yearly' as const,
+    changeFrequency: 'weekly' as const,
     priority: 0.9,
   }));
   
-  const { data: products } = await supabase.from('products').select('id, created_at');
+  const { data: productsData, error: productsError } = await supabase
+    .from('products')
+    .select('id, created_at');
+
+  if (productsError) {
+    console.warn("Sitemap: Could not fetch products from database.", productsError.message);
+  }
   
-  const productPages = (products as Product[] || []).map((product) => ({
+  const productPages = (productsData as Product[] || []).map((product) => ({
     url: `${BASE_URL}/products/${product.id}`,
     lastModified: new Date(product.created_at),
     changeFrequency: 'weekly' as const,
