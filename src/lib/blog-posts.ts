@@ -1,6 +1,6 @@
 
 import { supabase } from './supabaseClient';
-import type { Post } from './supabaseClient'; // Using a more generic post type location
+import type { Post } from '@/types';
 
 export type { Post };
 
@@ -32,3 +32,4 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 
   return data;
 };
+
