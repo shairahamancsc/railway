@@ -179,7 +179,16 @@ export function HomePageContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-center">
-                    <p className="text-lg font-bold text-primary">{product.price}</p>
+                     <div className="flex items-baseline gap-2">
+                        <p className={`text-lg font-bold ${product.discounted_price ? 'text-primary' : 'text-foreground'}`}>
+                            {product.discounted_price || product.selling_price}
+                        </p>
+                        {product.discounted_price && (
+                            <p className="text-sm text-muted-foreground line-through">
+                                {product.selling_price}
+                            </p>
+                        )}
+                    </div>
                     <Button variant="outline">
                       Learn More <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>

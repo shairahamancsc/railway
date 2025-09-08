@@ -54,7 +54,8 @@ export async function DELETE(
 const updateSchema = zfd.formData({
     name: zfd.text(),
     description: zfd.text(),
-    price: zfd.text(),
+    selling_price: zfd.text(),
+    discounted_price: zfd.text().optional(),
     hint: zfd.text(),
     image: z.union([zfd.file(), zfd.text()]), // Can be new file or existing URL
 });
@@ -67,7 +68,7 @@ export async function POST(
     try {
         const { id } = params;
         const formData = await request.formData();
-        const { name, description, price, hint, image } = updateSchema.parse(formData);
+        const { name, description, selling_price, discounted_price, hint, image } = updateSchema.parse(formData);
 
         let imageUrl: string;
 
@@ -86,7 +87,8 @@ export async function POST(
         const updatedProduct = {
             name,
             description,
-            price,
+            selling_price,
+            discounted_price: discounted_price || null, // Ensure it's null if empty
             hint,
             imageUrl,
         };

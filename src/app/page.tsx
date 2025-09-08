@@ -1,6 +1,7 @@
 
 import type { Metadata } from 'next';
 import { HomePageContent } from '@/components/landing/home-page-content';
+import { DataProvider } from '@/context/DataProvider';
 
 export const metadata: Metadata = {
   title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
@@ -29,5 +30,9 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  return <HomePageContent />;
+  return (
+    <DataProvider>
+      <HomePageContent />
+    </DataProvider>
+  );
 }

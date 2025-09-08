@@ -111,8 +111,8 @@ export default function ProductManagementPage() {
                 <TableRow>
                   <TableHead>Image</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Price</TableHead>
+                  <TableHead>Selling Price</TableHead>
+                  <TableHead>Discounted Price</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -144,11 +144,11 @@ export default function ProductManagementPage() {
                       <TableCell className="font-medium max-w-xs truncate">
                         {product.name}
                       </TableCell>
-                      <TableCell className="text-muted-foreground max-w-sm truncate">
-                        {product.description}
+                      <TableCell>
+                        {product.selling_price}
                       </TableCell>
                       <TableCell>
-                        {product.price}
+                        {product.discounted_price || 'N/A'}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">

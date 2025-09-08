@@ -45,7 +45,8 @@ export async function GET() {
 const postSchema = zfd.formData({
     name: zfd.text(),
     description: zfd.text(),
-    price: zfd.text(),
+    selling_price: zfd.text(),
+    discounted_price: zfd.text().optional(),
     hint: zfd.text(),
     image: zfd.file(),
 });
@@ -54,7 +55,7 @@ const postSchema = zfd.formData({
 export async function POST(request: Request) {
     try {
         const formData = await request.formData();
-        const { name, description, price, hint, image } = postSchema.parse(formData);
+        const { name, description, selling_price, discounted_price, hint, image } = postSchema.parse(formData);
 
         const imageUrl = await uploadFile(image);
         if (!imageUrl) {
@@ -64,7 +65,8 @@ export async function POST(request: Request) {
         const newProduct = {
             name,
             description,
-            price,
+            selling_price,
+            discounted_price: discounted_price || null,
             hint,
             imageUrl,
         };

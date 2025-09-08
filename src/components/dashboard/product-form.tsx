@@ -28,7 +28,8 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/web
 const productSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  price: z.string().min(1, "Price is required"),
+  selling_price: z.string().min(1, "Selling price is required"),
+  discounted_price: z.string().optional(),
   hint: z.string().min(2, "AI hint must be at least 2 characters"),
   image: z.any()
     .refine((file) => file || typeof file === 'string', "Image is required.")
@@ -57,7 +58,8 @@ export function ProductForm({ onFinished, product }: ProductFormProps) {
     defaultValues: {
       name: product?.name || "",
       description: product?.description || "",
-      price: product?.price || "",
+      selling_price: product?.selling_price || "",
+      discounted_price: product?.discounted_price || "",
       hint: product?.hint || "",
       image: product?.imageUrl || null,
     },
@@ -127,19 +129,34 @@ export function ProductForm({ onFinished, product }: ProductFormProps) {
             </FormItem>
           )}
         />
-         <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Price</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., Inquire for Price" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="selling_price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Selling Price</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., ₹50,000 or Inquire" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="discounted_price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Discounted Price (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., ₹45,000" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
         <FormField
           control={form.control}
           name="hint"

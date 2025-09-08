@@ -104,7 +104,8 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  price: string;
+  selling_price: string;
+  discounted_price?: string;
   imageUrl: string;
   hint: string;
   created_at: string;
