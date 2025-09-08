@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     openGraph: {
         title: `${post.title} | JRKE Contracting Blog`,
         description: post.excerpt,
+        url: `https://www.jrkelabour.com/blog/${post.slug}`,
         type: 'article',
         publishedTime: post.date,
         authors: ['JRKE Contracting'],

@@ -12,8 +12,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'About JRKE | Electrical & Civil Engineering Contractors',
     description: 'Discover our mission to deliver excellence in electrical and civil engineering services, from transformer installation to complete site development.',
+    url: 'https://www.jrkelabour.com/about',
+    type: 'website',
   },
   twitter: {
+    card: 'summary_large_image',
     title: 'About JRKE | Electrical & Civil Engineering Contractors',
     description: 'Discover our mission to deliver excellence in electrical and civil engineering services, from transformer installation to complete site development.',
   },
