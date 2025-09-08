@@ -35,7 +35,7 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slider": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",
-    "@radix-ui_react-switch": "npm:@radix-ui/react-switch@^1.1.0",
+    "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.1",
     "@radix-ui/react-tooltip": "^1.1.2",
@@ -47,17 +47,16 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.1.7",
-    "firebase": "^10.12.4",
+    "firebase": "^11.9.1",
     "form-data": "^4.0.0",
-    "genkit": "^0.6.2",
-    "lucide-react": "^0.414.0",
+    "genkit": "^1.18.0",
+    "lucide-react": "0.414.0",
     "next": "15.0.0-rc.0",
     "next-pwa": "^5.6.0",
-    "next-themes": "^0.3.0",
     "patch-package": "^8.0.0",
-    "react": "19.0.0-rc.0",
+    "react": "19.0.0-rc-f994737d14-20240522",
     "react-day-picker": "^8.10.1",
-    "react-dom": "19.0.0-rc.0",
+    "react-dom": "19.0.0-rc-f994737d14-20240522",
     "react-hook-form": "7.52.1",
     "recharts": "^2.12.7",
     "slugify": "^1.6.6",
@@ -74,7 +73,7 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "15.0.0-rc.0",
-    "genkit-cli": "^0.6.2",
+    "genkit-cli": "^1.18.0",
     "postcss": "^8",
     "pwa-asset-generator": "^6.3.1",
     "tailwindcss": "^3.4.1",
@@ -82,7 +81,10 @@
   },
   "overrides": {
     "react-hook-form": {
-      "react": "19.0.0-rc.0"
+      "react": "19.0.0-rc-f994737d14-20240522"
+    },
+    "lucide-react": {
+      "react": "19.0.0-rc-f994737d14-20240522"
     }
   }
 }

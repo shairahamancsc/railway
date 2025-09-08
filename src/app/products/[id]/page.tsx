@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Phone, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { RezopayButton } from '@/components/rezopay-button';
 
 type ProductPageProps = {
   params: {
@@ -136,24 +137,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         
                         <div className="flex items-baseline gap-4 mb-8">
                              <p className={`text-3xl font-bold ${product.discounted_price ? 'text-primary' : 'text-foreground'}`}>
-                                {product.discounted_price || product.selling_price}
+                                ₹{product.discounted_price || product.selling_price}
                             </p>
                             {product.discounted_price && (
                                 <p className="text-xl text-muted-foreground line-through">
-                                    {product.selling_price}
+                                    ₹{product.selling_price}
                                 </p>
                             )}
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Button size="lg" asChild>
+                            <RezopayButton product={product} />
+                            <Button size="lg" variant="outline" asChild>
                                 <a href="mailto:contact@jrkelabour.com">
                                     <Phone className="mr-2 h-5 w-5" /> Inquire Now
                                 </a>
                             </Button>
-                            <Button size="lg" variant="outline" asChild>
+                        </div>
+                        <div className="mt-8">
+                             <Button size="sm" variant="link" asChild className="p-0 h-auto">
                                 <Link href="/#products">
-                                <ArrowLeft className="mr-2 h-5 w-5" /> Back to Products
+                                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Products
                                 </Link>
                             </Button>
                         </div>
@@ -164,4 +168,3 @@ export default async function ProductPage({ params }: ProductPageProps) {
     </PublicLayout>
   );
 }
-
