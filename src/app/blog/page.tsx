@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
 
   return (
     <PublicLayout>

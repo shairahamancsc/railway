@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/refund-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
   ];
 
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
 
   const blogPostPages = (posts as Post[] || []).map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: products } = await supabase.from('products').select('id, created_at');
   
   const productPages = (products as Product[] || []).map((product) => ({
-    url: `${BASE_URL}/products/${product.id}`,
+    url: `${BASE_LRL}/products/${product.id}`,
     lastModified: new Date(product.created_at),
     changeFrequency: 'weekly' as const,
     priority: 0.8
