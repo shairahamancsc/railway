@@ -5,9 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowRight, Zap, HardHat, Phone } from "lucide-react";
+import { ArrowRight, Zap, HardHat, Phone, ShieldCheck, Award, Users, Search } from "lucide-react";
 import { PublicLayout } from "@/components/landing/public-layout";
 import { useThemeCustomizer } from "@/context/ThemeCustomizerProvider";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 
 const services = [
   {
@@ -50,6 +52,44 @@ const products = [
     hint: "high voltage electrical cable"
   },
 ];
+
+const whyChooseUsItems = [
+  {
+    icon: <Award className="w-8 h-8 text-primary" />,
+    title: "Unmatched Expertise",
+    description: "Our team consists of highly skilled, certified engineers and technicians with decades of collective experience in both the electrical and civil sectors. We have a proven track record of successfully completing complex, high-stakes projects on time and within budget. This deep expertise allows us to anticipate challenges and innovate solutions that others might miss, ensuring the highest quality outcome for your project."
+  },
+  {
+    icon: <ShieldCheck className="w-8 h-8 text-primary" />,
+    title: "Commitment to Safety",
+    description: "Safety is not just a policy; it's the core of our culture. We enforce rigorous safety protocols that exceed industry standards, conduct continuous training, and empower every team member to prioritize safety above all else. Our impeccable safety record protects our workers, your assets, and the community, providing you with peace of mind."
+  },
+  {
+    icon: <Users className="w-8 h-8 text-primary" />,
+    title: "Client-Centric Approach",
+    description: "We believe that successful projects are built on strong partnerships. We work collaboratively with our clients, maintaining open and transparent communication from the initial consultation to final handover. Your goals are our goals, and we are dedicated to understanding your unique needs to deliver a truly customized and satisfactory service."
+  },
+];
+
+const faqItems = [
+  {
+    question: "What types of projects do you specialize in?",
+    answer: "We specialize in a wide range of industrial and commercial projects, with a core focus on high-voltage electrical installations, substation construction, comprehensive site development, and transformer services. Our integrated expertise in both electrical and civil engineering makes us an ideal partner for complex infrastructure projects."
+  },
+  {
+    question: "How do you ensure safety on your worksites?",
+    answer: "Safety is our top priority. We implement a comprehensive safety program that includes daily toolbox talks, regular site safety audits, rigorous training for all personnel, and strict adherence to all OSHA and local regulations. All team members are empowered to stop work if they identify a safety hazard, ensuring a culture of collective responsibility."
+  },
+  {
+    question: "Can you handle both the electrical and civil aspects of a project?",
+    answer: "Absolutely. Our key advantage is our ability to provide a seamless, turnkey solution by managing both the electrical and civil engineering components of a project. This integrated approach eliminates coordination issues, streamlines timelines, and ensures that all aspects of the work are executed to the same high standard."
+  },
+    {
+    question: "How do I get a quote for my project?",
+    answer: "Getting a quote is simple. Click on the 'Get a Free Consultation' or 'Contact Us' button on our website and fill out the contact form with your project details. You can also call us directly. One of our project managers will get in touch with you to discuss your requirements, conduct a site visit if necessary, and provide a detailed, transparent proposal."
+  },
+];
+
 
 export function HomePageContent() {
   const { theme } = useThemeCustomizer();
@@ -103,9 +143,36 @@ export function HomePageContent() {
           </div>
         </div>
       </section>
+      
+       {/* Why Choose Us Section */}
+      <section className="py-16 md:py-24 bg-secondary/40">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">Why Partner with JRKE Contracting?</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+              Choosing the right contractor is the most critical decision for the success of your project. We deliver not just on specifications, but on promises of quality, safety, and partnership.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {whyChooseUsItems.map((item, index) => (
+              <Card key={index} className="text-center hover:shadow-xl transition-shadow duration-300">
+                <CardHeader>
+                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit mb-4">
+                    {item.icon}
+                  </div>
+                  <CardTitle>{item.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{item.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* E-commerce/Product Section */}
-      <section id="products" className="py-16 md:py-24 bg-secondary/40">
+      <section id="products" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">Industrial Products & Equipment</h2>
@@ -143,6 +210,29 @@ export function HomePageContent() {
           </div>
         </div>
       </section>
+      
+       {/* FAQ Section */}
+      <section className="py-16 md:py-24 bg-secondary/40">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">Frequently Asked Questions</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+              Have questions? We have answers. Here are some of the most common inquiries we receive from our clients.
+            </p>
+          </div>
+          <Accordion type="single" collapsible className="w-full">
+            {faqItems.map((item, index) => (
+              <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionTrigger className="text-left font-semibold text-lg">{item.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
 
       {/* CTA Section */}
       <section id="contact" className="py-16 md:py-24 bg-primary text-primary-foreground">
