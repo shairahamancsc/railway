@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
-import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord, Settlement, ReportData, OverallTotals, Post } from "@/types";
+import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord, Settlement, ReportData, OverallTotals, Post, Product } from "@/types";
 import { supabase } from "@/lib/supabaseClient";
 
 interface DataContextProps {
@@ -27,6 +27,10 @@ interface DataContextProps {
   addPost: (postData: any) => Promise<void>;
   updatePost: (slug: string, postData: any) => Promise<void>;
   deletePost: (slug: string) => Promise<void>;
+  products: Product[];
+  addProduct: (productData: any) => Promise<void>;
+  updateProduct: (id: string, productData: any) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
   loading: boolean;
   error: Error | null;
 }
@@ -39,6 +43,7 @@ const BUCKETS = {
   PROFILE_PHOTOS: 'profile-photos',
   DOCUMENTS: 'documents',
   BLOG_IMAGES: 'blog-images',
+  PRODUCT_IMAGES: 'product-images',
 };
 
 const uploadFile = async (file: File, bucket: string): Promise<string | null> => {
@@ -67,6 +72,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
   const [settlements, setSettlements] = useState<Settlement[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -80,12 +86,14 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             { data: attendanceData, error: attendanceError },
             { data: settlementsData, error: settlementsError },
             { data: postsData, error: postsError },
+            { data: productsData, error: productsError },
         ] = await Promise.all([
             supabase.from("labourers").select("*").order("fullName", { ascending: true }),
             supabase.from("supervisors").select("*"),
             supabase.from("attendance").select("*"),
             supabase.from("settlements").select("*").order('start_date', { ascending: false }),
             supabase.from("posts").select("*").order('date', { ascending: false }),
+            supabase.from("products").select("*").order('created_at', { ascending: false }),
         ]);
 
         if (labourersError) throw labourersError;
@@ -102,13 +110,19 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         if (settlementsError) throw settlementsError;
         setSettlements(settlementsData || []);
         
-        // This will throw an error if the "posts" table doesn't exist, which is what we want to avoid for now.
-        // We'll handle the error gracefully.
         if (postsError) {
           console.warn("Could not fetch posts from database, this might be expected if the table doesn't exist yet:", postsError.message);
           setPosts([]);
         } else {
           setPosts(postsData || []);
+        }
+
+        if (productsError) {
+          console.warn("Could not fetch products from database, this might be expected if the table doesn't exist yet:", productsError.message);
+          setProducts([]);
+          setError(productsError);
+        } else {
+          setProducts(productsData || []);
         }
 
     } catch (err: any) {
@@ -332,6 +346,42 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       setPosts(prev => prev.filter(p => p.slug !== slug));
   };
 
+  // Product Functions
+  const addProduct = async (productData: any) => {
+      const formData = new FormData();
+      Object.keys(productData).forEach(key => {
+          formData.append(key, productData[key]);
+      });
+      const response = await fetch('/api/products', { method: 'POST', body: formData });
+      if (!response.ok) {
+          const { error } = await response.json();
+          throw new Error(error || 'Failed to create product.');
+      }
+      await fetchData();
+  };
+
+  const updateProduct = async (id: string, productData: any) => {
+      const formData = new FormData();
+      Object.keys(productData).forEach(key => {
+          formData.append(key, productData[key]);
+      });
+      const response = await fetch(`/api/products/${id}`, { method: 'POST', body: formData });
+      if (!response.ok) {
+          const { error } = await response.json();
+          throw new Error(error || 'Failed to update product.');
+      }
+      await fetchData();
+  };
+
+  const deleteProduct = async (id: string) => {
+      const response = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+           const { error } = await response.json();
+          throw new Error(error || 'Failed to delete product.');
+      }
+      await fetchData();
+  };
+
 
   return (
     <DataContext.Provider
@@ -352,6 +402,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         addPost,
         updatePost,
         deletePost,
+        products,
+        addProduct,
+        updateProduct,
+        deleteProduct,
         loading,
         error
       }}

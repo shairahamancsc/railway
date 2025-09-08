@@ -5,11 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowRight, Zap, HardHat, Phone, ShieldCheck, Award, Users, Search } from "lucide-react";
+import { ArrowRight, Zap, HardHat, Phone, ShieldCheck, Award, Users, Search, Package } from "lucide-react";
 import { PublicLayout } from "@/components/landing/public-layout";
 import { useThemeCustomizer } from "@/context/ThemeCustomizerProvider";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-
+import { useData } from "@/hooks/useData";
 
 const services = [
   {
@@ -26,30 +26,6 @@ const services = [
     icon: <Zap className="w-8 h-8 text-primary" />,
     title: "Transformer Installation & Services",
     description: "We offer complete turnkey solutions for the installation, testing, and commissioning of electrical transformers. Our services cover all sizes and specifications, ensuring your power distribution systems are efficient, reliable, and maintained for peak performance.",
-  },
-];
-
-const products = [
-  {
-    name: "Distribution Transformer",
-    description: "Highly efficient and reliable distribution transformers for power networks. Available in various ratings and configurations to meet your project's specific voltage and load requirements. Built for longevity and performance.",
-    image: "https://picsum.photos/seed/transformer/600/400",
-    price: "Inquire for Price",
-    hint: "electrical transformer"
-  },
-  {
-    name: "Steel Utility Pole",
-    description: "Durable, weather-resistant galvanized steel utility poles for power lines and telecommunications infrastructure. A superior, low-maintenance alternative to traditional materials, engineered for high-load capacity.",
-    image: "https://picsum.photos/seed/pole/600/400",
-    price: "Inquire for Price",
-    hint: "steel utility pole"
-  },
-  {
-    name: "High-Voltage Cables",
-    description: "Suppliers of a wide range of armored and unarmored high-voltage cables designed for safe and efficient power transmission. Our cables meet stringent industry standards for safety, reliability, and durability in any environment.",
-    image: "https://picsum.photos/seed/cables/600/400",
-    price: "Inquire for Price",
-    hint: "high voltage electrical cable"
   },
 ];
 
@@ -93,6 +69,7 @@ const faqItems = [
 
 export function HomePageContent() {
   const { theme } = useThemeCustomizer();
+  const { products, loading: productsLoading } = useData();
 
   return (
     <PublicLayout>
@@ -181,11 +158,14 @@ export function HomePageContent() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product, index) => (
-              <Card key={index} className="overflow-hidden group">
+            {productsLoading ? (
+              <p>Loading products...</p>
+            ) : products.length > 0 ? (
+              products.map((product) => (
+              <Card key={product.id} className="overflow-hidden group">
                 <div className="relative">
                   <Image
-                    src={product.image}
+                    src={product.imageUrl}
                     alt={product.name}
                     width={600}
                     height={400}
@@ -206,7 +186,20 @@ export function HomePageContent() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            ))
+            ) : (
+                <Card className="md:col-span-2 lg:col-span-3 text-center py-12">
+                  <CardHeader>
+                    <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit mb-4">
+                      <Package className="w-8 h-8 text-primary" />
+                    </div>
+                    <CardTitle>Products Coming Soon!</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">We are updating our product catalog. Please check back later for high-quality industrial equipment.</p>
+                  </CardContent>
+                </Card>
+            )}
           </div>
         </div>
       </section>

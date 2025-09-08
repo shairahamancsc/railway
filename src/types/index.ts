@@ -99,3 +99,13 @@ export interface Post {
   aiHint: string;
   content: string;
 }
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  imageUrl: string;
+  hint: string;
+  created_at: string;
+}

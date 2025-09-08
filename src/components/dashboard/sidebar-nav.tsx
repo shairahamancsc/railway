@@ -19,6 +19,7 @@ import {
   Landmark,
   Palette,
   Newspaper,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -33,6 +34,7 @@ const navItems = [
   { href: "/dashboard/loans", icon: Landmark, label: "Loans" },
   { href: "/dashboard/reports", icon: FileText, label: "Reports" },
   { href: "/dashboard/settlements", icon: Archive, label: "Settlements" },
+  { href: "/dashboard/products", icon: Package, label: "Products"},
   { href: "/dashboard/blog", icon: Newspaper, label: "Blog" },
   { href: "/dashboard/theme", icon: Palette, label: "Theme" },
   { href: "/dashboard/api", icon: Code, label: "API" },
