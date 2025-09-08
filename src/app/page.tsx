@@ -4,7 +4,7 @@ import { HomePageContent } from '@/components/landing/home-page-content';
 
 export const metadata: Metadata = {
   title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
-  description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development. Quality and safety on every project.',
+  description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
   openGraph: {
     title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
     description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
