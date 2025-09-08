@@ -4,7 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/providers";
-import { Poppins } from 'next/font/google';
+import { Poppins, Inter, Roboto, Lato, Montserrat, Open_Sans } from 'next/font/google';
 import type { Metadata } from 'next';
 
 const poppins = Poppins({
@@ -13,6 +13,13 @@ const poppins = Poppins({
   variable: '--font-poppins',
   weight: ['400', '500', '600', '700']
 });
+
+const inter = Inter({ subsets: ["latin"], variable: '--font-inter', display: 'swap' });
+const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"], variable: '--font-roboto', display: 'swap' });
+const lato = Lato({ subsets: ["latin"], weight: ["400", "700"], variable: '--font-lato', display: 'swap' });
+const montserrat = Montserrat({ subsets: ["latin"], variable: '--font-montserrat', display: 'swap' });
+const openSans = Open_Sans({ subsets: ["latin"], variable: '--font-open-sans', display: 'swap' });
+
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -88,7 +95,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${poppins.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${inter.variable} ${roboto.variable} ${lato.variable} ${montserrat.variable} ${openSans.variable}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"></link>

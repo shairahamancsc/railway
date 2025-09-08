@@ -1,24 +1,14 @@
 
 "use client";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { Poppins, Inter, Roboto, Lato, Montserrat, Open_Sans } from "next/font/google";
 
-// Define fonts
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: '--font-poppins' });
-const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"], variable: '--font-roboto' });
-const lato = Lato({ subsets: ["latin"], weight: ["400", "700"], variable: '--font-lato' });
-const montserrat = Montserrat({ subsets: ["latin"], variable: '--font-montserrat' });
-const openSans = Open_Sans({ subsets: ["latin"], variable: '--font-open-sans' });
-
-
-const fontMap: { [key: string]: any } = {
-  Poppins: poppins,
-  Inter: inter,
-  Roboto: roboto,
-  Lato: lato,
-  Montserrat: montserrat,
-  "Open Sans": openSans,
+const fontMap: { [key: string]: string } = {
+  Poppins: "--font-poppins",
+  Inter: "--font-inter",
+  Roboto: "--font-roboto",
+  Lato: "--font-lato",
+  Montserrat: "--font-montserrat",
+  "Open Sans": "--font-open-sans",
 };
 
 
@@ -123,19 +113,12 @@ export const ThemeCustomizerProvider = ({ children }: { children: ReactNode }) =
     root.style.setProperty("--background", hexToHSL(theme.colors.background));
     root.style.setProperty("--accent", hexToHSL(theme.colors.accent));
     
-    // Dynamically add/remove font class names
-    Object.values(fontMap).forEach(font => {
-        root.classList.remove(font.variable);
-    });
-
-    const headlineFont = fontMap[theme.fonts.headline];
-    const bodyFont = fontMap[theme.fonts.body];
-
-    if (headlineFont) root.classList.add(headlineFont.variable);
-    if (bodyFont) root.classList.add(bodyFont.variable);
-
-    root.style.setProperty("--font-headline", headlineFont ? `var(${headlineFont.variable})` : 'sans-serif');
-    root.style.setProperty("--font-body", bodyFont ? `var(${bodyFont.variable})` : 'sans-serif');
+    // Apply fonts using CSS variables defined in layout.tsx
+    const headlineFontVar = fontMap[theme.fonts.headline] || fontMap.Poppins;
+    const bodyFontVar = fontMap[theme.fonts.body] || fontMap.Poppins;
+    
+    root.style.setProperty("--font-headline", `var(${headlineFontVar})`);
+    root.style.setProperty("--font-body", `var(${bodyFontVar})`);
 
   }, [theme]);
 
@@ -153,4 +136,3 @@ export const useThemeCustomizer = () => {
   }
   return context;
 };
-
