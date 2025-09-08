@@ -1,10 +1,11 @@
+
 {
-  "name": "JRKE Labour Management",
-  "short_name": "JRKE Labour",
-  "description": "A comprehensive tool for managing labour, attendance, and payroll for contracting projects.",
+  "name": "JRKE Contracting",
+  "short_name": "JRKE",
+  "description": "Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development. Quality and safety on every project.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#F8FAFC",
   "theme_color": "#3F51B5",
   "icons": [
     {

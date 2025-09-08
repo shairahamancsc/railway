@@ -5,7 +5,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/providers";
 import { Poppins, Inter, Roboto, Lato, Montserrat, Open_Sans } from 'next/font/google';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
+import { DynamicThemeColor } from "@/components/dynamic-theme-color";
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -73,10 +74,31 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  manifest: '/manifest.json',
   title: 'JRKE Contracting | Electrical & Civil Engineering',
   description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
   verification: {
     google: 'oEH0uuMTn5LfTSRZSgCMrNK7s727uY5Jsgpm1DLmYDs',
+  },
+  openGraph: {
+    title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
+    description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
+    url: 'https://www.jrkelabour.com',
+    siteName: 'JRKE Contracting',
+    images: [
+      {
+        url: 'https://www.jrkelabour.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
+    description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
   },
   other: {
     'script[type="application/ld+json"]': [
@@ -86,6 +108,10 @@ export const metadata: Metadata = {
     ],
   },
 };
+
+export const viewport: Viewport = {
+  themeColor: "#3F51B5",
+}
 
 
 export default function RootLayout({
@@ -97,9 +123,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${inter.variable} ${roboto.variable} ${lato.variable} ${montserrat.variable} ${openSans.variable}`}>
       <head>
-        <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"></link>
-        <meta name="theme-color" content="#3F51B5" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2534450356938343"
      crossOrigin="anonymous"></script>
       </head>
@@ -108,6 +132,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <Providers>
+            <DynamicThemeColor />
             {children}
             <Analytics />
             <SpeedInsights />
