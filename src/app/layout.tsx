@@ -68,10 +68,6 @@ export const metadata: Metadata = {
   },
   title: 'JRKE Contracting | Electrical & Civil Engineering',
   description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-  },
   verification: {
     google: 'oEH0uuMTn5LfTSRZSgCMrNK7s727uY5Jsgpm1DLmYDs',
   },
