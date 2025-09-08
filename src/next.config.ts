@@ -7,6 +7,21 @@ const withPWA = require('next-pwa')({
 })
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'jrkelabour.com',
+          },
+        ],
+        destination: 'https://www.jrkelabour.com/:path*',
+        permanent: true,
+      },
+    ]
+  },
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
