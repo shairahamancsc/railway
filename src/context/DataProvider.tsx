@@ -101,9 +101,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
         if (settlementsError) throw settlementsError;
         setSettlements(settlementsData || []);
-
-        if (postsError) throw postsError;
-        setPosts(postsData || []);
+        
+        // This will throw an error if the "posts" table doesn't exist, which is what we want to avoid for now.
+        // We'll handle the error gracefully.
+        if (postsError) {
+          console.warn("Could not fetch posts from database, this might be expected if the table doesn't exist yet:", postsError.message);
+          setPosts([]);
+        } else {
+          setPosts(postsData || []);
+        }
 
     } catch (err: any) {
       console.error("Failed to fetch data from Supabase:", err.message || err);

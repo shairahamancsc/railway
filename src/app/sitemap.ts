@@ -1,7 +1,7 @@
 
 import { MetadataRoute } from 'next';
-import { supabase } from '@/lib/supabaseClient';
-import type { Post } from '@/types';
+import { getAllPosts } from '@/lib/blog-posts';
+import type { Post } from '@/lib/blog-posts';
 
 const BASE_URL = 'https://www.jrkelabour.com';
 
@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/refund-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
   ];
 
-  const { data: posts } = await supabase.from('posts').select('slug, date');
+  const posts = getAllPosts();
 
   const blogPostPages = (posts as Post[] || []).map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,

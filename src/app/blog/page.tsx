@@ -3,23 +3,7 @@ import type { Metadata } from 'next';
 import { PublicLayout } from '@/components/landing/public-layout';
 import { BlogPostCard } from '@/components/landing/blog-post-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Post } from '@/types';
-import { supabase } from '@/lib/supabaseClient';
-
-export const revalidate = 60; // Revalidate every 60 seconds
-
-async function getPosts(): Promise<Post[]> {
-  const { data, error } = await supabase
-    .from('posts')
-    .select('*')
-    .order('date', { ascending: false });
-
-  if (error) {
-    console.error("Error fetching posts:", error);
-    return [];
-  }
-  return data as Post[];
-}
+import { getAllPosts } from '@/lib/blog-posts';
 
 export const metadata: Metadata = {
   title: 'Blog - Electrical & Civil Contracting Insights',
@@ -27,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const posts = await getPosts();
+  const posts = getAllPosts();
 
   return (
     <PublicLayout>

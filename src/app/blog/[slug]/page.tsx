@@ -8,8 +8,8 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/lib/supabaseClient';
-import type { Post } from '@/types';
+import { getPostBySlug, getAllPosts } from '@/lib/blog-posts';
+import type { Post } from '@/lib/blog-posts';
 
 type BlogPostPageProps = {
   params: {
@@ -17,24 +17,8 @@ type BlogPostPageProps = {
   };
 };
 
-export const revalidate = 60; // Revalidate every 60 seconds
-
-async function getPost(slug: string): Promise<Post | null> {
-  const { data, error } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('slug', slug)
-    .single();
-
-  if (error) {
-    console.error("Error fetching post:", error);
-    return null;
-  }
-  return data as Post;
-}
-
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const post = await getPost(params.slug);
+  const post = getPostBySlug(params.slug);
 
   if (!post) {
     return {
@@ -72,14 +56,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export async function generateStaticParams() {
-    const { data: posts } = await supabase.from('posts').select('slug');
-    return posts?.map((post) => ({
+    const posts = getAllPosts();
+    return posts.map((post) => ({
       slug: post.slug,
-    })) || [];
+    }));
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = await getPost(params.slug);
+  const post = getPostBySlug(params.slug);
 
   if (!post) {
     notFound();

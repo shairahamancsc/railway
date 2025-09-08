@@ -1,8 +1,4 @@
 
-// This file is no longer used for fetching posts on the public site, 
-// as they are now fetched directly from the database via Supabase.
-// It can be kept for reference or removed.
-
 export type Post = {
   slug: string;
   title: string;
@@ -42,3 +38,11 @@ export const posts: Post[] = [
     content: `Civil engineering is the unsung hero of the construction world. While architectural designs and finishing touches capture the eye, it is the meticulous work of civil engineers that ensures a structure is safe, stable, and durable. This work begins long before the first brick is laid, starting with a comprehensive site analysis. Geotechnical surveys are conducted to understand the soil composition, water table levels, and seismic risks, which are all critical factors that dictate the design of the foundation.\n\nA solid foundation is paramount. Whether it's a simple slab-on-grade for a small building or a complex system of deep piles for a skyscraper, the foundation's job is to transfer the building's load safely to the ground. The choice of foundation type depends entirely on the findings of the site analysis and the structural requirements of the building. Any miscalculation or shortcut at this stage can compromise the entire structure, leading to cracks, settlement, or even catastrophic failure in the future.\n\nBeyond the foundation, civil engineering encompasses drainage, grading, and utility connections. Proper site grading and drainage systems are essential to manage stormwater, prevent flooding, and protect the foundation from water damage. It is this holistic approach—from the ground down to the pipes below—that creates a safe and sustainable built environment. The precision and foresight of civil engineering provide the stability and resilience that allow architectural visions to stand the test of time.`,
   },
 ];
+
+export const getAllPosts = (): Post[] => {
+  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+};
+
+export const getPostBySlug = (slug: string): Post | undefined => {
+  return posts.find((post) => post.slug === slug);
+};
