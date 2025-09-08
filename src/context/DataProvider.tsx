@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from "react";
-import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord, Settlement, ReportData, OverallTotals } from "@/types";
+import type { Labourer, Supervisor, AttendanceRecord, DailyLabourerRecord, Settlement, ReportData, OverallTotals, Post } from "@/types";
 import { supabase } from "@/lib/supabaseClient";
 
 interface DataContextProps {
@@ -23,6 +23,10 @@ interface DataContextProps {
   }) => Promise<void>;
   adjustLoanBalance: (labourerId: string, amount: number, notes?: string) => Promise<void>;
   getLabourerById: (id: string) => Labourer | undefined;
+  posts: Post[];
+  addPost: (postData: any) => Promise<void>;
+  updatePost: (slug: string, postData: any) => Promise<void>;
+  deletePost: (slug: string) => Promise<void>;
   loading: boolean;
   error: Error | null;
 }
@@ -33,7 +37,8 @@ export const DataContext = createContext<DataContextProps | undefined>(
 
 const BUCKETS = {
   PROFILE_PHOTOS: 'profile-photos',
-  DOCUMENTS: 'documents'
+  DOCUMENTS: 'documents',
+  BLOG_IMAGES: 'blog-images',
 };
 
 const uploadFile = async (file: File, bucket: string): Promise<string | null> => {
@@ -46,7 +51,6 @@ const uploadFile = async (file: File, bucket: string): Promise<string | null> =>
         if (error.message.includes("Bucket not found")) {
             console.error(`Supabase Storage Error: Bucket "${bucket}" not found.`);
             console.error("Please create the bucket in your Supabase project dashboard under Storage > Buckets.");
-            // Return null to allow the function to continue without a file URL
             return null;
         }
         console.error('Error uploading file:', error);
@@ -62,6 +66,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [supervisors, setSupervisors] = useState<Supervisor[]>([]);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
   const [settlements, setSettlements] = useState<Settlement[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -69,42 +74,36 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
-      const { data: labourersData, error: labourersError } = await supabase
-        .from("labourers")
-        .select("*")
-        .order("fullName", { ascending: true });
-      if (labourersError) throw labourersError;
-      
-      setLabourers(labourersData || []);
+        const [
+            { data: labourersData, error: labourersError },
+            { data: supervisorsData, error: supervisorsError },
+            { data: attendanceData, error: attendanceError },
+            { data: settlementsData, error: settlementsError },
+            { data: postsData, error: postsError },
+        ] = await Promise.all([
+            supabase.from("labourers").select("*").order("fullName", { ascending: true }),
+            supabase.from("supervisors").select("*"),
+            supabase.from("attendance").select("*"),
+            supabase.from("settlements").select("*").order('start_date', { ascending: false }),
+            supabase.from("posts").select("*").order('date', { ascending: false }),
+        ]);
 
-      const { data: supervisorsData, error: supervisorsError } = await supabase
-        .from("supervisors")
-        .select("*");
-      if (supervisorsError) throw supervisorsError;
-      
-      const mappedSupervisors = supervisorsData?.map(s => ({
-          ...s,
-          createdAt: s.created_at
-      })) || [];
-      setSupervisors(mappedSupervisors || []);
-      
-      const { data: attendanceData, error: attendanceError } = await supabase
-        .from("attendance")
-        .select("*");
-      if (attendanceError) throw attendanceError;
-      
-      const mappedAttendance = attendanceData?.map(a => ({
-          ...a,
-          presentLabourerIds: a.present_labourer_ids
-      })) || [];
-      setAttendance(mappedAttendance || []);
+        if (labourersError) throw labourersError;
+        setLabourers(labourersData || []);
 
-      const { data: settlementsData, error: settlementsError } = await supabase
-        .from("settlements")
-        .select("*")
-        .order('start_date', { ascending: false });
-      if (settlementsError) throw settlementsError;
-      setSettlements(settlementsData || []);
+        if (supervisorsError) throw supervisorsError;
+        const mappedSupervisors = supervisorsData?.map(s => ({ ...s, createdAt: s.created_at })) || [];
+        setSupervisors(mappedSupervisors);
+
+        if (attendanceError) throw attendanceError;
+        const mappedAttendance = attendanceData?.map(a => ({ ...a, presentLabourerIds: a.present_labourer_ids })) || [];
+        setAttendance(mappedAttendance);
+
+        if (settlementsError) throw settlementsError;
+        setSettlements(settlementsData || []);
+
+        if (postsError) throw postsError;
+        setPosts(postsData || []);
 
     } catch (err: any) {
       console.error("Failed to fetch data from Supabase:", err.message || err);
@@ -151,11 +150,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       .single();
 
     if (dbError) throw dbError;
-
-    if (data) {
-        // After adding, refetch all data to maintain sorted order
-        await fetchData();
-    }
+    if (data) await fetchData();
   };
 
   const updateLabourer = async (labourerId: string, updatedData: any) => {
@@ -188,7 +183,6 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     if (dlUrl) newDocuments.dlUrl = dlUrl;
     dataToUpdate.documents = newDocuments;
 
-
     const { data, error: dbError } = await supabase
       .from("labourers")
       .update(dataToUpdate)
@@ -197,11 +191,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
       .single();
 
     if (dbError) throw dbError;
-
-    if (data) {
-       // After updating, refetch all data to maintain sorted order
-       await fetchData();
-    }
+    if (data) await fetchData();
   };
   
   const deleteLabourer = async (labourerId: string) => {
@@ -252,7 +242,6 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     report_data: ReportData[];
     overall_totals: OverallTotals;
   }) => {
-    // 1. Save the settlement report
     const { data: settlement, error } = await supabase
       .from("settlements")
       .insert([settlementData])
@@ -261,39 +250,25 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   
     if (error) throw error;
   
-    // 2. Update loan balances for each worker involved in the settlement
     const balanceUpdates = settlementData.report_data.map(report => {
       const loanChange = (report.newLoan || 0) - (report.loanRepayment || 0);
-      return {
-        id: report.labourerId,
-        change: loanChange
-      };
+      return { id: report.labourerId, change: loanChange };
     }).filter(update => update.change !== 0);
   
     if (balanceUpdates.length > 0) {
-      // Using a stored procedure would be more robust, but this works for now.
-      // It iterates through each required update.
       for (const update of balanceUpdates) {
         const labourer = labourers.find(l => l.id === update.id);
         if (labourer) {
           const newBalance = (labourer.loan_balance || 0) + update.change;
-          await supabase
-            .from('labourers')
-            .update({ loan_balance: newBalance })
-            .eq('id', update.id);
+          await supabase.from('labourers').update({ loan_balance: newBalance }).eq('id', update.id);
         }
       }
     }
   
-    // 3. Refetch labourers data to get updated balances and update state
-    if (settlement) {
-      setSettlements(prev => [settlement, ...prev]);
-      await fetchData(); // Refetch all data to ensure consistency
-    }
+    if (settlement) await fetchData();
   };
   
   const adjustLoanBalance = async (labourerId: string, amount: number, notes?: string) => {
-    // This function is for direct adjustments from the Loans page.
     const labourer = labourers.find(l => l.id === labourerId);
     if (!labourer) throw new Error("Worker not found");
   
@@ -308,15 +283,49 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
   
     if (error) throw error;
   
-    if (data) {
-      setLabourers(prev => prev.map(l => l.id === labourerId ? data : l));
-    }
-    // Optionally, you could log this transaction to another table if you had one.
+    if (data) setLabourers(prev => prev.map(l => l.id === labourerId ? data : l));
   };
 
   const getLabourerById = (id: string) => {
     return labourers.find(l => l.id === id);
-  }
+  };
+  
+  // Blog Post Functions
+  const addPost = async (postData: any) => {
+      const formData = new FormData();
+      Object.keys(postData).forEach(key => {
+          formData.append(key, postData[key]);
+      });
+      const response = await fetch('/api/blog', { method: 'POST', body: formData });
+      if (!response.ok) {
+          const { error } = await response.json();
+          throw new Error(error || 'Failed to create post.');
+      }
+      await fetchData();
+  };
+
+  const updatePost = async (slug: string, postData: any) => {
+      const formData = new FormData();
+      Object.keys(postData).forEach(key => {
+          formData.append(key, postData[key]);
+      });
+      const response = await fetch(`/api/blog/${slug}`, { method: 'POST', body: formData });
+      if (!response.ok) {
+          const { error } = await response.json();
+          throw new Error(error || 'Failed to update post.');
+      }
+      await fetchData();
+  };
+
+  const deletePost = async (slug: string) => {
+      const response = await fetch(`/api/blog/${slug}`, { method: 'DELETE' });
+      if (!response.ok) {
+           const { error } = await response.json();
+          throw new Error(error || 'Failed to delete post.');
+      }
+      setPosts(prev => prev.filter(p => p.slug !== slug));
+  };
+
 
   return (
     <DataContext.Provider
@@ -333,6 +342,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         addSettlement,
         adjustLoanBalance,
         getLabourerById,
+        posts,
+        addPost,
+        updatePost,
+        deletePost,
         loading,
         error
       }}
@@ -341,5 +354,3 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     </DataContext.Provider>
   );
 };
-
-    

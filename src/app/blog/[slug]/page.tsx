@@ -2,13 +2,14 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { PublicLayout } from '@/components/landing/public-layout';
-import { posts } from '@/lib/blog-posts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/lib/supabaseClient';
+import type { Post } from '@/types';
 
 type BlogPostPageProps = {
   params: {
@@ -16,11 +17,29 @@ type BlogPostPageProps = {
   };
 };
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
+async function getPost(slug: string): Promise<Post | null> {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (error) {
+    console.error("Error fetching post:", error);
+    return null;
+  }
+  return data as Post;
+}
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const post = posts.find((p) => p.slug === params.slug);
+  const post = await getPost(params.slug);
 
   if (!post) {
-    return {};
+    return {
+      title: 'Post Not Found'
+    };
   }
 
   return {
@@ -53,14 +72,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export async function generateStaticParams() {
-    return posts.map((post) => ({
+    const { data: posts } = await supabase.from('posts').select('slug');
+    return posts?.map((post) => ({
       slug: post.slug,
-    }));
+    })) || [];
 }
 
-
-export default function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = posts.find((p) => p.slug === params.slug);
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const post = await getPost(params.slug);
 
   if (!post) {
     notFound();

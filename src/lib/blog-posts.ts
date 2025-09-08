@@ -1,3 +1,8 @@
+
+// This file is no longer used for fetching posts on the public site, 
+// as they are now fetched directly from the database via Supabase.
+// It can be kept for reference or removed.
+
 export type Post = {
   slug: string;
   title: string;

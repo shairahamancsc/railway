@@ -79,7 +79,6 @@ export interface Settlement {
     created_at: string;
 }
 
-// Add this new type for the attendance form props
 export interface AttendanceFormProps {
   targetDate: Date;
   onSave?: () => void;
@@ -91,4 +90,12 @@ export interface AttendanceState {
   remarks: string;
 }
 
-    
+export interface Post {
+  slug: string;
+  title: string;
+  date: string;
+  excerpt: string;
+  imageUrl: string;
+  aiHint: string;
+  content: string;
+}

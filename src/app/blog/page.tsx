@@ -2,15 +2,33 @@
 import type { Metadata } from 'next';
 import { PublicLayout } from '@/components/landing/public-layout';
 import { BlogPostCard } from '@/components/landing/blog-post-card';
-import { posts } from '@/lib/blog-posts';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Post } from '@/types';
+import { supabase } from '@/lib/supabaseClient';
+
+export const revalidate = 60; // Revalidate every 60 seconds
+
+async function getPosts(): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*')
+    .order('date', { ascending: false });
+
+  if (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
+  return data as Post[];
+}
 
 export const metadata: Metadata = {
   title: 'Blog - Electrical & Civil Contracting Insights',
   description: 'Explore articles, case studies, and insights on electrical contracting, civil engineering, transformer maintenance, and industry best practices from the experts at JRKE Contracting.',
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await getPosts();
+
   return (
     <PublicLayout>
       <div className="bg-secondary/40 py-16 md:py-24">
