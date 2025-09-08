@@ -62,6 +62,10 @@ const serviceSchema = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.jrkelabour.com'),
+  alternates: {
+    canonical: '/',
+  },
   title: 'JRKE Contracting | Electrical & Civil Engineering',
   description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
   viewport: {
