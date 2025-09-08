@@ -64,6 +64,10 @@ const serviceSchema = {
 export const metadata: Metadata = {
   title: 'JRKE Contracting | Electrical & Civil Engineering',
   description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+  },
   verification: {
     google: 'oEH0uuMTn5LfTSRZSgCMrNK7s727uY5Jsgpm1DLmYDs',
   },
@@ -86,7 +90,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${poppins.variable}`}>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"></link>
         <meta name="theme-color" content="#3F51B5" />
