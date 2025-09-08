@@ -163,19 +163,25 @@ export function HomePageContent() {
             ) : products.length > 0 ? (
               products.map((product) => (
               <Card key={product.id} className="overflow-hidden group">
-                <div className="relative">
-                  <Image
-                    src={product.imageUrl}
-                    alt={product.name}
-                    width={600}
-                    height={400}
-                    className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
-                    data-ai-hint={product.hint}
-                  />
-                </div>
+                <Link href={`/products/${product.id}`} className="block">
+                    <div className="relative">
+                    <Image
+                        src={product.imageUrl}
+                        alt={product.name}
+                        width={600}
+                        height={400}
+                        className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
+                        data-ai-hint={product.hint}
+                    />
+                    </div>
+                </Link>
                 <CardHeader>
-                  <CardTitle>{product.name}</CardTitle>
-                  <CardDescription>{product.description}</CardDescription>
+                    <CardTitle>
+                        <Link href={`/products/${product.id}`} className="hover:text-primary transition-colors">
+                           {product.name}
+                        </Link>
+                    </CardTitle>
+                  <CardDescription className="line-clamp-2">{product.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-center">
@@ -189,8 +195,10 @@ export function HomePageContent() {
                             </p>
                         )}
                     </div>
-                    <Button variant="outline">
-                      Learn More <ArrowRight className="ml-2 h-4 w-4" />
+                    <Button variant="outline" asChild>
+                      <Link href={`/products/${product.id}`}>
+                        View Details <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>

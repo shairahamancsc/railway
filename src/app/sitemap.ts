@@ -2,6 +2,8 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/blog-posts';
 import type { Post } from '@/lib/blog-posts';
+import { supabase } from '@/lib/supabaseClient';
+import type { Product } from '@/types';
 
 const BASE_URL = 'https://www.jrkelabour.com';
 
@@ -24,6 +26,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'yearly' as const,
     priority: 0.9,
   }));
+  
+  const { data: products } = await supabase.from('products').select('id, created_at');
+  
+  const productPages = (products as Product[] || []).map((product) => ({
+    url: `${BASE_URL}/products/${product.id}`,
+    lastModified: new Date(product.created_at),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8
+  }));
 
-  return [...staticPages, ...blogPostPages];
+
+  return [...staticPages, ...blogPostPages, ...productPages];
 }
