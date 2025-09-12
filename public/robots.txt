@@ -1,8 +1,6 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
 
-# Allow crawling of all content
+# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Disallow: /dashboard/
 
-# Point to the sitemap
-Sitemap: https://www.jrkelabour.com/sitemap.xml
+Sitemap: https://jrkelabour.com/sitemap.xml

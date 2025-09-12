@@ -8,6 +8,14 @@ import { getAllPosts } from '@/lib/blog-posts';
 export const metadata: Metadata = {
   title: 'Blog - Electrical & Civil Contracting Insights',
   description: 'Explore articles, case studies, and insights on electrical contracting, civil engineering, transformer maintenance, and industry best practices from the experts at JRKE Contracting.',
+  alternates: {
+    canonical: '/blog',
+  },
+  openGraph: {
+    title: 'Blog - Electrical & Civil Contracting Insights',
+    description: 'Explore articles from the experts at JRKE Contracting.',
+    url: '/blog',
+  },
 };
 
 export default async function BlogPage() {

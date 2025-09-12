@@ -28,8 +28,8 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "JRKE Contracting",
-  "url": "https://www.jrkelabour.com",
-  "logo": "https://www.jrkelabour.com/icons/android-chrome-192x192.png",
+  "url": "https://jrkelabour.com",
+  "logo": "https://jrkelabour.com/icons/android-chrome-192x192.png",
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "contact@jrkelabour.com",
@@ -43,11 +43,11 @@ const organizationSchema = {
 const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "url": "https://www.jrkelabour.com",
+    "url": "https://jrkelabour.com",
     "name": "JRKE Contracting",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://www.jrkelabour.com/?q={search_term_string}",
+      "target": "https://jrkelabour.com/?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
 };
@@ -72,24 +72,30 @@ const serviceSchema = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.jrkelabour.com'),
+  metadataBase: new URL('https://jrkelabour.com'),
   alternates: {
     canonical: '/',
   },
   manifest: '/manifest.json',
-  title: 'JRKE Contracting | Electrical & Civil Engineering',
+  title: {
+    default: 'JRKE Contracting | Electrical & Civil Engineering',
+    template: '%s | JRKE Contracting',
+  },
   description: 'Leading contractors for high-voltage electrical installations, civil engineering, and transformer services. Powering progress with reliable infrastructure solutions.',
   verification: {
     google: 'oEH0uuMTn5LfTSRZSgCMrNK7s727uY5Jsgpm1DLmYDs',
   },
   openGraph: {
-    title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
+    title: {
+        default: 'Expert Electrical & Civil Engineering | JRKE Contracting',
+        template: '%s | JRKE Contracting',
+    },
     description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
-    url: 'https://www.jrkelabour.com',
+    url: 'https://jrkelabour.com',
     siteName: 'JRKE Contracting',
     images: [
       {
-        url: 'https://www.jrkelabour.com/og-image.jpg',
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
       },
@@ -99,16 +105,19 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Expert Electrical & Civil Engineering | JRKE Contracting',
+    title: {
+        default: 'Expert Electrical & Civil Engineering | JRKE Contracting',
+        template: '%s | JRKE Contracting',
+    },
     description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
-    images: ['https://www.jrkelabour.com/twitter-image.jpg'],
+    images: ['/twitter-image.jpg'],
   },
   other: {
-    'script[type="application/ld+json"]': [
-      JSON.stringify(organizationSchema),
-      JSON.stringify(websiteSchema),
-      JSON.stringify(serviceSchema),
-    ],
+    'script[type="application/ld+json"]': JSON.stringify([
+        organizationSchema,
+        websiteSchema,
+        serviceSchema,
+    ]),
   },
 };
 

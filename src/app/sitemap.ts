@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 import type { Post, Product } from '@/types';
 
-const BASE_URL = 'https://www.jrkelabour.com';
+const BASE_URL = 'https://jrkelabour.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages = [
@@ -17,6 +17,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ].map(route => ({
     url: `${BASE_URL}${route}`,
     lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: route === '/' ? 1.0 : 0.8,
   }));
 
   const { data: postsData, error: postsError } = await supabase

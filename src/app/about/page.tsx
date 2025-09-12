@@ -1,5 +1,4 @@
 
-
 import Image from "next/image";
 import { PublicLayout } from "@/components/landing/public-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,16 +8,14 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'About JRKE | Electrical & Civil Engineering Contractors',
   description: 'Learn about JRKE Contracting, our mission, and our unwavering commitment to quality, safety, and integrity in the electrical and civil contracting industry.',
+  alternates: {
+    canonical: '/about',
+  },
   openGraph: {
     title: 'About JRKE | Electrical & Civil Engineering Contractors',
     description: 'Discover our mission to deliver excellence in electrical and civil engineering services, from transformer installation to complete site development.',
-    url: 'https://www.jrkelabour.com/about',
+    url: '/about',
     type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'About JRKE | Electrical & Civil Engineering Contractors',
-    description: 'Discover our mission to deliver excellence in electrical and civil engineering services, from transformer installation to complete site development.',
   },
 };
 
@@ -41,7 +38,7 @@ export default function AboutPage() {
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
             <div>
               <Image
-                src="https://picsum.photos/800/600"
+                src="https://picsum.photos/seed/about/800/600"
                 alt="Our Team at a worksite"
                 width={800}
                 height={600}

@@ -43,13 +43,16 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   }
 
   return {
-    title: `${product.name} | JRKE Contracting`,
+    title: product.name,
     description: product.description.substring(0, 160), // SEO-friendly description length
+    alternates: {
+      canonical: `/products/${product.id}`,
+    },
     openGraph: {
-      title: `${product.name} | JRKE Contracting`,
+      title: product.name,
       description: product.description,
-      url: `https://www.jrkelabour.com/products/${product.id}`,
-      type: 'website',
+      url: `/products/${product.id}`,
+      type: 'website', // Should be 'product' but using 'website' for simplicity
       images: [
         {
           url: product.imageUrl,
@@ -58,12 +61,6 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
           alt: product.name,
         },
       ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${product.name} | JRKE Contracting`,
-      description: product.description,
-      images: [product.imageUrl],
     },
   };
 }
@@ -97,9 +94,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
     offers: {
       '@type': 'Offer',
-      url: `https://www.jrkelabour.com/products/${product.id}`,
+      url: `https://jrkelabour.com/products/${product.id}`,
       priceCurrency: 'INR',
-      price: product.discounted_price || product.selling_price,
+      price: product.discounted_price ? product.discounted_price.replace(/[^0-9.]/g, '') : product.selling_price.replace(/[^0-9.]/g, ''),
       availability: 'https://schema.org/InStock',
       seller: {
         '@type': 'Organization',
