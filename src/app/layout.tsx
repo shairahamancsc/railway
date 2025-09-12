@@ -28,8 +28,8 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "JRKE Contracting",
-  "url": "https://jrkelabour.com",
-  "logo": "https://jrkelabour.com/icons/android-chrome-192x192.png",
+  "url": "https://jrk-nine.vercel.app",
+  "logo": "https://jrk-nine.vercel.app/icons/android-chrome-192x192.png",
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "contact@jrkelabour.com",
@@ -43,11 +43,11 @@ const organizationSchema = {
 const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "url": "https://jrkelabour.com",
+    "url": "https://jrk-nine.vercel.app",
     "name": "JRKE Contracting",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://jrkelabour.com/?q={search_term_string}",
+      "target": "https://jrk-nine.vercel.app/?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
 };
@@ -72,7 +72,7 @@ const serviceSchema = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://jrkelabour.com'),
+  metadataBase: new URL('https://jrk-nine.vercel.app'),
   alternates: {
     canonical: '/',
   },
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
         template: '%s | JRKE Contracting',
     },
     description: 'Expert electrical and civil contracting services, specializing in high-voltage transformer installations and robust site development.',
-    url: 'https://jrkelabour.com',
+    url: 'https://jrk-nine.vercel.app',
     siteName: 'JRKE Contracting',
     images: [
       {

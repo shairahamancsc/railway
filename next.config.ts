@@ -14,10 +14,10 @@ const nextConfig: NextConfig = {
         has: [
           {
             type: 'host',
-            value: 'www.jrkelabour.com',
+            value: 'www.jrk-nine.vercel.app',
           },
         ],
-        destination: 'https://jrkelabour.com/:path*',
+        destination: 'https://jrk-nine.vercel.app/:path*',
         permanent: true,
       },
     ]

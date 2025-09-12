@@ -94,7 +94,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
     offers: {
       '@type': 'Offer',
-      url: `https://jrkelabour.com/products/${product.id}`,
+      url: `https://jrk-nine.vercel.app/products/${product.id}`,
       priceCurrency: 'INR',
       price: product.discounted_price ? product.discounted_price.replace(/[^0-9.]/g, '') : product.selling_price.replace(/[^0-9.]/g, ''),
       availability: 'https://schema.org/InStock',

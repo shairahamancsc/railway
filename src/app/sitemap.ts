@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 import type { Post, Product } from '@/types';
 
-const BASE_URL = 'https://jrkelabour.com';
+const BASE_URL = 'https://jrk-nine.vercel.app';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
