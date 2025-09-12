@@ -7,6 +7,21 @@ const withPWA = require('next-pwa')({
 })
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.jrkelabour.com',
+          },
+        ],
+        destination: 'https://jrkelabour.com/:path*',
+        permanent: true,
+      },
+    ]
+  },
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
@@ -27,7 +42,15 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: process.env.NEXT_PUBLIC_SUPABASE_URL 
+          ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
+          : '',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   webpack: (config, { isServer }) => {
