@@ -14,10 +14,10 @@ const nextConfig: NextConfig = {
         has: [
           {
             type: 'host',
-            value: 'jrkelabour.com',
+            value: 'www.jrkelabour.com',
           },
         ],
-        destination: 'https://www.jrkelabour.com/:path*',
+        destination: 'https://jrkelabour.com/:path*',
         permanent: true,
       },
     ]
