@@ -122,7 +122,7 @@ export function HomePageContent() {
       </section>
       
        {/* Why Choose Us Section */}
-      <section className="py-16 md:py-24 bg-secondary/40">
+      <section className="py-16 md:py-24 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">Why Partner with JRKE Contracting?</h2>
@@ -222,7 +222,7 @@ export function HomePageContent() {
       </section>
       
        {/* FAQ Section */}
-      <section className="py-16 md:py-24 bg-secondary/40">
+      <section className="py-16 md:py-24 bg-secondary">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">Frequently Asked Questions</h2>
