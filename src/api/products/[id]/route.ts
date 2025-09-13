@@ -8,6 +8,7 @@ const BUCKET_NAME = 'product-images';
 
 // Helper to upload file to Supabase Storage
 const uploadFile = async (file: File) => {
+    if (!file || typeof file !== 'object') return null;
     const fileName = `${Date.now()}_${file.name}`;
     const { data, error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, file);
 
@@ -28,12 +29,11 @@ export async function DELETE(
   try {
     const { id } = params;
     
-    // Optional: Delete the image from storage first
-    const { data: productData } = await supabase.from('products').select('imageUrl').eq('id', id).single();
-    if (productData?.imageUrl) {
-        const fileName = productData.imageUrl.split('/').pop();
-        if(fileName) {
-            await supabase.storage.from(BUCKET_NAME).remove([fileName]);
+    const { data: productData } = await supabase.from('products').select('imageUrls').eq('id', id).single();
+    if (productData?.imageUrls && productData.imageUrls.length > 0) {
+        const fileNames = productData.imageUrls.map((url: string) => url.split('/').pop()).filter(Boolean) as string[];
+        if (fileNames.length > 0) {
+            await supabase.storage.from(BUCKET_NAME).remove(fileNames);
         }
     }
 
@@ -57,7 +57,7 @@ const updateSchema = zfd.formData({
     selling_price: zfd.text(),
     discounted_price: zfd.text().optional(),
     hint: zfd.text(),
-    image: z.union([zfd.file(), zfd.text()]), // Can be new file or existing URL
+    image: z.union([zfd.file(), zfd.file().array(), zfd.text(), zfd.text().array()]),
 });
 
 
@@ -70,27 +70,40 @@ export async function POST(
         const formData = await request.formData();
         const { name, description, selling_price, discounted_price, hint, image } = updateSchema.parse(formData);
 
-        let imageUrl: string;
+        let newImageUrls: string[] = [];
+        const existingImages: string[] = [];
 
-        if (typeof image === 'string') {
-            imageUrl = image; // Keep existing image
-        } else {
-             // Optional: Delete old image from storage
-            const { data: productData } = await supabase.from('products').select('imageUrl').eq('id', id).single();
-            if (productData?.imageUrl) {
-                const oldFileName = productData.imageUrl.split('/').pop();
-                if(oldFileName) await supabase.storage.from(BUCKET_NAME).remove([oldFileName]);
+        const images = Array.isArray(image) ? image : [image];
+
+        for (const img of images) {
+            if (typeof img === 'string') {
+                existingImages.push(img);
+            } else if (img instanceof File) {
+                 const newUrl = await uploadFile(img);
+                 if (newUrl) newImageUrls.push(newUrl);
             }
-            imageUrl = await uploadFile(image); // Upload new image
+        }
+
+        // Delete old images that are not in the existingImages array
+        const { data: productData } = await supabase.from('products').select('imageUrls').eq('id', id).single();
+        if (productData?.imageUrls) {
+            const oldUrls = productData.imageUrls as string[];
+            const urlsToDelete = oldUrls.filter(url => !existingImages.includes(url));
+            const fileNamesToDelete = urlsToDelete.map(url => url.split('/').pop()).filter(Boolean) as string[];
+            if (fileNamesToDelete.length > 0) {
+                 await supabase.storage.from(BUCKET_NAME).remove(fileNamesToDelete);
+            }
         }
         
+        const finalImageUrls = [...existingImages, ...newImageUrls];
+
         const updatedProduct = {
             name,
             description,
             selling_price,
             discounted_price: discounted_price || null, // Ensure it's null if empty
             hint,
-            imageUrl,
+            imageUrls: finalImageUrls,
         };
 
         const { data, error } = await supabase

@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useData } from "@/hooks/useData";
 import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@/types";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -32,12 +32,7 @@ const productSchema = z.object({
   discounted_price: z.string().optional(),
   hint: z.string().min(2, "AI hint must be at least 2 characters"),
   image: z.any()
-    .refine((file) => file || typeof file === 'string', "Image is required.")
-    .refine((file) => !file || typeof file === 'string' || file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-    .refine(
-        (file) => !file || typeof file === 'string' || ACCEPTED_IMAGE_TYPES.includes(file?.type),
-        "Only .jpg, .jpeg, .png and .webp formats are supported."
-    )
+    .refine((files) => files && (Array.isArray(files) ? files.length > 0 : true), "At least one image is required.")
 });
 
 interface ProductFormProps {
@@ -50,7 +45,7 @@ export function ProductForm({ onFinished, product }: ProductFormProps) {
   const { toast } = useToast();
   const isEditMode = !!product;
   const [isLoading, setIsLoading] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(product?.imageUrl || null);
+  const [previewImages, setPreviewImages] = useState<string[]>(product?.imageUrls || []);
   const imageRef =  useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof productSchema>>({
@@ -61,7 +56,7 @@ export function ProductForm({ onFinished, product }: ProductFormProps) {
       selling_price: product?.selling_price || "",
       discounted_price: product?.discounted_price || "",
       hint: product?.hint || "",
-      image: product?.imageUrl || null,
+      image: product?.imageUrls || [],
     },
   });
 
@@ -88,15 +83,27 @@ export function ProductForm({ onFinished, product }: ProductFormProps) {
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (file) {
-          form.setValue("image", file);
-          const reader = new FileReader();
-          reader.onloadend = () => {
-              setPreviewImage(reader.result as string);
-          };
-          reader.readAsDataURL(file);
+      const files = Array.from(event.target.files || []);
+      if (files.length > 0) {
+          const currentImages = form.getValues('image') || [];
+          form.setValue("image", [...currentImages, ...files]);
+          
+          const newPreviews = files.map(file => URL.createObjectURL(file));
+          setPreviewImages(prev => [...prev, ...newPreviews]);
       }
+  }
+
+  const removeImage = (index: number, url: string) => {
+    const currentImages = form.getValues('image') || [];
+    const updatedImages = currentImages.filter((img: File | string, i: number) => {
+        if(img instanceof File) {
+            return URL.createObjectURL(img) !== url;
+        }
+        return img !== url;
+    });
+
+    form.setValue('image', updatedImages);
+    setPreviewImages(prev => prev.filter((_, i) => i !== index));
   }
 
 
@@ -175,7 +182,7 @@ export function ProductForm({ onFinished, product }: ProductFormProps) {
             name="image"
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Product Image</FormLabel>
+                    <FormLabel>Product Images</FormLabel>
                     <FormControl>
                         <div>
                              <Input 
@@ -184,10 +191,11 @@ export function ProductForm({ onFinished, product }: ProductFormProps) {
                                 ref={imageRef}
                                 onChange={handleImageChange}
                                 accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                                multiple
                              />
                              <Button type="button" variant="outline" onClick={() => imageRef.current?.click()}>
                                 <Upload className="mr-2" />
-                                {field.value?.name || (isEditMode ? 'Change Image' : 'Upload Image')}
+                                Add Images
                              </Button>
                         </div>
                     </FormControl>
@@ -195,10 +203,25 @@ export function ProductForm({ onFinished, product }: ProductFormProps) {
                 </FormItem>
             )}
         />
-        {previewImage && (
+        {previewImages.length > 0 && (
             <div>
-                <FormLabel>Image Preview</FormLabel>
-                <Image src={previewImage} alt="Preview" width={200} height={120} className="mt-2 rounded-md object-cover" />
+                <FormLabel>Image Previews</FormLabel>
+                <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {previewImages.map((src, index) => (
+                        <div key={index} className="relative group">
+                            <Image src={src} alt={`Preview ${index}`} width={200} height={120} className="rounded-md object-cover w-full h-24" />
+                             <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100"
+                                onClick={() => removeImage(index, src)}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
             </div>
         )}
 

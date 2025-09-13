@@ -9,6 +9,7 @@ const BUCKET_NAME = 'blog-images';
 
 // Helper to upload file to Supabase Storage
 const uploadFile = async (file: File) => {
+    if (!file || typeof file !== 'object') return null;
     const fileName = `${Date.now()}_${file.name}`;
     const { data, error } = await supabase.storage.from(BUCKET_NAME).upload(fileName, file);
 
@@ -29,12 +30,11 @@ export async function DELETE(
   try {
     const { slug } = params;
     
-    // Optional: Delete the image from storage first
-    const { data: postData } = await supabase.from('posts').select('imageUrl').eq('slug', slug).single();
-    if (postData?.imageUrl) {
-        const fileName = postData.imageUrl.split('/').pop();
-        if(fileName) {
-            await supabase.storage.from(BUCKET_NAME).remove([fileName]);
+    const { data: postData } = await supabase.from('posts').select('imageUrls').eq('slug', slug).single();
+    if (postData?.imageUrls && postData.imageUrls.length > 0) {
+        const fileNames = postData.imageUrls.map((url: string) => url.split('/').pop()).filter(Boolean) as string[];
+        if(fileNames.length > 0) {
+            await supabase.storage.from(BUCKET_NAME).remove(fileNames);
         }
     }
 
@@ -57,7 +57,7 @@ const updateSchema = zfd.formData({
     excerpt: zfd.text(),
     content: zfd.text(),
     aiHint: zfd.text(),
-    image: z.union([zfd.file(), zfd.text()]), // Can be new file or existing URL
+    image: z.union([zfd.file(), zfd.file().array(), zfd.text(), zfd.text().array()]),
 });
 
 
@@ -70,27 +70,40 @@ export async function POST(
         const formData = await request.formData();
         const { title, excerpt, content, aiHint, image } = updateSchema.parse(formData);
 
-        let imageUrl: string;
+        let newImageUrls: string[] = [];
+        const existingImages: string[] = [];
 
-        if (typeof image === 'string') {
-            imageUrl = image; // Keep existing image
-        } else {
-             // Optional: Delete old image from storage
-            const { data: postData } = await supabase.from('posts').select('imageUrl').eq('slug', currentSlug).single();
-            if (postData?.imageUrl) {
-                const oldFileName = postData.imageUrl.split('/').pop();
-                if(oldFileName) await supabase.storage.from(BUCKET_NAME).remove([oldFileName]);
+        const images = Array.isArray(image) ? image : [image];
+
+        for (const img of images) {
+            if (typeof img === 'string') {
+                existingImages.push(img);
+            } else if (img instanceof File) {
+                 const newUrl = await uploadFile(img);
+                 if (newUrl) newImageUrls.push(newUrl);
             }
-            imageUrl = await uploadFile(image); // Upload new image
+        }
+
+        // Delete old images that are not in the existingImages array
+        const { data: postData } = await supabase.from('posts').select('imageUrls').eq('slug', currentSlug).single();
+        if (postData?.imageUrls) {
+            const oldUrls = postData.imageUrls as string[];
+            const urlsToDelete = oldUrls.filter(url => !existingImages.includes(url));
+            const fileNamesToDelete = urlsToDelete.map(url => url.split('/').pop()).filter(Boolean) as string[];
+            if (fileNamesToDelete.length > 0) {
+                await supabase.storage.from(BUCKET_NAME).remove(fileNamesToDelete);
+            }
         }
         
+        const finalImageUrls = [...existingImages, ...newImageUrls];
+
         const updatedPost = {
             slug: slugify(title, { lower: true, strict: true }),
             title,
             excerpt,
             content,
             aiHint,
-            imageUrl,
+            imageUrls: finalImageUrls,
             date: new Date().toISOString(), // Update date on edit
         };
 
