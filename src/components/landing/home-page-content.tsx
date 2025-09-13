@@ -105,7 +105,7 @@ export function HomePageContent() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
-              <Card key={index} className="text-center hover:shadow-xl transition-shadow duration-300">
+              <Card key={index} className="text-center hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
                 <CardHeader>
                   <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit mb-4">
                     {service.icon}
@@ -132,7 +132,7 @@ export function HomePageContent() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {whyChooseUsItems.map((item, index) => (
-              <Card key={index} className="text-center hover:shadow-xl transition-shadow duration-300">
+              <Card key={index} className="text-center hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
                 <CardHeader>
                   <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit mb-4">
                     {item.icon}
@@ -234,7 +234,7 @@ export function HomePageContent() {
             {faqItems.map((item, index) => (
               <AccordionItem key={index} value={`item-${index}`}>
                 <AccordionTrigger className="text-left font-semibold text-lg">{item.question}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
+                <AccordionContent className="text-muted-foreground text-base">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>

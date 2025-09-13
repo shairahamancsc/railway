@@ -64,8 +64,11 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body text-base;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline;
