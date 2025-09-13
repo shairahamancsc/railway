@@ -15,7 +15,11 @@ export async function getAllPosts(): Promise<Post[]> {
     return [];
   }
 
-  return data || [];
+  // Ensure imageUrls is always an array
+  return (data || []).map(post => ({
+    ...post,
+    imageUrls: Array.isArray(post.imageUrls) ? post.imageUrls : (post.imageUrl ? [post.imageUrl] : [])
+  }));
 };
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -29,7 +33,12 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     console.error(`Error fetching post by slug ${slug}:`, error);
     return null;
   }
+  
+  if (!data) return null;
 
-  return data;
+  // Ensure imageUrls is always an array
+  return {
+    ...data,
+    imageUrls: Array.isArray(data.imageUrls) ? data.imageUrls : (data.imageUrl ? [data.imageUrl] : [])
+  };
 };
-

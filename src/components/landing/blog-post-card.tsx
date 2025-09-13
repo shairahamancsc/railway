@@ -11,12 +11,13 @@ type BlogPostCardProps = {
 };
 
 export function BlogPostCard({ post }: BlogPostCardProps) {
+  const firstImage = post.imageUrls?.[0] || 'https://picsum.photos/seed/placeholder/600/400';
   return (
     <Card className="flex flex-col overflow-hidden group">
       <Link href={`/blog/${post.slug}`} className="block">
         <div className="relative">
             <Image
-            src={post.imageUrl}
+            src={firstImage}
             alt={post.title}
             width={600}
             height={400}

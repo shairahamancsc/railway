@@ -3,6 +3,13 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { PublicLayout } from '@/components/landing/public-layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import Image from 'next/image';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -26,6 +33,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   }
 
+  const firstImage = post.imageUrls?.[0] || '';
+
   return {
     title: post.title,
     description: post.excerpt,
@@ -39,14 +48,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         type: 'article',
         publishedTime: post.date,
         authors: ['JRKE Contracting'],
-        images: [
+        images: firstImage ? [
             {
-                url: post.imageUrl,
+                url: firstImage,
                 width: 1200,
                 height: 630,
                 alt: post.title,
             },
-        ],
+        ] : [],
     },
   };
 }
@@ -79,15 +88,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     </h1>
                 </header>
                 
-                <Image
-                    src={post.imageUrl}
-                    alt={post.title}
-                    width={1200}
-                    height={630}
-                    className="w-full h-auto rounded-lg shadow-lg mb-8"
-                    priority
-                    data-ai-hint={post.aiHint}
-                />
+                {post.imageUrls && post.imageUrls.length > 0 && (
+                   <Carousel className="w-full mb-8 shadow-lg rounded-lg overflow-hidden">
+                      <CarouselContent>
+                        {post.imageUrls.map((url, index) => (
+                          <CarouselItem key={index}>
+                            <Image
+                              src={url}
+                              alt={`${post.title} - image ${index + 1}`}
+                              width={1200}
+                              height={630}
+                              className="w-full h-auto object-cover"
+                              priority={index === 0}
+                              data-ai-hint={post.aiHint}
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      {post.imageUrls.length > 1 && (
+                        <>
+                            <CarouselPrevious className="left-2" />
+                            <CarouselNext className="right-2" />
+                        </>
+                      )}
+                    </Carousel>
+                )}
                 
                 <div className="prose prose-lg max-w-none mx-auto text-foreground/90">
                     {post.content.split('\n\n').map((paragraph, index) => (

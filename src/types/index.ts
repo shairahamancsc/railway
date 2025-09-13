@@ -95,7 +95,7 @@ export interface Post {
   title: string;
   date: string;
   excerpt: string;
-  imageUrl: string;
+  imageUrls: string[];
   aiHint: string;
   content: string;
 }
@@ -106,7 +106,7 @@ export interface Product {
   description: string;
   selling_price: string;
   discounted_price?: string;
-  imageUrl: string;
+  imageUrls: string[];
   hint: string;
   created_at: string;
 }
