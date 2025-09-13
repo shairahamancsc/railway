@@ -48,7 +48,7 @@ const postSchema = zfd.formData({
     excerpt: zfd.text(),
     content: zfd.text(),
     aiHint: zfd.text(),
-    image: zfd.file(),
+    image: z.union([zfd.file(), zfd.file().array()]),
 });
 
 
@@ -57,8 +57,10 @@ export async function POST(request: Request) {
         const formData = await request.formData();
         const { title, excerpt, content, aiHint, image } = postSchema.parse(formData);
 
-        const imageUrl = await uploadFile(image);
-        if (!imageUrl) {
+        const files = Array.isArray(image) ? image : [image];
+        const imageUrls = (await Promise.all(files.map(file => uploadFile(file)))).filter(Boolean) as string[];
+
+        if (imageUrls.length === 0) {
             return NextResponse.json({ error: 'Image upload failed.' }, { status: 500 });
         }
         
@@ -68,7 +70,7 @@ export async function POST(request: Request) {
             excerpt,
             content,
             aiHint,
-            imageUrl,
+            imageUrls,
             date: new Date().toISOString(),
         };
 
@@ -96,4 +98,3 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: err.message || 'An unexpected error occurred.' }, { status: 500 });
     }
 }
-

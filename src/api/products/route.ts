@@ -49,7 +49,7 @@ const postSchema = zfd.formData({
     selling_price: zfd.text(),
     discounted_price: zfd.text().optional(),
     hint: zfd.text(),
-    image: zfd.file(),
+    image: z.union([zfd.file(), zfd.file().array()]),
 });
 
 
@@ -57,9 +57,12 @@ export async function POST(request: Request) {
     try {
         const formData = await request.formData();
         const { name, description, selling_price, discounted_price, hint, image } = postSchema.parse(formData);
+        
+        const files = Array.isArray(image) ? image : [image];
+        const imageUrls = (await Promise.all(files.map(file => uploadFile(file)))).filter(Boolean) as string[];
 
-        const imageUrl = await uploadFile(image);
-        if (!imageUrl) {
+
+        if (imageUrls.length === 0) {
             return NextResponse.json({ error: 'Image upload failed.' }, { status: 500 });
         }
         
@@ -69,7 +72,7 @@ export async function POST(request: Request) {
             selling_price,
             discounted_price: discounted_price || null,
             hint,
-            imageUrl,
+            imageUrls,
         };
 
         const { data, error } = await supabase
