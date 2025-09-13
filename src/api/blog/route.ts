@@ -48,7 +48,7 @@ const postSchema = zfd.formData({
     excerpt: zfd.text(),
     content: zfd.text(),
     aiHint: zfd.text(),
-    image: z.union([zfd.file(), zfd.file().array()]),
+    image: z.union([zfd.file(), zfd.file().array()]).optional(),
 });
 
 
@@ -57,11 +57,11 @@ export async function POST(request: Request) {
         const formData = await request.formData();
         const { title, excerpt, content, aiHint, image } = postSchema.parse(formData);
 
-        const files = Array.isArray(image) ? image : [image];
+        const files = image ? (Array.isArray(image) ? image : [image]) : [];
         const imageUrls = (await Promise.all(files.map(file => uploadFile(file)))).filter(Boolean) as string[];
 
         if (imageUrls.length === 0) {
-            return NextResponse.json({ error: 'Image upload failed.' }, { status: 500 });
+             // Allow posts without images
         }
         
         const newPost = {
